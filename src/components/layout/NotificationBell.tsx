@@ -110,10 +110,10 @@ export default function NotificationBell() {
         <div className="absolute left-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border-2 border-slate-300 p-3 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
           <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
             <div className="flex items-center gap-1.5">
-              <span className="text-xs font-black text-slate-900">مركز الإشعارات والتنبيهات</span>
+              <span className="text-xs font-black text-slate-900">الإشعارات</span>
               {unreadCount > 0 && (
                 <span className="text-[10px] font-black bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-full">
-                  {unreadCount} جديد
+                  {unreadCount}
                 </span>
               )}
             </div>
@@ -123,7 +123,7 @@ export default function NotificationBell() {
                 className="text-[11px] text-sky-700 hover:text-sky-900 font-bold flex items-center gap-1 cursor-pointer"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
-                <span>تحديد الكل كمقروء</span>
+                <span>قراءة الكل</span>
               </button>
             )}
           </div>
@@ -132,8 +132,7 @@ export default function NotificationBell() {
             {notifications.length === 0 ? (
               <div className="py-8 text-center text-slate-400">
                 <Bell className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                <p className="text-xs font-bold text-slate-600">لا توجد تنبيهات حالياً</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">ستصلك إشعارات فورية عند رفع محاضرات جديدة</p>
+                <p className="text-xs font-bold text-slate-600">لا توجد إشعارات</p>
               </div>
             ) : (
               notifications.map((n) => (

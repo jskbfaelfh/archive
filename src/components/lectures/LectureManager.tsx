@@ -252,14 +252,7 @@ export default function LectureManager() {
       {/* Header */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-base font-black text-slate-900">مستودع المحاضرات</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            {currentUser.role === 'student'
-              ? `المحاضرات المتاحة لك (${currentUser.sectionName || 'شعبتك'})`
-              : currentUser.role === 'doctor'
-              ? `محاضرات موادك الدراسية (${myDoctorSubjects.map((s) => s.name).join('، ') || 'لم تسند لك مواد'})`
-              : 'إيداع وإدارة المحاضرات بحسب الكلية والقسم والمرحلة والشعبة'}
-          </p>
+          <h2 className="text-base font-black text-slate-900">المحاضرات</h2>
         </div>
 
         {currentUser.role !== 'student' && (
@@ -269,21 +262,15 @@ export default function LectureManager() {
             className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-xs"
           >
             <UploadCloud className="w-4 h-4" />
-            <span>إيداع محاضرة</span>
+            <span>إضافة محاضرة</span>
           </button>
         )}
       </div>
 
       {/* Doctor No-Subjects Warning */}
       {currentUser.role === 'doctor' && myDoctorSubjects.length === 0 && (
-        <div className="bg-amber-50 border-2 border-amber-300 p-4 rounded-2xl flex items-center gap-3 text-amber-900">
-          <div className="p-2 bg-amber-100 rounded-xl font-bold text-lg">⚠️</div>
-          <div>
-            <h4 className="font-bold text-sm">لم يتم إسناد أي مادة دراسية لحسابك حتى الآن</h4>
-            <p className="text-xs text-amber-800 mt-0.5">
-              لم يقم رئيس القسم أو العميد بربطك بأي مادة دراسية بعد. يرجى التواصل مع رئاسة القسم لإسناد موادك الدراسية لتتمكن من إيداع المحاضرات وإدارتها.
-            </p>
-          </div>
+        <div className="bg-amber-50 border border-amber-300 p-3 rounded-2xl flex items-center gap-2.5 text-amber-900 text-xs font-bold">
+          <span>⚠️ لم تُسند لك مواد دراسية بعد.</span>
         </div>
       )}
 
@@ -295,7 +282,7 @@ export default function LectureManager() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="بحث بالمحاضرة، المادة، أو اسم التدريسي..."
+            placeholder="بحث..."
             className="w-full text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal pr-9 pl-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-sky-600 focus:outline-none"
           />
           {searchQuery && (
@@ -339,21 +326,18 @@ export default function LectureManager() {
       {filteredLectures.length === 0 ? (
         <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center">
           <FileText className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-          <p className="text-sm font-bold text-slate-700">لا توجد محاضرات مطابقة للبحث أو التصفية</p>
-          <p className="text-xs text-slate-400 mt-1">
-            {searchQuery ? 'جرّب كتابة كلمات بحث أخرى أو إزالة الفلترة.' : 'اضغط على (إيداع محاضرة) لرفع ونشر محاضرة في النظام.'}
-          </p>
+          <p className="text-sm font-bold text-slate-700">لا توجد محاضرات</p>
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
           <table className="w-full text-right text-xs">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold">
-                <th className="py-3 px-4">عنوان المحاضرة</th>
-                <th className="py-3 px-3">التسلسل الأكاديمي</th>
+                <th className="py-3 px-4">المحاضرة</th>
+                <th className="py-3 px-3">المادة</th>
                 <th className="py-3 px-3">الشعبة</th>
                 <th className="py-3 px-3">التدريسي</th>
-                <th className="py-3 px-4 text-center">الإجراءات</th>
+                <th className="py-3 px-4 text-center">إجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -380,7 +364,7 @@ export default function LectureManager() {
                     <td className="py-3 px-3 text-slate-700">
                       <span className="font-semibold block">{sub?.name || 'مقرر'}</span>
                       <span className="text-[10px] text-slate-500 block">
-                        {col?.name} • قسم {dept?.name} • مرحلة {lec.stage}
+                        {col?.name} • {dept?.name} • م{lec.stage}
                       </span>
                     </td>
 
@@ -397,7 +381,6 @@ export default function LectureManager() {
                         <button
                           onClick={() => setPreviewLecture(lec)}
                           className="px-2.5 py-1 bg-sky-50 hover:bg-sky-100 text-sky-900 rounded-lg text-xs font-bold cursor-pointer flex items-center gap-1 border border-sky-200"
-                          title="معاينة المستند"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>معاينة</span>
@@ -406,7 +389,6 @@ export default function LectureManager() {
                         <button
                           onClick={() => handleDownload(lec)}
                           className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold cursor-pointer flex items-center gap-1 border border-slate-200"
-                          title="تحميل الملف وحساب التنزيل"
                         >
                           <Download className="w-3.5 h-3.5 text-emerald-700" />
                           <span>{lec.downloadsCount}</span>
@@ -449,11 +431,11 @@ export default function LectureManager() {
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
                 <span className="text-[10px] text-sky-800 font-bold bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200">
-                  معاينة المستند الأكاديمي
+                  معاينة
                 </span>
                 <h3 className="font-black text-base text-slate-900 mt-1">{previewLecture.title}</h3>
                 <p className="text-xs text-slate-500">
-                  {previewLecture.subjectName} • التدريسي: {previewLecture.doctorName}
+                  {previewLecture.subjectName} • {previewLecture.doctorName}
                 </p>
               </div>
               <button
@@ -476,20 +458,20 @@ export default function LectureManager() {
 
               {previewLecture.description && (
                 <div className="p-3 bg-white rounded-xl border border-slate-200 text-right text-xs text-slate-700 leading-relaxed font-medium">
-                  <span className="font-bold block text-slate-900 mb-1">ملخص المحاضرة والمحاور:</span>
+                  <span className="font-bold block text-slate-900 mb-1">الوصف:</span>
                   {previewLecture.description}
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-2 text-right text-xs pt-2">
                 <div className="p-2.5 bg-white rounded-xl border border-slate-200">
-                  <span className="text-slate-400 text-[10px] block">المرحلة والشعبة:</span>
+                  <span className="text-slate-400 text-[10px] block">الشعبة:</span>
                   <span className="font-bold text-slate-800">
-                    المرحلة {previewLecture.stage} - {previewLecture.sectionName || 'عام'}
+                    م{previewLecture.stage} • {previewLecture.sectionName || 'عام'}
                   </span>
                 </div>
                 <div className="p-2.5 bg-white rounded-xl border border-slate-200">
-                  <span className="text-slate-400 text-[10px] block">تاريخ الإيداع:</span>
+                  <span className="text-slate-400 text-[10px] block">التاريخ:</span>
                   <span className="font-bold text-slate-800 font-mono">{previewLecture.uploadDate}</span>
                 </div>
               </div>
@@ -498,7 +480,7 @@ export default function LectureManager() {
             {/* Actions */}
             <div className="flex items-center justify-between pt-2">
               <span className="text-xs text-slate-500 font-medium">
-                مرات التحميل: <b>{previewLecture.downloadsCount}</b> • المشاهدات: <b>{previewLecture.viewsCount}</b>
+                التحميلات: <b>{previewLecture.downloadsCount}</b>
               </span>
               <div className="flex gap-2">
                 <button
@@ -514,7 +496,7 @@ export default function LectureManager() {
                   className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Download className="w-4 h-4" />
-                  <span>تنزيل المحاضرة الآن</span>
+                  <span>تحميل</span>
                 </button>
               </div>
             </div>
@@ -527,42 +509,38 @@ export default function LectureManager() {
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-5 space-y-3 max-h-[90vh] overflow-y-auto">
             <h3 className="font-bold text-sm text-slate-900">
-              {editId ? 'تعديل المحاضرة' : 'إيداع محاضرة بالهيكلية'}
+              {editId ? 'تعديل محاضرة' : 'إضافة محاضرة'}
             </h3>
 
             <form onSubmit={handleSave} className="space-y-3 text-xs">
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">عنوان المحاضرة</label>
+                <label className="block text-xs font-black text-slate-900 mb-1">العنوان</label>
                 <input
                   type="text"
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="مثال: المحاضرة 1: تشريح الصدر"
-                  className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-500 placeholder:font-normal p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                  placeholder="عنوان المحاضرة"
+                  className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">وصف أو محاور المحاضرة (اختياري)</label>
+                <label className="block text-xs font-black text-slate-900 mb-1">الوصف</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="اكتب نبذة أو المحاور الأساسية للمحاضرة..."
+                  placeholder="ملاحظات..."
                   rows={2}
                   className="w-full text-xs font-bold text-slate-900 placeholder:text-slate-400 p-2 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none"
                 />
               </div>
 
               {/* Cascading Selection */}
-              <div className="p-3.5 bg-slate-100 rounded-xl border-2 border-slate-200 space-y-2.5">
-                <span className="font-black text-slate-900 block text-xs">
-                  التسلسل الإلزامي لإيداع المحاضرة:
-                </span>
-
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
                 {/* 1. College */}
                 <div>
-                  <label className="block text-xs font-black text-slate-800 mb-1">1. الكلية</label>
+                  <label className="block text-xs font-black text-slate-800 mb-1">الكلية</label>
                   {currentUser.role === 'super_admin' ? (
                     <select
                       value={collegeId}
@@ -574,7 +552,7 @@ export default function LectureManager() {
                       required
                       className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
                     >
-                      <option value="">-- اختر الكلية --</option>
+                      <option value="">-- الكلية --</option>
                       {colleges.map((c) => (
                         <option key={c.id} value={c.id}>
                           {c.name}
@@ -583,17 +561,17 @@ export default function LectureManager() {
                     </select>
                   ) : (
                     <div className="p-2.5 bg-slate-200/80 rounded-lg text-slate-900 font-bold text-xs border border-slate-300">
-                      {colleges.find((c) => c.id === currentUser.collegeId)?.name || 'كليتك الحصرية'}
+                      {colleges.find((c) => c.id === currentUser.collegeId)?.name}
                     </div>
                   )}
                 </div>
 
                 {/* 2. Department */}
                 <div>
-                  <label className="block text-xs font-black text-slate-800 mb-1">2. القسم</label>
+                  <label className="block text-xs font-black text-slate-800 mb-1">القسم</label>
                   {currentUser.role === 'department_admin' || currentUser.role === 'doctor' ? (
                     <div className="p-2.5 bg-slate-200/80 rounded-lg text-slate-900 font-bold text-xs border border-slate-300">
-                      {availableDepts.find((d) => d.id === currentUser.departmentId)?.name || 'قسمك الحصري'}
+                      {availableDepts.find((d) => d.id === currentUser.departmentId)?.name}
                     </div>
                   ) : (
                     <select
@@ -602,7 +580,7 @@ export default function LectureManager() {
                       required
                       className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
                     >
-                      <option value="">-- اختر القسم --</option>
+                      <option value="">-- القسم --</option>
                       {availableDepts.map((d) => (
                         <option key={d.id} value={d.id}>
                           {d.name}
@@ -616,7 +594,7 @@ export default function LectureManager() {
                 {currentUser.role === 'doctor' ? (
                   <div className="space-y-2.5">
                     <div>
-                      <label className="block text-xs font-black text-slate-800 mb-1">3. المادة الدراسية المسندة إليك</label>
+                      <label className="block text-xs font-black text-slate-800 mb-1">المادة</label>
                       <select
                         value={subjectId}
                         onChange={(e) => {
@@ -631,31 +609,26 @@ export default function LectureManager() {
                         required
                         className="w-full text-sm font-black text-slate-900 p-2.5 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
                       >
-                        <option value="">-- اختر مادتك الدراسية --</option>
+                        <option value="">-- المادة --</option>
                         {myDoctorSubjects.map((s) => (
                           <option key={s.id} value={s.id}>
-                            {s.name} (المرحلة {s.stage})
+                            {s.name} (م{s.stage})
                           </option>
                         ))}
                       </select>
-                      {myDoctorSubjects.length === 0 && (
-                        <span className="text-[11px] font-bold text-amber-700 block mt-1">
-                          لم يتم تكليفك بأي مادة بعد. يرجى التواصل مع رئيس القسم.
-                        </span>
-                      )}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-black text-slate-800 mb-1">4. الشعبة المستهدفة بالمحاضرة</label>
+                      <label className="block text-xs font-black text-slate-800 mb-1">الشعبة</label>
                       <select
                         value={sectionTarget}
                         onChange={(e) => setSectionTarget(e.target.value)}
                         className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
                       >
-                        <option value="all">كافة الشُعب (عام للمرحلة {stage})</option>
+                        <option value="all">كافة الشُعب</option>
                         {availableSections.map((sec) => (
                           <option key={sec.id} value={sec.id}>
-                            {sec.name} فقط
+                            {sec.name}
                           </option>
                         ))}
                       </select>
@@ -663,10 +636,9 @@ export default function LectureManager() {
                   </div>
                 ) : (
                   <>
-                    {/* 3. Stage & Section */}
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs font-black text-slate-800 mb-1">3. المرحلة</label>
+                        <label className="block text-xs font-black text-slate-800 mb-1">المرحلة</label>
                         <select
                           value={stage}
                           onChange={(e) => setStage(Number(e.target.value))}
@@ -674,50 +646,44 @@ export default function LectureManager() {
                         >
                           {[1, 2, 3, 4, 5, 6].map((s) => (
                             <option key={s} value={s}>
-                              المرحلة {s}
+                              م{s}
                             </option>
                           ))}
                         </select>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-black text-slate-800 mb-1">4. الشعبة المستهدفة</label>
+                        <label className="block text-xs font-black text-slate-800 mb-1">الشعبة</label>
                         <select
                           value={sectionTarget}
                           onChange={(e) => setSectionTarget(e.target.value)}
                           className="w-full text-sm font-black text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
                         >
-                          <option value="all">كافة الشُعب (عام)</option>
+                          <option value="all">كافة الشُعب</option>
                           {availableSections.map((sec) => (
                             <option key={sec.id} value={sec.id}>
-                              {sec.name} فقط
+                              {sec.name}
                             </option>
                           ))}
                         </select>
                       </div>
                     </div>
 
-                    {/* 4. Subject */}
                     <div>
-                      <label className="block text-xs font-black text-slate-800 mb-1">5. المادة الدراسية</label>
+                      <label className="block text-xs font-black text-slate-800 mb-1">المادة</label>
                       <select
                         value={subjectId}
                         onChange={(e) => setSubjectId(e.target.value)}
                         required
                         className="w-full text-sm font-black text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
                       >
-                        <option value="">-- اختر المادة --</option>
+                        <option value="">-- المادة --</option>
                         {availableSubjects.map((s) => (
                           <option key={s.id} value={s.id}>
                             {s.name}
                           </option>
                         ))}
                       </select>
-                      {availableSubjects.length === 0 && (
-                        <span className="text-[11px] font-bold text-amber-700 block mt-1">
-                          لا توجد مواد مسجلة لهذه المرحلة. أضف مادة أولاً من تبويب الهيكلية.
-                        </span>
-                      )}
                     </div>
                   </>
                 )}
@@ -725,14 +691,14 @@ export default function LectureManager() {
 
               {/* File upload */}
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">ملف المحاضرة الفعلي (PDF / PPTX / MP4)</label>
+                <label className="block text-xs font-black text-slate-900 mb-1">الملف</label>
                 <input
                   type="file"
                   onChange={handleFile}
                   accept=".pdf,.pptx,.ppt,.docx,.mp4"
                   className="w-full text-xs p-2 bg-white border-2 border-slate-300 rounded-xl cursor-pointer"
                 />
-                {fileName && <p className="text-[11px] font-bold text-emerald-800 mt-1">الملف المختار: {fileName} ({fileSize})</p>}
+                {fileName && <p className="text-[11px] font-bold text-emerald-800 mt-1">{fileName} ({fileSize})</p>}
               </div>
 
               <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
@@ -749,7 +715,7 @@ export default function LectureManager() {
                   className="px-4 py-1.5 text-xs bg-slate-900 hover:bg-slate-800 text-white rounded-lg cursor-pointer font-bold flex items-center gap-1.5 disabled:opacity-50"
                 >
                   {isUploading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  <span>{isUploading ? 'جاري رفع الملف...' : 'إيداع المحاضرة'}</span>
+                  <span>{isUploading ? 'جاري الرفع...' : 'حفظ'}</span>
                 </button>
               </div>
             </form>

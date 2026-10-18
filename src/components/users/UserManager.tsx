@@ -98,24 +98,24 @@ export default function UserManager() {
   const getAllowedRoles = (): { role: UserRole; label: string }[] => {
     if (isSuper) {
       return [
-        { role: 'college_admin', label: 'أدمن كلية (عمادة الكلية)' },
-        { role: 'department_admin', label: 'أدمن قسم (رئاسة القسم)' },
-        { role: 'doctor', label: 'تدريسي (أستاذ مقرر)' },
-        { role: 'student', label: 'طالب جامعي' },
-        { role: 'super_admin', label: 'سوبر أدمن الجامعة' },
+        { role: 'college_admin', label: 'عميد كلية' },
+        { role: 'department_admin', label: 'رئيس قسم' },
+        { role: 'doctor', label: 'تدريسي' },
+        { role: 'student', label: 'طالب' },
+        { role: 'super_admin', label: 'سوبر أدمن' },
       ];
     }
     if (isCollegeAdmin) {
       return [
-        { role: 'department_admin', label: 'أدمن قسم (رئاسة القسم)' },
-        { role: 'doctor', label: 'تدريسي (أستاذ مقرر)' },
-        { role: 'student', label: 'طالب جامعي' },
+        { role: 'department_admin', label: 'رئيس قسم' },
+        { role: 'doctor', label: 'تدريسي' },
+        { role: 'student', label: 'طالب' },
       ];
     }
     if (isDeptAdmin) {
       return [
-        { role: 'doctor', label: 'تدريسي (أستاذ مقرر)' },
-        { role: 'student', label: 'طالب جامعي' },
+        { role: 'doctor', label: 'تدريسي' },
+        { role: 'student', label: 'طالب' },
       ];
     }
     return [];
@@ -173,7 +173,7 @@ export default function UserManager() {
     // Strict validation for students
     if (role === 'student') {
       if (!targetCollegeId || !targetDeptId || !sectionId) {
-        alert('تنبيه: لا يمكن تسجيل طالب بدون تحديد الكلية والقسم والمرحلة والشعبة التابع لها!');
+        alert('يرجى تحديد الكلية والقسم والمرحلة والشعبة!');
         return;
       }
     }
@@ -197,7 +197,7 @@ export default function UserManager() {
         name,
         email,
         role,
-        title: title || (role === 'college_admin' ? 'عميد الكلية' : role === 'department_admin' ? 'رئيس القسم' : role === 'doctor' ? 'أستاذ' : 'طالب'),
+        title: title || (role === 'college_admin' ? 'عميد' : role === 'department_admin' ? 'رئيس قسم' : role === 'doctor' ? 'تدريسي' : 'طالب'),
         collegeId: role === 'super_admin' ? undefined : targetCollegeId,
         departmentId: (role === 'department_admin' || role === 'doctor' || role === 'student') ? targetDeptId : undefined,
         stage: role === 'student' ? stage : undefined,
@@ -229,9 +229,9 @@ export default function UserManager() {
       case 'super_admin':
         return <span className="bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded text-[11px]">سوبر أدمن</span>;
       case 'college_admin':
-        return <span className="bg-purple-50 text-purple-700 font-bold px-2 py-0.5 rounded text-[11px]">أدمن كلية</span>;
+        return <span className="bg-purple-50 text-purple-700 font-bold px-2 py-0.5 rounded text-[11px]">عميد كلية</span>;
       case 'department_admin':
-        return <span className="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded text-[11px]">أدمن قسم</span>;
+        return <span className="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded text-[11px]">رئيس قسم</span>;
       case 'doctor':
         return <span className="bg-teal-50 text-teal-700 font-bold px-2 py-0.5 rounded text-[11px]">تدريسي</span>;
       default:
@@ -243,8 +243,7 @@ export default function UserManager() {
     return (
       <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center">
         <Shield className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-        <p className="text-sm font-bold text-slate-700">غير مصرح لك بإدارة الحسابات</p>
-        <p className="text-xs text-slate-400 mt-1">تقتصر إدارة الحسابات على الإدارة المركزية وعمداء الكليات ورؤساء الأقسام فقط.</p>
+        <p className="text-sm font-bold text-slate-700">غير مصرح</p>
       </div>
     );
   }
@@ -255,13 +254,13 @@ export default function UserManager() {
   return (
     <div className="space-y-6">
       {/* Scope Alert Badge */}
-      <div className="bg-white p-3.5 rounded-2xl border border-slate-200 flex items-center justify-between text-xs">
+      <div className="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
-          <span className="font-black text-slate-800">نطاق صلاحيات إدارة المستخدمين:</span>
-          <span className="px-2.5 py-1 rounded-lg font-bold bg-slate-100 text-slate-800 border border-slate-300">
-            {isSuper && 'سوبر أدمن: إدارة كافة مستخدمي وحسابات الجامعة'}
-            {isCollegeAdmin && `عميد كلية: إدارة حسابات (${userColName}) فقط`}
-            {isDeptAdmin && `رئيس قسم: إدارة حسابات أساتذة وطلبة قسم (${userDeptName}) فقط`}
+          <span className="font-bold text-slate-500">الصلاحية:</span>
+          <span className="px-2 py-0.5 rounded-lg font-bold bg-slate-100 text-slate-800">
+            {isSuper && 'سوبر أدمن'}
+            {isCollegeAdmin && `عميد • ${userColName}`}
+            {isDeptAdmin && `رئيس قسم • ${userDeptName}`}
           </span>
         </div>
       </div>
@@ -269,12 +268,7 @@ export default function UserManager() {
       {/* Header */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 flex items-center justify-between">
         <div>
-          <h2 className="text-base font-black text-slate-900">إدارة الحسابات والصلاحيات</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            {isSuper && 'إضافة وتعديل وحذف حسابات المسؤولين، التدريسيين، والطلبة بكافة الكليات'}
-            {isCollegeAdmin && `إدارة حسابات التدريسيين ورؤساء الأقسام والطلبة في ${userColName}`}
-            {isDeptAdmin && `إدارة حسابات التدريسيين والطلبة في قسم ${userDeptName}`}
-          </p>
+          <h2 className="text-base font-black text-slate-900">المستخدمون</h2>
         </div>
 
         <div className="flex items-center gap-2">
@@ -288,7 +282,7 @@ export default function UserManager() {
             className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
-            <span>استيراد إكسل (Excel)</span>
+            <span>استيراد إكسل</span>
           </button>
 
           <button
@@ -303,8 +297,8 @@ export default function UserManager() {
       </div>
 
       {colleges.length === 0 && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
-          تنبيه: يجب إضافة كلية أولاً من تبويب (الهيكلية) قبل إنشاء الحسابات لربط كل حساب بموقعه الإداري.
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 font-bold">
+          ⚠️ أضف كلية أولاً من تبويب الهيكلية.
         </div>
       )}
 
@@ -313,18 +307,18 @@ export default function UserManager() {
         <table className="w-full text-right text-xs">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold">
-              <th className="py-3 px-4">الاسم والصفة</th>
-              <th className="py-3 px-3">البريد الإلكتروني</th>
+              <th className="py-3 px-4">الاسم</th>
+              <th className="py-3 px-3">البريد</th>
               <th className="py-3 px-3">الدور</th>
-              <th className="py-3 px-3">التبعية الأكاديمية (التسلسل)</th>
-              <th className="py-3 px-4 text-center">الإجراءات</th>
+              <th className="py-3 px-3">التبعية</th>
+              <th className="py-3 px-4 text-center">إجراءات</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {visibleUsers.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-slate-400">
-                  لا يوجد مستخدمون مسجلون ضمن نطاق صلاحياتك حالياً.
+                <td colSpan={5} className="py-8 text-center text-slate-400 font-bold">
+                  لا يوجد مستخدمون
                 </td>
               </tr>
             ) : (
@@ -347,14 +341,14 @@ export default function UserManager() {
 
                     <td className="py-3 px-3 text-slate-700">
                       {u.role === 'super_admin' ? (
-                        <span className="text-slate-400 font-bold">إدارة الجامعة المركزية</span>
+                        <span className="text-slate-400 font-bold">إدارة مركزية</span>
                       ) : (
                         <div className="space-y-0.5">
                           <span className="font-semibold block">{col?.name || '-'}</span>
-                          {dept && <span className="text-[11px] text-slate-500 block">قسم: {dept.name}</span>}
+                          {dept && <span className="text-[11px] text-slate-500 block">{dept.name}</span>}
                           {u.stage && (
                             <span className="text-[10px] text-teal-700 block">
-                              المرحلة {u.stage} {u.sectionName ? `• ${u.sectionName}` : ''}
+                              م{u.stage} {u.sectionName ? `• ${u.sectionName}` : ''}
                             </span>
                           )}
                           {u.role === 'doctor' && (
@@ -367,11 +361,11 @@ export default function UserManager() {
                                       key={s.id}
                                       className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-1.5 py-0.2 rounded font-bold"
                                     >
-                                      مادة: {s.name} (م{s.stage})
+                                      {s.name} (م{s.stage})
                                     </span>
                                   ))
                               ) : (
-                                <span className="text-[10px] text-amber-700 font-medium">لم تُسند له مواد بعد</span>
+                                <span className="text-[10px] text-amber-700 font-medium">بدون مواد</span>
                               )}
                             </div>
                           )}
@@ -419,36 +413,36 @@ export default function UserManager() {
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-5 space-y-3 max-h-[90vh] overflow-y-auto">
             <h3 className="font-bold text-sm text-slate-900">
-              {editId ? 'تعديل بيانات المستخدم' : 'إضافة حساب جديد بالهيكلية'}
+              {editId ? 'تعديل مستخدم' : 'إضافة مستخدم'}
             </h3>
 
             <form onSubmit={handleSave} className="space-y-3 text-xs">
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">الاسم الكامل</label>
+                <label className="block text-xs font-black text-slate-900 mb-1">الاسم</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="الاسم الثلاثي"
-                  className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-500 placeholder:font-normal p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                  placeholder="الاسم"
+                  className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">البريد الإلكتروني</label>
+                <label className="block text-xs font-black text-slate-900 mb-1">البريد</label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="user@alzahrawi.edu.iq"
-                  className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-500 placeholder:font-normal p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                  placeholder="name@domain.com"
+                  className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">نوع الدور والصلاحية</label>
+                <label className="block text-xs font-black text-slate-900 mb-1">الدور</label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value as UserRole)}
@@ -464,14 +458,10 @@ export default function UserManager() {
 
               {/* Strict Hierarchy Selection */}
               {role !== 'super_admin' && (
-                <div className="p-3.5 bg-slate-100 rounded-xl border-2 border-slate-200 space-y-3">
-                  <span className="font-black text-slate-900 block text-xs">
-                    التسلسل الأكاديمي الإلزامي:
-                  </span>
-
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
                   {/* 1. College */}
                   <div>
-                    <label className="block text-xs font-black text-slate-800 mb-1">1. الكلية التابع لها</label>
+                    <label className="block text-xs font-black text-slate-800 mb-1">الكلية</label>
                     {isSuper ? (
                       <select
                         value={collegeId}
@@ -487,7 +477,7 @@ export default function UserManager() {
                         required
                         className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
                       >
-                        <option value="">-- اختر الكلية --</option>
+                        <option value="">-- الكلية --</option>
                         {colleges.map((col) => (
                           <option key={col.id} value={col.id}>
                             {col.name}
@@ -496,7 +486,7 @@ export default function UserManager() {
                       </select>
                     ) : (
                       <div className="p-2.5 bg-slate-200/80 rounded-lg text-slate-900 font-bold text-xs border border-slate-300">
-                        {userColName} (كليتك الحصرية)
+                        {userColName}
                       </div>
                     )}
                   </div>
@@ -504,10 +494,10 @@ export default function UserManager() {
                   {/* 2. Department */}
                   {(role === 'department_admin' || role === 'doctor' || role === 'student') && (
                     <div>
-                      <label className="block text-xs font-black text-slate-800 mb-1">2. القسم العلمي</label>
+                      <label className="block text-xs font-black text-slate-800 mb-1">القسم</label>
                       {isDeptAdmin ? (
                         <div className="p-2.5 bg-slate-200/80 rounded-lg text-slate-900 font-bold text-xs border border-slate-300">
-                          {userDeptName} (قسمك الحصري)
+                          {userDeptName}
                         </div>
                       ) : (
                         <select
@@ -516,7 +506,7 @@ export default function UserManager() {
                           required
                           className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
                         >
-                          <option value="">-- اختر القسم --</option>
+                          <option value="">-- القسم --</option>
                           {availableDepts.map((d) => (
                             <option key={d.id} value={d.id}>
                               {d.name}
@@ -531,7 +521,7 @@ export default function UserManager() {
                   {role === 'student' && (
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs font-black text-slate-800 mb-1">3. المرحلة</label>
+                        <label className="block text-xs font-black text-slate-800 mb-1">المرحلة</label>
                         <select
                           value={stage}
                           onChange={(e) => setStage(Number(e.target.value))}
@@ -539,32 +529,27 @@ export default function UserManager() {
                         >
                           {[1, 2, 3, 4, 5, 6].map((s) => (
                             <option key={s} value={s}>
-                              المرحلة {s}
+                              م{s}
                             </option>
                           ))}
                         </select>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-black text-slate-800 mb-1">4. الشعبة الحصرية</label>
+                        <label className="block text-xs font-black text-slate-800 mb-1">الشعبة</label>
                         <select
                           value={sectionId}
                           onChange={(e) => setSectionId(e.target.value)}
                           required
                           className="w-full text-sm font-black text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
                         >
-                          <option value="">-- اختر الشعبة --</option>
+                          <option value="">-- الشعبة --</option>
                           {availableSections.map((sec) => (
                             <option key={sec.id} value={sec.id}>
                               {sec.name}
                             </option>
                           ))}
                         </select>
-                        {availableSections.length === 0 && (
-                          <span className="text-[11px] font-bold text-rose-600 block mt-1">
-                            لا توجد شعب لهذه المرحلة. يرجى إضافة شعبة من تبويب الهيكلية أولاً!
-                          </span>
-                        )}
                       </div>
                     </div>
                   )}
@@ -583,7 +568,7 @@ export default function UserManager() {
                   type="submit"
                   className="px-4 py-1.5 text-xs bg-slate-900 text-white rounded-lg cursor-pointer font-bold"
                 >
-                  حفظ الحساب
+                  حفظ
                 </button>
               </div>
             </form>
@@ -597,13 +582,7 @@ export default function UserManager() {
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto border border-slate-200">
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
-                <span className="text-[10px] text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                  استيراد الحسابات دفعة واحدة
-                </span>
-                <h3 className="font-black text-base text-slate-900 mt-1">استيراد الطلاب والأساتذة من ملف إكسل</h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  ارفع ملف .xlsx أو .csv لإنشاء مئات أو آلاف الحسابات ومطابقتها بالشعب تلقائياً.
-                </p>
+                <h3 className="font-black text-base text-slate-900">استيراد من إكسل</h3>
               </div>
               <button
                 onClick={() => setImportModalOpen(false)}
@@ -614,11 +593,8 @@ export default function UserManager() {
             </div>
 
             {/* Template Download Alert */}
-            <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 text-xs">
-              <div>
-                <span className="font-bold text-slate-900 block">هل تحتاج قالب الإكسل النموذجي؟</span>
-                <span className="text-[11px] text-slate-500">حمل القالب الجاهز بالأعمدة المعتمدة واملأه ببياناتك.</span>
-              </div>
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 text-xs">
+              <span className="font-bold text-slate-900">قالب إكسل</span>
               <a
                 href="/api/users/template"
                 download="alzahrawi_users_template.xlsx"
@@ -631,7 +607,7 @@ export default function UserManager() {
 
             {/* File Drop / Select */}
             <div className="space-y-2">
-              <label className="block text-xs font-black text-slate-900">اختر ملف الإكسل (.xlsx / .csv)</label>
+              <label className="block text-xs font-black text-slate-900">الملف (.xlsx / .csv)</label>
               <input
                 type="file"
                 accept=".xlsx, .xls, .csv"
@@ -646,7 +622,7 @@ export default function UserManager() {
               {importFile && (
                 <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 p-2 bg-emerald-50 rounded-xl border border-emerald-200">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>الملف الجاهز للاستيراد: {importFile.name}</span>
+                  <span>{importFile.name}</span>
                 </div>
               )}
             </div>
@@ -656,14 +632,14 @@ export default function UserManager() {
               <div className="space-y-2.5 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs">
                 <div className="flex items-center gap-2 font-bold text-emerald-800">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>تم استيراد وإنشاء {importResult.count} حساب بنجاح!</span>
+                  <span>تم إنشاء {importResult.count} حساب</span>
                 </div>
 
                 {importResult.createdAccounts && importResult.createdAccounts.length > 0 && (
                   <div className="space-y-1.5 pt-2 border-t border-slate-200">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-slate-800 text-[11px] block">
-                        بيانات الدخول المؤقتة المُولَّدة (يلزم تغييرها عند أول دخول):
+                        الحسابات المُولَّدة:
                       </span>
                       <button
                         type="button"
@@ -672,7 +648,7 @@ export default function UserManager() {
                             .map((a) => `${a.name}\t${a.email}\t${a.tempPassword}`)
                             .join('\n');
                           navigator.clipboard.writeText(text);
-                          alert('تم نسخ بيانات الحسابات المؤقتة إلى الحافظة!');
+                          alert('تم النسخ إلى الحافظة');
                         }}
                         className="text-[10px] text-sky-700 hover:text-sky-900 font-bold underline cursor-pointer"
                       >
@@ -699,7 +675,7 @@ export default function UserManager() {
                 {importResult.errors.length > 0 && (
                   <div className="space-y-1 pt-1 border-t border-slate-200">
                     <span className="font-bold text-amber-800 text-[11px] block">
-                      تنبيهات وتجاوزات ({importResult.errors.length}):
+                      أخطاء ({importResult.errors.length}):
                     </span>
                     <div className="max-h-24 overflow-y-auto space-y-1">
                       {importResult.errors.map((err, idx) => (
@@ -729,7 +705,7 @@ export default function UserManager() {
                 className="px-5 py-2 text-xs bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold cursor-pointer disabled:opacity-50 flex items-center gap-2 shadow-xs"
               >
                 {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{isImporting ? 'جاري قراءة واستيراد الحسابات...' : 'بدء الاستيراد للجامعة'}</span>
+                <span>{isImporting ? 'جاري الاستيراد...' : 'بدء الاستيراد'}</span>
               </button>
             </div>
           </div>

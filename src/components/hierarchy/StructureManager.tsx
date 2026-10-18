@@ -104,13 +104,13 @@ export default function StructureManager() {
       {/* Scope Alert Badge */}
       <div className="bg-white p-3.5 rounded-2xl border border-slate-200 flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
-          <span className="font-black text-slate-800">نطاق صلاحياتك الأكاديمية:</span>
+          <span className="font-black text-slate-800">الصلاحية:</span>
           <span className="px-2.5 py-1 rounded-lg font-bold bg-slate-100 text-slate-800 border border-slate-300">
-            {isSuper && 'سوبر أدمن: إدارة كافة كليات وأقسام وشُعب ومواد الجامعة بالكامل'}
-            {isCollegeAdmin && `عميد الكلية: إدارة وحصر كليتك (${userCollege?.name || 'لم تحدد بعد'})`}
-            {isDeptAdmin && `رئيس القسم: إدارة شُعب ومواد قسمك (${userDept?.name || 'لم يحدد بعد'}) في (${userCollege?.name || ''})`}
-            {isDoctor && `عضو هيئة تدريس: استعراض مقررات وشُعب قسمك (${userDept?.name || ''})`}
-            {isStudent && `طالب: استعراض شُعبتك ومواد مرحلتك الخاصة`}
+            {isSuper && 'سوبر أدمن'}
+            {isCollegeAdmin && `عميد • ${userCollege?.name || ''}`}
+            {isDeptAdmin && `رئيس قسم • ${userDept?.name || ''}`}
+            {isDoctor && `تدريسي • ${userDept?.name || ''}`}
+            {isStudent && 'طالب'}
           </span>
         </div>
       </div>
@@ -118,8 +118,7 @@ export default function StructureManager() {
       {/* Header */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 flex items-center justify-between">
         <div>
-          <h2 className="text-base font-black text-slate-900">الهيكلية الأكاديمية الهرمية</h2>
-          <p className="text-xs text-slate-500 mt-0.5">الكلية ⬅ الأقسام ⬅ المراحل ⬅ الشُعب والمواد</p>
+          <h2 className="text-base font-black text-slate-900">الهيكلية الأكاديمية</h2>
         </div>
 
         {isSuper && (
@@ -135,8 +134,8 @@ export default function StructureManager() {
 
       {/* Warning if non-super has no college */}
       {!isSuper && !currentUser.collegeId && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 font-bold">
-          ⚠️ تنبيه: حسابك غير مقترن بأي كلية حالياً. يرجى مراجعة سوبر أدمن الجامعة لإسناد كليتك في إدارة المستخدمين.
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 font-bold">
+          ⚠️ الحساب غير مرتبط بكلية.
         </div>
       )}
 
@@ -144,16 +143,13 @@ export default function StructureManager() {
       {visibleColleges.length === 0 ? (
         <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center">
           <Building2 className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-          <p className="text-sm font-bold text-slate-700">لا توجد كليات متاحة لعرضها</p>
-          <p className="text-xs text-slate-400 mt-1 mb-4">
-            {isSuper ? 'ابدأ بإضافة أول كلية لتفعيل التسلسل الأكاديمي.' : 'لم يتم ربط كليتك أو لا تملك صلاحية رؤية كليات أخرى.'}
-          </p>
+          <p className="text-sm font-bold text-slate-700">لا توجد كليات</p>
           {isSuper && (
             <button
               onClick={() => setCollegeModal({ open: true, name: '' })}
-              className="px-4 py-2 bg-sky-700 text-white text-xs font-bold rounded-xl cursor-pointer"
+              className="mt-3 px-4 py-2 bg-sky-700 text-white text-xs font-bold rounded-xl cursor-pointer"
             >
-              + إضافة كلية جديدة
+              إضافة كلية
             </button>
           )}
         </div>
@@ -185,11 +181,11 @@ export default function StructureManager() {
                         <span className="font-black text-sm text-slate-900">{col.name}</span>
                       </div>
                       <p className="text-[11px] text-slate-500 mt-0.5">
-                        العميد المسؤول:{' '}
+                        العميد:{' '}
                         {colAdmin ? (
-                          <span className="font-bold text-sky-800">{colAdmin.name} ({colAdmin.email})</span>
+                          <span className="font-bold text-sky-800">{colAdmin.name}</span>
                         ) : (
-                          <span className="text-amber-700 font-semibold bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">لم يُعيّن حساب عميد بعد (من تبويب المستخدمين)</span>
+                          <span className="text-amber-700 font-semibold bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">غير معيّن</span>
                         )}
                       </p>
                     </div>
@@ -251,7 +247,7 @@ export default function StructureManager() {
                   <div className="p-4 bg-white space-y-4">
                     {depts.length === 0 ? (
                       <p className="text-xs text-slate-400 text-center py-4">
-                        لا توجد أقسام مسجلة في {col.name}. اضغط على (+ إضافة قسم) لإضافة قسم.
+                        لا توجد أقسام.
                       </p>
                     ) : (
                       depts.map((dept) => {
@@ -284,9 +280,9 @@ export default function StructureManager() {
                                   <p className="text-[10px] text-slate-500 mt-0.5">
                                     رئيس القسم:{' '}
                                     {deptAdmin ? (
-                                      <span className="font-bold text-teal-800">{deptAdmin.name} ({deptAdmin.email})</span>
+                                      <span className="font-bold text-teal-800">{deptAdmin.name}</span>
                                     ) : (
-                                      <span className="text-amber-700 font-medium bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">لم يُعيّن رئيس قسم بعد (من تبويب المستخدمين)</span>
+                                      <span className="text-amber-700 font-medium bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">غير معيّن</span>
                                     )}
                                   </p>
                                 </div>
@@ -409,7 +405,7 @@ export default function StructureManager() {
                                         <div className="flex items-center gap-2 flex-wrap">
                                           <span className="text-slate-400 font-semibold text-[10px]">الشُعب:</span>
                                           {stageSections.length === 0 ? (
-                                            <span className="text-slate-400 text-[10px]">لا توجد شعب بعد.</span>
+                                            <span className="text-slate-400 text-[10px]">لا توجد شُعب</span>
                                           ) : (
                                             stageSections.map((sec) => (
                                               <div
@@ -455,7 +451,7 @@ export default function StructureManager() {
                                         <div className="flex items-center gap-2 flex-wrap pt-1">
                                           <span className="text-slate-400 font-semibold text-[10px]">المواد:</span>
                                           {stageSubjects.length === 0 ? (
-                                            <span className="text-slate-400 text-[10px]">لا توجد مواد مسجلة.</span>
+                                            <span className="text-slate-400 text-[10px]">لا توجد مواد</span>
                                           ) : (
                                             stageSubjects.map((sub) => (
                                               <div
@@ -465,11 +461,11 @@ export default function StructureManager() {
                                                 <span className="font-bold">{sub.name}</span>
                                                 {sub.doctorName ? (
                                                   <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-bold border border-emerald-300">
-                                                    أستاذ: {sub.doctorName}
+                                                    {sub.doctorName}
                                                   </span>
                                                 ) : (
                                                   <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-medium border border-amber-300">
-                                                    بدون تدريسي
+                                                    شاغر
                                                   </span>
                                                 )}
                                                 {canManageInDept && (
@@ -527,20 +523,17 @@ export default function StructureManager() {
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-5 space-y-3">
             <h3 className="font-bold text-sm text-slate-900">
-              {collegeModal.editId ? 'تعديل بيانات الكلية' : 'إضافة كلية جديدة'}
+              {collegeModal.editId ? 'تعديل كلية' : 'إضافة كلية'}
             </h3>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">اسم الكلية</label>
+              <label className="block text-xs font-black text-slate-900 mb-1.5">الاسم</label>
               <input
                 type="text"
                 value={collegeModal.name}
                 onChange={(e) => setCollegeModal({ ...collegeModal, name: e.target.value })}
-                placeholder="مثال: كلية الطب البشري"
+                placeholder="اسم الكلية"
                 className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
               />
-            </div>
-            <div className="p-2.5 bg-sky-50 border border-sky-100 rounded-xl text-sky-900 text-xs">
-              💡 <b>ملاحظة:</b> عميد الكلية يُعيّن تلقائياً عند إنشاء حسابه من تبويب <b>&quot;المستخدمون&quot;</b>.
             </div>
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
@@ -577,20 +570,20 @@ export default function StructureManager() {
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-5 space-y-3">
             <h3 className="font-bold text-sm text-slate-900">
-              {deptModal.editId ? 'تعديل القسم' : 'إضافة قسم علمي تابع للكلية'}
+              {deptModal.editId ? 'تعديل قسم' : 'إضافة قسم'}
             </h3>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">اسم القسم</label>
+              <label className="block text-xs font-black text-slate-900 mb-1.5">الاسم</label>
               <input
                 type="text"
                 value={deptModal.name}
                 onChange={(e) => setDeptModal({ ...deptModal, name: e.target.value })}
-                placeholder="مثال: قسم الجراحة العامة"
+                placeholder="اسم القسم"
                 className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">عدد المراحل الدراسية</label>
+              <label className="block text-xs font-black text-slate-900 mb-1.5">المراحل</label>
               <select
                 value={deptModal.stagesCount}
                 onChange={(e) => setDeptModal({ ...deptModal, stagesCount: Number(e.target.value) })}
@@ -602,9 +595,6 @@ export default function StructureManager() {
                   </option>
                 ))}
               </select>
-            </div>
-            <div className="p-2.5 bg-teal-50 border border-teal-100 rounded-xl text-teal-900 text-xs">
-              💡 <b>ملاحظة:</b> رئيس القسم يُعيّن تلقائياً عند إنشاء حسابه من تبويب <b>&quot;المستخدمون&quot;</b>.
             </div>
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
@@ -643,15 +633,15 @@ export default function StructureManager() {
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-5 space-y-3">
             <h3 className="font-bold text-sm text-slate-900">
-              {sectionModal.editId ? 'تعديل الشعبة' : `إضافة شعبة للمرحلة ${sectionModal.stage}`}
+              {sectionModal.editId ? 'تعديل شعبة' : `إضافة شعبة • م${sectionModal.stage}`}
             </h3>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">اسم الشعبة</label>
+              <label className="block text-xs font-black text-slate-900 mb-1.5">الاسم</label>
               <input
                 type="text"
                 value={sectionModal.name}
                 onChange={(e) => setSectionModal({ ...sectionModal, name: e.target.value })}
-                placeholder="مثال: شعبة (أ)"
+                placeholder="أ، ب، ج..."
                 className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
               />
             </div>
@@ -681,7 +671,7 @@ export default function StructureManager() {
                 }}
                 className="px-4 py-1.5 text-xs bg-slate-900 text-white rounded-lg cursor-pointer font-bold"
               >
-                حفظ الشعبة
+                حفظ
               </button>
             </div>
           </div>
@@ -693,39 +683,34 @@ export default function StructureManager() {
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-5 space-y-3">
             <h3 className="font-bold text-sm text-slate-900">
-              {subjectModal.editId ? 'تعديل المقرر' : `إضافة مادة للمرحلة ${subjectModal.stage}`}
+              {subjectModal.editId ? 'تعديل مادة' : `إضافة مادة • م${subjectModal.stage}`}
             </h3>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">اسم المادة</label>
+              <label className="block text-xs font-black text-slate-900 mb-1.5">الاسم</label>
               <input
                 type="text"
                 value={subjectModal.name}
                 onChange={(e) => setSubjectModal({ ...subjectModal, name: e.target.value })}
-                placeholder="مثال: علم التشريح"
+                placeholder="اسم المادة"
                 className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">التدريسي المسؤول عن تدريس المادة</label>
+              <label className="block text-xs font-black text-slate-900 mb-1.5">التدريسي</label>
               <select
                 value={subjectModal.doctorId || ''}
                 onChange={(e) => setSubjectModal({ ...subjectModal, doctorId: e.target.value })}
                 className="w-full text-sm font-bold text-slate-900 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs cursor-pointer"
               >
-                <option value="">-- بدون تدريسي حالياً --</option>
+                <option value="">-- بدون تدريسي --</option>
                 {users
                   .filter((u) => u.role === 'doctor' && u.departmentId === subjectModal.departmentId)
                   .map((doc) => (
                     <option key={doc.id} value={doc.id}>
-                      {doc.name} ({doc.email})
+                      {doc.name}
                     </option>
                   ))}
               </select>
-              {users.filter((u) => u.role === 'doctor' && u.departmentId === subjectModal.departmentId).length === 0 && (
-                <p className="text-[11px] text-amber-700 mt-1 font-semibold">
-                  💡 لا يوجد تدريسيون مسجلون في هذا القسم بعد. يمكنك إسناد التدريسي للمادة لاحقاً بعد إنشاء حسابه.
-                </p>
-              )}
             </div>
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
@@ -761,7 +746,7 @@ export default function StructureManager() {
                 }}
                 className="px-4 py-1.5 text-xs bg-slate-900 text-white rounded-lg cursor-pointer font-bold"
               >
-                حفظ المادة
+                حفظ
               </button>
             </div>
           </div>

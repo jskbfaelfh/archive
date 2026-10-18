@@ -50,7 +50,6 @@ export default function Navbar() {
   const canSeeUsersTab = isSuper || isCollegeAdmin || isDeptAdmin;
 
   const userCol = colleges.find((c) => c.id === currentUser.collegeId);
-  const userDept = userCol?.departments.find((d) => d.id === currentUser.departmentId);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,11 +108,10 @@ export default function Navbar() {
           </div>
           <div>
             <h1 className="text-sm sm:text-base font-black text-slate-900 leading-tight">جامعة الزهراوي</h1>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 hidden sm:block">منظومة أرشفة المحاضرات الأكاديمية</p>
           </div>
         </div>
 
-        {/* 3 Main Tabs */}
+        {/* 4 Main Tabs */}
         <nav className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold overflow-x-auto max-w-full">
           <button
             onClick={() => setActiveTab('structure')}
@@ -124,7 +122,7 @@ export default function Navbar() {
             }`}
           >
             <Layers className="w-4 h-4" />
-            <span>الهيكلية والشُعب</span>
+            <span>الهيكلية</span>
           </button>
 
           {canSeeUsersTab && (
@@ -137,7 +135,7 @@ export default function Navbar() {
               }`}
             >
               <Users className="w-4 h-4" />
-              <span>المستخدمين والصلاحيات</span>
+              <span>المستخدمون</span>
             </button>
           )}
 
@@ -163,7 +161,7 @@ export default function Navbar() {
               }`}
             >
               <TrendingUp className="w-4 h-4" />
-              <span>الإحصائيات والرقابة</span>
+              <span>الإحصائيات</span>
             </button>
           )}
         </nav>
@@ -179,22 +177,22 @@ export default function Navbar() {
                 <div className="text-right">
                   <div className="leading-tight text-slate-900">{currentUser.name}</div>
                   <div className="text-[10px] text-slate-500 font-normal">
-                    {isSuper && 'سوبر أدمن (كافة الصلاحيات)'}
-                    {isCollegeAdmin && `عميد (${userCol?.name || 'كلية'})`}
-                    {isDeptAdmin && `رئيس قسم (${userDept?.name || 'قسم'})`}
-                    {currentUser.role === 'doctor' && `تدريسي (${userDept?.name || 'قسم'})`}
-                    {currentUser.role === 'student' && `طالب (مرحلة ${currentUser.stage || 1}${currentUser.sectionName ? ` • ${currentUser.sectionName}` : ''})`}
+                    {isSuper && 'سوبر أدمن'}
+                    {isCollegeAdmin && `عميد • ${userCol?.name || 'كلية'}`}
+                    {isDeptAdmin && `رئيس قسم`}
+                    {currentUser.role === 'doctor' && `تدريسي`}
+                    {currentUser.role === 'student' && `طالب • م${currentUser.stage || 1}`}
                   </div>
                 </div>
               </div>
 
               <button
                 onClick={logout}
-                title="تسجيل الخروج"
+                title="خروج"
                 className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-all cursor-pointer font-bold shadow-2xs"
               >
                 <LogOut className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">خروج</span>
+                <span>خروج</span>
               </button>
             </div>
           ) : (
@@ -203,17 +201,17 @@ export default function Navbar() {
               className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
             >
               <LogIn className="w-3.5 h-3.5 text-sky-400" />
-              <span>تسجيل الدخول</span>
+              <span>دخول</span>
             </button>
           )}
 
           <button
             onClick={() => {
-              if (confirm('تصفير كافة البيانات والعودة للبيانات الأولية المعتمدة؟')) {
+              if (confirm('تصفير البيانات والعودة للبيانات الأولية؟')) {
                 resetAll();
               }
             }}
-            title="إعادة ضبط وتصفير"
+            title="تصفير"
             className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
@@ -231,8 +229,7 @@ export default function Navbar() {
                   <Lock className="w-5 h-5 text-sky-400" />
                 </div>
                 <div>
-                  <h3 className="font-black text-base text-slate-900">تسجيل الدخول للنظام الأكاديمي</h3>
-                  <p className="text-xs text-slate-500">أدخل البريد الإلكتروني وكلمة المرور المشفرة</p>
+                  <h3 className="font-black text-base text-slate-900">تسجيل الدخول</h3>
                 </div>
               </div>
               <button
@@ -251,7 +248,7 @@ export default function Navbar() {
 
             <form onSubmit={handleLoginSubmit} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">البريد الإلكتروني الجامعي</label>
+                <label className="block text-xs font-black text-slate-900 mb-1">البريد</label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute right-3 top-3" />
                   <input
@@ -278,12 +275,11 @@ export default function Navbar() {
                     className="w-full text-sm font-bold text-slate-900 pr-9 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
                   />
                 </div>
-                <span className="text-[10px] text-slate-400 mt-1 block">كلمة المرور الافتراضية لكافة الحسابات هي: 123456</span>
               </div>
 
               {/* Quick Fill Pills for Demo */}
               <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-[10px] text-slate-600 font-bold block mb-1.5">تعبئة سريعة للحسابات النموذجية:</span>
+                <span className="text-[10px] text-slate-600 font-bold block mb-1.5">حسابات تجريبية:</span>
                 <div className="flex flex-wrap gap-1.5">
                   {[
                     { label: 'سوبر أدمن', email: 'admin@alzahrawi.edu.iq' },
@@ -318,7 +314,7 @@ export default function Navbar() {
                   className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-50"
                 >
                   <LogIn className="w-3.5 h-3.5 text-sky-400" />
-                  <span>{isSubmitting ? 'جاري التحقق...' : 'دخول إلى المنظومة'}</span>
+                  <span>{isSubmitting ? 'جاري التحقق...' : 'دخول'}</span>
                 </button>
               </div>
             </form>
@@ -335,8 +331,8 @@ export default function Navbar() {
                 <Shield className="w-6 h-6 text-amber-600" />
               </div>
               <div>
-                <h3 className="text-base font-black text-slate-900">إجراء أمني إلزامي: تعيين كلمة مرور جديدة</h3>
-                <p className="text-xs text-slate-500 font-medium">حسابك يتطلب تعيين كلمة مرور شخصية وخاصة للمتابعة.</p>
+                <h3 className="text-base font-black text-slate-900">تغيير كلمة المرور</h3>
+                <p className="text-xs text-slate-500 font-medium">مطلوب تعيين كلمة مرور جديدة للمتابعة.</p>
               </div>
             </div>
 
@@ -348,7 +344,7 @@ export default function Navbar() {
 
             <form onSubmit={handleChangePasswordSubmit} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">كلمة المرور الحالية (المؤقتة)</label>
+                <label className="block text-xs font-black text-slate-900 mb-1">كلمة المرور الحالية</label>
                 <input
                   type="password"
                   required
@@ -360,7 +356,7 @@ export default function Navbar() {
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">كلمة المرور الجديدة (8 خانات على الأقل)</label>
+                <label className="block text-xs font-black text-slate-900 mb-1">كلمة المرور الجديدة</label>
                 <input
                   type="password"
                   required
@@ -372,7 +368,7 @@ export default function Navbar() {
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">تأكيد كلمة المرور الجديدة</label>
+                <label className="block text-xs font-black text-slate-900 mb-1">تأكيد كلمة المرور</label>
                 <input
                   type="password"
                   required
@@ -389,7 +385,7 @@ export default function Navbar() {
                   onClick={logout}
                   className="text-xs font-bold text-rose-600 hover:text-rose-700 hover:underline cursor-pointer"
                 >
-                  تسجيل الخروج
+                  خروج
                 </button>
 
                 <button
@@ -398,7 +394,7 @@ export default function Navbar() {
                   className="flex items-center gap-1.5 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-50"
                 >
                   <Lock className="w-3.5 h-3.5" />
-                  <span>{isChangingPass ? 'جاري الحفظ...' : 'تحديث كلمة المرور والمتابعة'}</span>
+                  <span>{isChangingPass ? 'جاري الحفظ...' : 'حفظ ومتابعة'}</span>
                 </button>
               </div>
             </form>
