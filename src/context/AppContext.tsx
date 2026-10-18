@@ -317,14 +317,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   // User Operations
-  const addUser = async (data: Omit<User, 'id'>) => {
+  const addUser = async (data: Omit<User, 'id'> & { password?: string }) => {
     const res = await fetch('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    await handleApiResponse(res, 'فشل إنشاء المستخدم');
+    const result = await handleApiResponse(res, 'فشل إنشاء المستخدم');
     await refreshData();
+    return result;
   };
 
   const updateUser = async (id: string, updates: Partial<User>) => {

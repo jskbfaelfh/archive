@@ -45,6 +45,13 @@ export default function UserManager() {
     createdAccounts?: { name: string; email: string; tempPassword: string; role: string }[];
   } | null>(null);
 
+  // Single Created User Success Modal/Banner
+  const [createdUserNotice, setCreatedUserNotice] = useState<{
+    name: string;
+    email: string;
+    tempPassword?: string;
+  } | null>(null);
+
   const handleImportExcel = async () => {
     if (!importFile) return;
     setIsImporting(true);
@@ -181,7 +188,7 @@ export default function UserManager() {
     const sec = sections.find((s) => s.id === sectionId);
 
     if (editId) {
-      updateUser(editId, {
+      await updateUser(editId, {
         name,
         email,
         role,
@@ -193,7 +200,7 @@ export default function UserManager() {
         sectionName: role === 'student' ? sec?.name : undefined,
       });
     } else {
-      addUser({
+      const result = await addUser({
         name,
         email,
         role,
@@ -204,6 +211,14 @@ export default function UserManager() {
         sectionId: role === 'student' ? sectionId : undefined,
         sectionName: role === 'student' ? sec?.name : undefined,
       });
+
+      if (result?.tempPassword) {
+        setCreatedUserNotice({
+          name,
+          email,
+          tempPassword: result.tempPassword,
+        });
+      }
     }
 
     setModalOpen(false);
@@ -264,6 +279,46 @@ export default function UserManager() {
           </span>
         </div>
       </div>
+
+      {/* Single Created User Credentials Banner */}
+      {createdUserNotice && (
+        <div className="bg-amber-50 border-2 border-amber-300 p-4 rounded-2xl flex items-start justify-between gap-4 animate-in fade-in">
+          <div className="space-y-1 text-xs">
+            <div className="flex items-center gap-2 font-black text-amber-900 text-sm">
+              <CheckCircle2 className="w-5 h-5 text-amber-700 shrink-0" />
+              <span>تم إنشاء الحساب بنجاح</span>
+            </div>
+            <p className="text-amber-800 font-medium">
+              زوّد المستخدم ببيانات الدخول التالية (سيتوجب عليه تعيين كلمة مرور جديدة عند أول دخول):
+            </p>
+            <div className="flex flex-wrap items-center gap-3 pt-2 font-mono">
+              <span className="bg-white px-3 py-1.5 rounded-xl border border-amber-200 font-bold text-slate-800">
+                البريد: <span className="text-sky-700">{createdUserNotice.email}</span>
+              </span>
+              <span className="bg-white px-3 py-1.5 rounded-xl border border-amber-200 font-bold text-slate-800">
+                كلمة المرور المؤقتة: <span className="text-amber-900 font-black">{createdUserNotice.tempPassword}</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(`البريد: ${createdUserNotice.email}\nكلمة المرور: ${createdUserNotice.tempPassword}`);
+                  alert('تم نسخ بيانات الدخول إلى الحافظة');
+                }}
+                className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-xl font-bold font-sans cursor-pointer transition-colors"
+              >
+                نسخ البيانات
+              </button>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setCreatedUserNotice(null)}
+            className="text-amber-700 hover:text-amber-900 p-1 cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      )}
 
       {/* Header */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 flex items-center justify-between">
