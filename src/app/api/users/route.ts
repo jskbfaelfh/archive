@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
 
     const newUser = await prisma.user.create({
       data: {
-        id: `user-${Date.now()}`,
+        id: `user-${crypto.randomUUID()}`,
         name: data.name.trim(),
         email: data.email.trim().toLowerCase(),
         password: passwordHash,

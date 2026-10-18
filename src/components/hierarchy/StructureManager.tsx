@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { College, Department, Section, Subject } from '@/types';
 import {
   Building2,
   FolderTree,
@@ -11,10 +10,6 @@ import {
   Trash2,
   ChevronDown,
   ChevronRight,
-  GitBranch,
-  BookOpen,
-  X,
-  Check,
 } from 'lucide-react';
 
 export default function StructureManager() {
@@ -545,7 +540,7 @@ export default function StructureManager() {
               />
             </div>
             <div className="p-2.5 bg-sky-50 border border-sky-100 rounded-xl text-sky-900 text-xs">
-              💡 <b>ملاحظة:</b> عميد الكلية يُعيّن تلقائياً عند إنشاء حسابه من تبويب <b>"المستخدمون"</b>.
+              💡 <b>ملاحظة:</b> عميد الكلية يُعيّن تلقائياً عند إنشاء حسابه من تبويب <b>&quot;المستخدمون&quot;</b>.
             </div>
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
@@ -609,7 +604,7 @@ export default function StructureManager() {
               </select>
             </div>
             <div className="p-2.5 bg-teal-50 border border-teal-100 rounded-xl text-teal-900 text-xs">
-              💡 <b>ملاحظة:</b> رئيس القسم يُعيّن تلقائياً عند إنشاء حسابه من تبويب <b>"المستخدمون"</b>.
+              💡 <b>ملاحظة:</b> رئيس القسم يُعيّن تلقائياً عند إنشاء حسابه من تبويب <b>&quot;المستخدمون&quot;</b>.
             </div>
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button

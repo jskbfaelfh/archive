@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     const college = await prisma.college.create({
       data: {
-        id: `col-${Date.now()}`,
+        id: `col-${crypto.randomUUID()}`,
         name: name.trim(),
       },
       include: { departments: true },

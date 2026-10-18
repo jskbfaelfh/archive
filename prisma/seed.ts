@@ -19,7 +19,7 @@ async function main() {
   await prisma.college.deleteMany({});
 
   // 1. Create Colleges & Departments
-  const medCollege = await prisma.college.create({
+  await prisma.college.create({
     data: {
       id: 'col-medicine',
       name: 'كلية الطب البشري',
@@ -40,7 +40,7 @@ async function main() {
     },
   });
 
-  const pharmCollege = await prisma.college.create({
+  await prisma.college.create({
     data: {
       id: 'col-pharmacy',
       name: 'كلية الصيدلة',

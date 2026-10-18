@@ -29,15 +29,20 @@ export default function NotificationBell() {
         setNotifications(data.notifications || []);
         setUnreadCount(data.unreadCount || 0);
       }
-    } catch (e) {
+    } catch {
       // silently handle network errors
     }
   };
 
   useEffect(() => {
-    fetchNotifications();
+    const timer = setTimeout(() => {
+      fetchNotifications();
+    }, 0);
     const interval = setInterval(fetchNotifications, 25000);
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
   }, [currentUser.id]);
 
   useEffect(() => {

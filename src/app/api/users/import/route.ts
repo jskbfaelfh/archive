@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Resolve Section (for students)
-      let targetSection = allSections.find(
+      const targetSection = allSections.find(
         (s) =>
           s.collegeId === targetCollege?.id &&
           s.departmentId === targetDept?.id &&
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
       try {
         await prisma.user.create({
           data: {
-            id: `user-${Date.now()}-${i}`,
+            id: `user-${crypto.randomUUID()}`,
             name,
             email,
             password: defaultPasswordHash,

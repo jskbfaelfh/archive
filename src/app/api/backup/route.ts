@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const user = await requireRole(['super_admin']);
 

@@ -67,7 +67,10 @@ export default function AnalyticsView() {
   };
 
   useEffect(() => {
-    loadStats();
+    const timer = setTimeout(() => {
+      loadStats();
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleDownloadBackup = () => {

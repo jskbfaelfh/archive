@@ -775,7 +775,7 @@ function safeGetItem<T>(key: string, defaultValue: T): T {
   try {
     const item = localStorage.getItem(key);
     return item ? JSON.parse(item) : defaultValue;
-  } catch (error) {
+  } catch {
     return defaultValue;
   }
 }
@@ -784,7 +784,7 @@ function safeSetItem<T>(key: string, value: T): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(key, JSON.stringify(value));
-  } catch (error) {}
+  } catch {}
 }
 
 export const StorageService = {
@@ -796,7 +796,7 @@ export const StorageService = {
   addCollege(data: { name: string }): College {
     const list = this.getColleges();
     const newCol: College = {
-      id: `col-${Date.now()}`,
+      id: `col-${crypto.randomUUID()}`,
       name: data.name.trim(),
       departments: [],
     };
@@ -832,7 +832,7 @@ export const StorageService = {
     if (colIndex === -1) return null;
 
     const newDept: Department = {
-      id: `dept-${Date.now()}`,
+      id: `dept-${crypto.randomUUID()}`,
       collegeId,
       name: data.name.trim(),
       stagesCount: data.stagesCount || 4,
@@ -881,7 +881,7 @@ export const StorageService = {
   addSection(data: { name: string; collegeId: string; departmentId: string; stage: number }): Section {
     const list = this.getSections();
     const newSec: Section = {
-      id: `sec-${Date.now()}`,
+      id: `sec-${crypto.randomUUID()}`,
       name: data.name.trim(),
       collegeId: data.collegeId,
       departmentId: data.departmentId,
@@ -910,7 +910,7 @@ export const StorageService = {
     const list = this.getSubjects();
     const newSub: Subject = {
       ...data,
-      id: `sub-${Date.now()}`,
+      id: `sub-${crypto.randomUUID()}`,
       name: data.name.trim(),
     };
     safeSetItem(STORAGE_KEYS.SUBJECTS, [...list, newSub]);
@@ -936,7 +936,7 @@ export const StorageService = {
     const list = this.getUsers();
     const newUser: User = {
       ...data,
-      id: `user-${Date.now()}`,
+      id: `user-${crypto.randomUUID()}`,
       name: data.name.trim(),
       email: data.email.trim(),
     };
@@ -971,7 +971,7 @@ export const StorageService = {
     const list = this.getLectures();
     const newLec: Lecture = {
       ...data,
-      id: `lec-${Date.now()}`,
+      id: `lec-${crypto.randomUUID()}`,
       uploadDate: new Date().toISOString().split('T')[0],
       downloadsCount: 0,
       viewsCount: 1,

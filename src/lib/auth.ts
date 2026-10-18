@@ -32,7 +32,7 @@ export async function verifySessionToken(token: string): Promise<SessionUser | n
   try {
     const { payload } = await jwtVerify(token, SECRET);
     return payload as unknown as SessionUser;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

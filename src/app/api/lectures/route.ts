@@ -122,9 +122,13 @@ export async function POST(req: NextRequest) {
       if (sec) sectionName = sec.name;
     }
 
+    const resolvedFileName = fileName || `${title.trim()}.pdf`;
+    const ext = resolvedFileName.split('.').pop()?.toLowerCase() || 'pdf';
+    const detectedFileType = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'mp4', 'zip'].includes(ext) ? ext : 'pdf';
+
     const newLecture = await prisma.lecture.create({
       data: {
-        id: `lec-${Date.now()}`,
+        id: `lec-${crypto.randomUUID()}`,
         title: title.trim(),
         description: description?.trim() || null,
         collegeId,
@@ -136,8 +140,8 @@ export async function POST(req: NextRequest) {
         sectionName,
         doctorId: user.id,
         doctorName: user.name,
-        fileType: 'pdf',
-        fileName: fileName || `${title.trim()}.pdf`,
+        fileType: data.fileType || detectedFileType,
+        fileName: resolvedFileName,
         fileSize: fileSize || '3.5 MB',
         filePath: filePath || null,
         uploadDate: new Date().toISOString().split('T')[0],

@@ -11,11 +11,7 @@ import {
   Edit2,
   Eye,
   Search,
-  Filter,
   X,
-  ExternalLink,
-  Calendar,
-  CheckCircle2,
   Loader2,
 } from 'lucide-react';
 

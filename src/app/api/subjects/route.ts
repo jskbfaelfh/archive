@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     const subject = await prisma.subject.create({
       data: {
-        id: `sub-${Date.now()}`,
+        id: `sub-${crypto.randomUUID()}`,
         name: name.trim(),
         collegeId,
         departmentId,
@@ -143,6 +143,9 @@ export async function DELETE(req: NextRequest) {
 
     if (!canManage) return NextResponse.json({ error: 'غير مصرح لك بحذف المادة' }, { status: 403 });
 
+    // Cascade delete lectures associated with this subject
+    await prisma.lecture.deleteMany({ where: { subjectId: id } });
+
     await prisma.subject.delete({ where: { id } });
 
     await logAuditEvent({
@@ -151,6 +154,7 @@ export async function DELETE(req: NextRequest) {
       userRole: user.role,
       action: 'DELETE_SUBJECT',
       target: existing.name,
+      details: 'حذف المادة وحذف كافة المحاضرات التابعة لها تسلسلياً.',
     });
 
     return NextResponse.json({ success: true });

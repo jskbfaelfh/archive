@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, College, Department, Section, Subject, Lecture, UserRole } from '@/types';
+import { User, College, Department, Section, Subject, Lecture } from '@/types';
 
 export type MainTab = 'structure' | 'users' | 'lectures' | 'analytics';
 
@@ -9,6 +9,10 @@ interface AppContextType {
   currentUser: User;
   users: User[];
   switchUser: (id: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+  isLoginModalOpen: boolean;
+  setIsLoginModalOpen: (open: boolean) => void;
 
   colleges: College[];
   sections: Section[];
@@ -69,6 +73,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [lectures, setLectures] = useState<Lecture[]>([]);
   const [activeTab, setActiveTab] = useState<MainTab>('structure');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const refreshData = useCallback(async () => {
     try {
@@ -116,7 +121,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (usrData.users) setUsers(usrData.users);
       }
 
-      // 6. Fetch Lectures (Server filtered by role!)
+      // 6. Fetch Lectures (Server filtered by role)
       const lecRes = await fetch('/api/lectures');
       if (lecRes.ok) {
         const lecData = await lecRes.json();
@@ -128,10 +133,68 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    refreshData();
+    const timer = setTimeout(() => {
+      refreshData();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [refreshData]);
 
-  // Switch perspective and update JWT session on server
+  // Handle API responses with informative alerts on failure
+  const handleApiResponse = async (res: Response, fallbackMsg: string) => {
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      const msg = errorData.error || fallbackMsg;
+      alert(`⚠️ خطأ: ${msg}`);
+      throw new Error(msg);
+    }
+    return res.json().catch(() => ({}));
+  };
+
+  // Real Login
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || 'البريد الإلكتروني أو كلمة المرور غير صحيحة' };
+      }
+      setCurrentUser(data.user);
+      setIsLoginModalOpen(false);
+      await refreshData();
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'فشل الاتصال بالخادم' };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Real Logout
+  const logout = async () => {
+    setIsLoading(true);
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      setCurrentUser({
+        id: '',
+        name: 'غير مسجل',
+        email: '',
+        role: 'student',
+      });
+      setLectures([]);
+      setIsLoginModalOpen(true);
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Switch perspective (for testing / demo)
   const switchUser = async (id: string) => {
     setIsLoading(true);
     try {
@@ -154,150 +217,167 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // College Operations
   const addCollege = async (data: { name: string }) => {
-    await fetch('/api/colleges', {
+    const res = await fetch('/api/colleges', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+    await handleApiResponse(res, 'فشل إضافة الكلية');
     await refreshData();
   };
 
   const updateCollege = async (id: string, updates: Partial<College>) => {
-    await fetch('/api/colleges', {
+    const res = await fetch('/api/colleges', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, ...updates }),
     });
+    await handleApiResponse(res, 'فشل تعديل الكلية');
     await refreshData();
   };
 
   const deleteCollege = async (id: string) => {
-    await fetch(`/api/colleges?id=${id}`, { method: 'DELETE' });
+    const res = await fetch(`/api/colleges?id=${id}`, { method: 'DELETE' });
+    await handleApiResponse(res, 'فشل حذف الكلية');
     await refreshData();
   };
 
   // Department Operations
   const addDepartment = async (collegeId: string, data: { name: string; stagesCount: number }) => {
-    await fetch('/api/departments', {
+    const res = await fetch('/api/departments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ collegeId, ...data }),
     });
+    await handleApiResponse(res, 'فشل إضافة القسم');
     await refreshData();
   };
 
   const updateDepartment = async (collegeId: string, deptId: string, updates: Partial<Department>) => {
-    await fetch('/api/departments', {
+    const res = await fetch('/api/departments', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: deptId, collegeId, ...updates }),
     });
+    await handleApiResponse(res, 'فشل تعديل القسم');
     await refreshData();
   };
 
   const deleteDepartment = async (collegeId: string, deptId: string) => {
-    await fetch(`/api/departments?id=${deptId}`, { method: 'DELETE' });
+    const res = await fetch(`/api/departments?id=${deptId}`, { method: 'DELETE' });
+    await handleApiResponse(res, 'فشل حذف القسم');
     await refreshData();
   };
 
   // Section Operations
   const addSection = async (data: { name: string; collegeId: string; departmentId: string; stage: number }) => {
-    await fetch('/api/sections', {
+    const res = await fetch('/api/sections', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+    await handleApiResponse(res, 'فشل إضافة الشعبة');
     await refreshData();
   };
 
   const updateSection = async (id: string, updates: Partial<Section>) => {
-    await fetch('/api/sections', {
+    const res = await fetch('/api/sections', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, ...updates }),
     });
+    await handleApiResponse(res, 'فشل تعديل الشعبة');
     await refreshData();
   };
 
   const deleteSection = async (id: string) => {
-    await fetch(`/api/sections?id=${id}`, { method: 'DELETE' });
+    const res = await fetch(`/api/sections?id=${id}`, { method: 'DELETE' });
+    await handleApiResponse(res, 'فشل حذف الشعبة');
     await refreshData();
   };
 
   // Subject Operations
   const addSubject = async (data: Omit<Subject, 'id'>) => {
-    await fetch('/api/subjects', {
+    const res = await fetch('/api/subjects', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+    await handleApiResponse(res, 'فشل إضافة المادة');
     await refreshData();
   };
 
   const updateSubject = async (id: string, updates: Partial<Subject>) => {
-    await fetch('/api/subjects', {
+    const res = await fetch('/api/subjects', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, ...updates }),
     });
+    await handleApiResponse(res, 'فشل تعديل المادة');
     await refreshData();
   };
 
   const deleteSubject = async (id: string) => {
-    await fetch(`/api/subjects?id=${id}`, { method: 'DELETE' });
+    const res = await fetch(`/api/subjects?id=${id}`, { method: 'DELETE' });
+    await handleApiResponse(res, 'فشل حذف المادة');
     await refreshData();
   };
 
   // User Operations
   const addUser = async (data: Omit<User, 'id'>) => {
-    await fetch('/api/users', {
+    const res = await fetch('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+    await handleApiResponse(res, 'فشل إنشاء المستخدم');
     await refreshData();
   };
 
   const updateUser = async (id: string, updates: Partial<User>) => {
-    await fetch('/api/users', {
+    const res = await fetch('/api/users', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, ...updates }),
     });
+    await handleApiResponse(res, 'فشل تعديل بيانات المستخدم');
     await refreshData();
   };
 
   const deleteUser = async (id: string) => {
-    await fetch(`/api/users?id=${id}`, { method: 'DELETE' });
+    const res = await fetch(`/api/users?id=${id}`, { method: 'DELETE' });
+    await handleApiResponse(res, 'فشل حذف المستخدم');
     await refreshData();
   };
 
   // Lecture Operations
   const addLecture = async (data: Omit<Lecture, 'id' | 'uploadDate' | 'downloadsCount' | 'viewsCount'>) => {
-    await fetch('/api/lectures', {
+    const res = await fetch('/api/lectures', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+    await handleApiResponse(res, 'فشل رفع المحاضرة');
     await refreshData();
   };
 
   const updateLecture = async (id: string, updates: Partial<Lecture>) => {
-    await fetch('/api/lectures', {
+    const res = await fetch('/api/lectures', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, ...updates }),
     });
+    await handleApiResponse(res, 'فشل تعديل المحاضرة');
     await refreshData();
   };
 
   const deleteLecture = async (id: string) => {
-    await fetch(`/api/lectures?id=${id}`, { method: 'DELETE' });
+    const res = await fetch(`/api/lectures?id=${id}`, { method: 'DELETE' });
+    await handleApiResponse(res, 'فشل حذف المحاضرة');
     await refreshData();
   };
 
   const resetAll = async () => {
-    // Re-seed DB to initial state
     await fetch('/api/auth/switch', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -312,6 +392,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         currentUser,
         users,
         switchUser,
+        login,
+        logout,
+        isLoginModalOpen,
+        setIsLoginModalOpen,
         colleges,
         sections,
         subjects,

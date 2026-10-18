@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
     const section = await prisma.section.create({
       data: {
-        id: `sec-${Date.now()}`,
+        id: `sec-${crypto.randomUUID()}`,
         name: name.trim(),
         collegeId,
         departmentId,
@@ -114,6 +114,15 @@ export async function DELETE(req: NextRequest) {
 
     if (!canManage) return NextResponse.json({ error: 'غير مصرح لك بحذف الشعبة' }, { status: 403 });
 
+    // Cascade delete lectures targeted to this section
+    await prisma.lecture.deleteMany({ where: { sectionTarget: id } });
+
+    // Unlink users from this section
+    await prisma.user.updateMany({
+      where: { sectionId: id },
+      data: { sectionId: null, sectionName: null },
+    });
+
     await prisma.section.delete({ where: { id } });
 
     await logAuditEvent({
@@ -122,6 +131,7 @@ export async function DELETE(req: NextRequest) {
       userRole: user.role,
       action: 'DELETE_SECTION',
       target: existing.name,
+      details: 'حذف الشعبة وحذف كافة المحاضرات المرتبطة بها تسلسلياً.',
     });
 
     return NextResponse.json({ success: true });
