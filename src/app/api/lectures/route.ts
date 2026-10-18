@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, handleApiError } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -73,10 +73,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ lectures });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -88,13 +85,13 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await req.json();
-    const { title, description, collegeId, departmentId, stage, subjectId, sectionTarget, fileName, fileSize, filePath } = data;
+    const { title, description, subjectId, sectionTarget, fileName, fileSize, filePath } = data;
 
-    if (!title || !collegeId || !departmentId || !subjectId) {
-      return NextResponse.json({ error: 'جميع حقول التسلسل الأكاديمي وعنوان المحاضرة مطلوبة' }, { status: 400 });
+    if (!title || !subjectId) {
+      return NextResponse.json({ error: 'عنوان المحاضرة والمادة الدراسية مطلوبان' }, { status: 400 });
     }
 
-    // Server-side check if doctor is assigned to this subject
+    // Server-side check: Derive collegeId, departmentId, and stage strictly from the subject
     const subject = await prisma.subject.findUnique({
       where: { id: subjectId },
     });
@@ -103,25 +100,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'المادة الدراسية غير موجودة' }, { status: 404 });
     }
 
+    const { collegeId, departmentId, stage } = subject;
+
     if (user.role === 'doctor') {
       if (subject.doctorId !== user.id) {
         return NextResponse.json({ error: 'لا يمكنك رفع محاضرة لمادة غير مسندة إليك' }, { status: 403 });
       }
     } else if (user.role === 'department_admin') {
-      if (departmentId !== user.departmentId || collegeId !== user.collegeId) {
+      if (subject.departmentId !== user.departmentId || subject.collegeId !== user.collegeId) {
         return NextResponse.json({ error: 'غير مصرح لك برفع محاضرات خارج قسمك' }, { status: 403 });
       }
     } else if (user.role === 'college_admin') {
-      if (collegeId !== user.collegeId) {
+      if (subject.collegeId !== user.collegeId) {
         return NextResponse.json({ error: 'غير مصرح لك برفع محاضرات خارج كليتك' }, { status: 403 });
       }
     }
 
-    // Resolve section name
+    // Resolve section name and strictly check it belongs to the same department and stage
     let sectionName = 'كافة الشُعب';
     if (sectionTarget && sectionTarget !== 'all') {
       const sec = await prisma.section.findUnique({ where: { id: sectionTarget } });
-      if (sec) sectionName = sec.name;
+      if (!sec || sec.departmentId !== departmentId || sec.stage !== stage) {
+        return NextResponse.json({ error: 'الشعبة المحددة لا تنتمي لهذا القسم أو المرحلة' }, { status: 400 });
+      }
+      sectionName = sec.name;
     }
 
     const resolvedFileName = fileName || `${title.trim()}.pdf`;
@@ -215,11 +217,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ lecture: newLecture });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Lecture upload error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء رفع المحاضرة' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -248,7 +246,10 @@ export async function PUT(req: NextRequest) {
         sectionName = 'كافة الشُعب';
       } else {
         const sec = await prisma.section.findUnique({ where: { id: data.sectionTarget } });
-        if (sec) sectionName = sec.name;
+        if (!sec || sec.departmentId !== existing.departmentId || sec.stage !== existing.stage) {
+          return NextResponse.json({ error: 'الشعبة المحددة لا تنتمي لهذا القسم أو المرحلة' }, { status: 400 });
+        }
+        sectionName = sec.name;
       }
     }
 
@@ -264,8 +265,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ lecture: updated });
   } catch (error) {
-    console.error('Lecture update error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في السيرفر أثناء تعديل المحاضرة' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -303,6 +303,6 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleApiError(error);
   }
 }

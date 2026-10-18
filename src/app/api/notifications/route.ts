@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, handleApiError } from '@/lib/auth';
 
 export async function GET() {
   try {
@@ -18,10 +18,7 @@ export async function GET() {
 
     return NextResponse.json({ notifications, unreadCount });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleApiError(error, 'Notifications GET');
   }
 }
 
@@ -48,6 +45,6 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ error: 'معاملات غير صالحة' }, { status: 400 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleApiError(error, 'Notifications PUT');
   }
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, handleApiError } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 
 export async function GET() {
@@ -27,24 +27,31 @@ export async function GET() {
 
     return NextResponse.json({ sections });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Sections GET error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء جلب الشُعب' }, { status: 500 });
+    return handleApiError(error, 'Sections GET');
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const user = await requireAuth();
-    const { name, collegeId, departmentId, stage } = await req.json();
+    const { name, departmentId, stage } = await req.json();
+
+    if (!name || !departmentId || !stage) {
+      return NextResponse.json({ error: 'البيانات غير مكتملة' }, { status: 400 });
+    }
+
+    const dept = await prisma.department.findUnique({ where: { id: departmentId } });
+    if (!dept) {
+      return NextResponse.json({ error: 'القسم غير موجود' }, { status: 404 });
+    }
+
+    const targetCollegeId = dept.collegeId;
 
     // Check authority
     const canManage =
       user.role === 'super_admin' ||
-      (user.role === 'college_admin' && user.collegeId === collegeId) ||
-      (user.role === 'department_admin' && user.collegeId === collegeId && user.departmentId === departmentId);
+      (user.role === 'college_admin' && user.collegeId === targetCollegeId) ||
+      (user.role === 'department_admin' && user.departmentId === departmentId);
 
     if (!canManage) {
       return NextResponse.json({ error: 'غير مصرح لك بإضافة شعبة' }, { status: 403 });
@@ -54,7 +61,7 @@ export async function POST(req: NextRequest) {
       data: {
         id: `sec-${crypto.randomUUID()}`,
         name: name.trim(),
-        collegeId,
+        collegeId: targetCollegeId,
         departmentId,
         stage: Number(stage),
       },
@@ -70,11 +77,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ section });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Sections POST error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء إضافة الشعبة' }, { status: 500 });
+    return handleApiError(error, 'Sections POST');
   }
 }
 
@@ -100,11 +103,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ section });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Sections PUT error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء تعديل الشعبة' }, { status: 500 });
+    return handleApiError(error, 'Sections PUT');
   }
 }
 
@@ -148,10 +147,6 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Sections DELETE error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء حذف الشعبة' }, { status: 500 });
+    return handleApiError(error, 'Sections DELETE');
   }
 }

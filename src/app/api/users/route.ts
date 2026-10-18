@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, handleApiError } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 import bcrypt from 'bcryptjs';
 
@@ -68,11 +68,7 @@ export async function GET() {
 
     return NextResponse.json({ users });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Users GET error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء جلب المستخدمين' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -84,23 +80,55 @@ export async function POST(req: NextRequest) {
     // Check authority to create this role
     if (user.role === 'super_admin') {
       // Allowed all roles
+      if (data.sectionId) {
+        const sec = await prisma.section.findUnique({ where: { id: data.sectionId } });
+        if (sec) data.sectionName = sec.name;
+      }
     } else if (user.role === 'college_admin') {
       if (['super_admin', 'college_admin'].includes(data.role)) {
         return NextResponse.json({ error: 'غير مصرح لك بإنشاء حساب بهذه الرتبة' }, { status: 403 });
       }
       data.collegeId = user.collegeId;
+
+      // Validate department belongs to this college
+      if (data.departmentId) {
+        const dept = await prisma.department.findUnique({ where: { id: data.departmentId } });
+        if (!dept || dept.collegeId !== user.collegeId) {
+          return NextResponse.json({ error: 'القسم المحدد لا ينتمي لكليتك' }, { status: 400 });
+        }
+      }
+
+      // Validate section belongs to the department and stage
+      if (data.sectionId) {
+        const sec = await prisma.section.findUnique({ where: { id: data.sectionId } });
+        if (!sec || sec.departmentId !== data.departmentId || (data.stage && sec.stage !== Number(data.stage))) {
+          return NextResponse.json({ error: 'الشعبة المحددة غير متوافقة مع القسم أو المرحلة' }, { status: 400 });
+        }
+        data.sectionName = sec.name;
+      }
     } else if (user.role === 'department_admin') {
       if (!['doctor', 'student'].includes(data.role)) {
         return NextResponse.json({ error: 'غير مصرح لك بإنشاء حساب بهذه الرتبة' }, { status: 403 });
       }
       data.collegeId = user.collegeId;
       data.departmentId = user.departmentId;
+
+      // Validate section belongs to this department and stage
+      if (data.sectionId) {
+        const sec = await prisma.section.findUnique({ where: { id: data.sectionId } });
+        if (!sec || sec.departmentId !== user.departmentId || (data.stage && sec.stage !== Number(data.stage))) {
+          return NextResponse.json({ error: 'الشعبة المحددة غير متوافقة مع قسمك أو المرحلة' }, { status: 400 });
+        }
+        data.sectionName = sec.name;
+      }
     } else {
       return NextResponse.json({ error: 'غير مصرح لك بإنشاء مستخدمين' }, { status: 403 });
     }
 
-    // Default password or custom
-    const passwordHash = await bcrypt.hash(data.password || '123456', 10);
+    // Generate random temporary password if not explicitly provided
+    const tempPassword = data.password ? data.password.trim() : `alzahrawi-${Math.floor(100000 + Math.random() * 900000)}`;
+    const passwordHash = await bcrypt.hash(tempPassword, 10);
+    const mustChangePassword = !data.password || Boolean(data.mustChangePassword);
 
     const newUser = await prisma.user.create({
       data: {
@@ -108,6 +136,7 @@ export async function POST(req: NextRequest) {
         name: data.name.trim(),
         email: data.email.trim().toLowerCase(),
         password: passwordHash,
+        mustChangePassword,
         role: data.role,
         title: data.title || null,
         collegeId: data.collegeId || null,
@@ -127,6 +156,7 @@ export async function POST(req: NextRequest) {
         stage: true,
         sectionId: true,
         sectionName: true,
+        mustChangePassword: true,
       },
     });
 
@@ -139,16 +169,12 @@ export async function POST(req: NextRequest) {
       details: `إنشاء حساب جديد (${newUser.role}) بريد: ${newUser.email}`,
     });
 
-    return NextResponse.json({ user: newUser });
+    return NextResponse.json({ user: newUser, tempPassword });
   } catch (error: any) {
     if (error.code === 'P2002') {
       return NextResponse.json({ error: 'هذا البريد الإلكتروني مسجل مسبقاً' }, { status: 400 });
     }
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Users POST error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء إنشاء المستخدم' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -200,11 +226,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ user: updated });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Users PUT error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء تعديل المستخدم' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -250,10 +272,6 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Users DELETE error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء حذف المستخدم' }, { status: 500 });
+    return handleApiError(error);
   }
 }

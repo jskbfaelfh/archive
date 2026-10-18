@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireRole } from '@/lib/auth';
+import { requireRole, handleApiError } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 import bcrypt from 'bcryptjs';
 
@@ -54,10 +54,7 @@ export async function GET() {
       },
     });
   } catch (error: any) {
-    if (error.message === 'FORBIDDEN') {
-      return NextResponse.json({ error: 'صلاحية تصدير النسخ الاحتياطية للسوبر أدمن فقط' }, { status: 403 });
-    }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -240,10 +237,6 @@ export async function POST(req: NextRequest) {
       message: 'تم استرجاع النسخة الاحتياطية بنجاح وتحديث كافة البيانات في قاعدة البيانات.',
     });
   } catch (error: any) {
-    if (error.message === 'FORBIDDEN') {
-      return NextResponse.json({ error: 'صلاحية استرجاع البيانات للسوبر أدمن فقط' }, { status: 403 });
-    }
-    console.error('Backup restore error:', error);
-    return NextResponse.json({ error: 'حدث خطأ أثناء معالجة واسترجاع النسخة الاحتياطية' }, { status: 500 });
+    return handleApiError(error);
   }
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, handleApiError } from '@/lib/auth';
 import { readFile } from 'fs/promises';
 import path from 'path';
 
@@ -100,10 +100,6 @@ export async function GET(
       },
     });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Download error:', error);
-    return NextResponse.json({ error: 'حدث خطأ أثناء تحميل الملف' }, { status: 500 });
+    return handleApiError(error, 'Lecture Download GET');
   }
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, handleApiError } from '@/lib/auth';
 
 export async function GET() {
   try {
@@ -17,6 +17,8 @@ export async function GET() {
       user.role === 'department_admin'
         ? { collegeId: user.collegeId || '', departmentId: user.departmentId || '' }
         : collegeFilter;
+
+    const auditLogWhere = user.role === 'super_admin' ? {} : { user: { is: deptFilter } };
 
     const [
       collegesCount,
@@ -48,8 +50,19 @@ export async function GET() {
         },
       }),
       prisma.auditLog.findMany({
+        where: auditLogWhere,
         orderBy: { createdAt: 'desc' },
         take: 8,
+        select: {
+          id: true,
+          userName: true,
+          userRole: true,
+          action: true,
+          target: true,
+          details: true,
+          createdAt: true,
+          ...(user.role === 'super_admin' ? { ipAddress: true } : {}),
+        },
       }),
     ]);
 
@@ -64,6 +77,6 @@ export async function GET() {
       recentAuditLogs,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleApiError(error);
   }
 }

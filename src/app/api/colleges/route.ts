@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth, requireRole } from '@/lib/auth';
+import { requireAuth, requireRole, handleApiError } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 
 export async function GET() {
@@ -23,11 +23,7 @@ export async function GET() {
 
     return NextResponse.json({ colleges });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Colleges GET error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء جلب بيانات الكليات' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -59,11 +55,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ college });
   } catch (error: any) {
-    if (error.message === 'FORBIDDEN') {
-      return NextResponse.json({ error: 'غير مصرح لك بإضافة كليات' }, { status: 403 });
-    }
-    console.error('Colleges POST error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء إضافة الكلية' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -88,11 +80,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ college });
   } catch (error: any) {
-    if (error.message === 'FORBIDDEN') {
-      return NextResponse.json({ error: 'غير مصرح لك بتعديل الكليات' }, { status: 403 });
-    }
-    console.error('Colleges PUT error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء تعديل الكلية' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -118,10 +106,6 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    if (error.message === 'FORBIDDEN') {
-      return NextResponse.json({ error: 'غير مصرح لك بحذف الكليات' }, { status: 403 });
-    }
-    console.error('Colleges DELETE error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء حذف الكلية' }, { status: 500 });
+    return handleApiError(error);
   }
 }

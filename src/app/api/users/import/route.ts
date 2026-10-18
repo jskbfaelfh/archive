@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, handleApiError } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 import * as XLSX from 'xlsx';
 import bcrypt from 'bcryptjs';
@@ -154,8 +154,7 @@ export async function POST(req: NextRequest) {
       createdAccounts,
       errors: errors.slice(0, 15), // return top 15 errors
     });
-  } catch (error) {
-    console.error('Import error:', error);
-    return NextResponse.json({ error: 'حدث خطأ أثناء استيراد ومعالجة الملف' }, { status: 500 });
+  } catch (error: any) {
+    return handleApiError(error, 'Users Import POST');
   }
 }

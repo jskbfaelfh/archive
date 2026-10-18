@@ -6,8 +6,9 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting Alzahrawi University database seeding...');
 
-  // Default password hashed for all test accounts
-  const defaultPasswordHash = await bcrypt.hash('123456', 10);
+  // Password hashed for test accounts / super_admin
+  const initialAdminPass = process.env.ADMIN_INITIAL_PASSWORD || '123456';
+  const defaultPasswordHash = await bcrypt.hash(initialAdminPass, 10);
 
   // Clean existing data
   await prisma.auditLog.deleteMany({});
@@ -381,7 +382,7 @@ async function main() {
     await prisma.user.create({
       data: {
         ...u,
-        mustChangePassword: u.role !== 'super_admin', // Require all seeded users to set their own password upon first access
+        mustChangePassword: true, // Require all seeded users to set their own password upon first access
       },
     });
   }

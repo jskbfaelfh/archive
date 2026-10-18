@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, handleApiError } from '@/lib/auth';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 
@@ -63,7 +63,6 @@ export async function POST(req: NextRequest) {
       fileType: ext.replace('.', ''),
     });
   } catch (error: any) {
-    console.error('Upload error:', error);
-    return NextResponse.json({ error: 'فشل رفع وحفظ الملف على الخادم' }, { status: 500 });
+    return handleApiError(error);
   }
 }

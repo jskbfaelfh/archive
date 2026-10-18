@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, handleApiError } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 
 export async function POST(req: NextRequest) {
@@ -8,8 +8,10 @@ export async function POST(req: NextRequest) {
     const user = await requireAuth();
     const { collegeId, name, stagesCount } = await req.json();
 
+    const targetCollegeId = user.role === 'college_admin' ? (user.collegeId || '') : collegeId;
+
     // Verify role permissions
-    if (user.role !== 'super_admin' && (user.role !== 'college_admin' || user.collegeId !== collegeId)) {
+    if (user.role !== 'super_admin' && (user.role !== 'college_admin' || !targetCollegeId)) {
       return NextResponse.json({ error: 'غير مصرح لك بإضافة قسم لهذه الكلية' }, { status: 403 });
     }
 
@@ -18,7 +20,7 @@ export async function POST(req: NextRequest) {
         id: `dept-${crypto.randomUUID()}`,
         name: name.trim(),
         stagesCount: Number(stagesCount) || 4,
-        collegeId,
+        collegeId: targetCollegeId,
       },
     });
 
@@ -33,20 +35,21 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ department: dept });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Department POST error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء إضافة القسم' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
 export async function PUT(req: NextRequest) {
   try {
     const user = await requireAuth();
-    const { id, collegeId, name, stagesCount } = await req.json();
+    const { id, name, stagesCount } = await req.json();
 
-    if (user.role !== 'super_admin' && (user.role !== 'college_admin' || user.collegeId !== collegeId)) {
+    const existing = await prisma.department.findUnique({ where: { id } });
+    if (!existing) {
+      return NextResponse.json({ error: 'القسم غير موجود' }, { status: 404 });
+    }
+
+    if (user.role !== 'super_admin' && (user.role !== 'college_admin' || user.collegeId !== existing.collegeId)) {
       return NextResponse.json({ error: 'غير مصرح لك بتعديل هذا القسم' }, { status: 403 });
     }
 
@@ -60,11 +63,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ department: dept });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Department PUT error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء تعديل القسم' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -105,10 +104,6 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Department DELETE error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء حذف القسم' }, { status: 500 });
+    return handleApiError(error);
   }
 }

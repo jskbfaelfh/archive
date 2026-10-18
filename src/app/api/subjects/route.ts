@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, handleApiError } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 
 export async function GET() {
@@ -15,6 +15,11 @@ export async function GET() {
         where: { collegeId: user.collegeId || '' },
         orderBy: { name: 'asc' },
       });
+    } else if (user.role === 'doctor') {
+      subjects = await prisma.subject.findMany({
+        where: { doctorId: user.id },
+        orderBy: { name: 'asc' },
+      });
     } else {
       subjects = await prisma.subject.findMany({
         where: {
@@ -27,41 +32,43 @@ export async function GET() {
 
     return NextResponse.json({ subjects });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Subjects GET error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء جلب المقررات' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const user = await requireAuth();
-    const { name, collegeId, departmentId, stage, semester, doctorId, doctorName } = await req.json();
+    const { name, collegeId, departmentId, stage, semester, doctorId } = await req.json();
+
+    const targetCollegeId = user.role === 'college_admin' ? (user.collegeId || '') : collegeId;
+    const targetDeptId = user.role === 'department_admin' ? (user.departmentId || '') : departmentId;
 
     const canManage =
       user.role === 'super_admin' ||
-      (user.role === 'college_admin' && user.collegeId === collegeId) ||
-      (user.role === 'department_admin' && user.collegeId === collegeId && user.departmentId === departmentId);
+      (user.role === 'college_admin' && user.collegeId === targetCollegeId) ||
+      (user.role === 'department_admin' && user.collegeId === targetCollegeId && user.departmentId === targetDeptId);
 
     if (!canManage) {
       return NextResponse.json({ error: 'غير مصرح لك بإضافة مادة' }, { status: 403 });
     }
 
-    // Resolve doctor name if doctorId provided
-    let resolvedDoctorName = doctorName;
-    if (doctorId && !doctorName) {
+    // Strict validation: doctor must exist, have doctor role, and belong to same college & department
+    let resolvedDoctorName: string | null = null;
+    if (doctorId) {
       const doc = await prisma.user.findUnique({ where: { id: doctorId } });
-      resolvedDoctorName = doc?.name;
+      if (!doc || doc.role !== 'doctor' || doc.collegeId !== targetCollegeId || doc.departmentId !== targetDeptId) {
+        return NextResponse.json({ error: 'التدريسي المحدد غير صالح أو لا ينتمي لنفس كلية وقسم المادة' }, { status: 400 });
+      }
+      resolvedDoctorName = doc.name;
     }
 
     const subject = await prisma.subject.create({
       data: {
         id: `sub-${crypto.randomUUID()}`,
         name: name.trim(),
-        collegeId,
-        departmentId,
+        collegeId: targetCollegeId,
+        departmentId: targetDeptId,
         stage: Number(stage),
         semester: Number(semester) || 1,
         doctorId: doctorId || null,
@@ -80,18 +87,14 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ subject });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Subjects POST error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء إضافة المقرر' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
 export async function PUT(req: NextRequest) {
   try {
     const user = await requireAuth();
-    const { id, name, doctorId, doctorName } = await req.json();
+    const { id, name, doctorId } = await req.json();
 
     const existing = await prisma.subject.findUnique({ where: { id } });
     if (!existing) return NextResponse.json({ error: 'المادة غير موجودة' }, { status: 404 });
@@ -103,10 +106,14 @@ export async function PUT(req: NextRequest) {
 
     if (!canManage) return NextResponse.json({ error: 'غير مصرح لك بتعديل المادة' }, { status: 403 });
 
-    let resolvedDoctorName = doctorName;
-    if (doctorId && !doctorName) {
+    // Strict validation: doctor must exist, have doctor role, and belong to same college & department
+    let resolvedDoctorName: string | null = null;
+    if (doctorId) {
       const doc = await prisma.user.findUnique({ where: { id: doctorId } });
-      resolvedDoctorName = doc?.name;
+      if (!doc || doc.role !== 'doctor' || doc.collegeId !== existing.collegeId || doc.departmentId !== existing.departmentId) {
+        return NextResponse.json({ error: 'التدريسي المحدد غير صالح أو لا ينتمي لنفس كلية وقسم المادة' }, { status: 400 });
+      }
+      resolvedDoctorName = doc.name;
     }
 
     const subject = await prisma.subject.update({
@@ -129,11 +136,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ subject });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Subjects PUT error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء تعديل المقرر' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -171,10 +174,6 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
-    }
-    console.error('Subjects DELETE error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء حذف المقرر' }, { status: 500 });
+    return handleApiError(error);
   }
 }

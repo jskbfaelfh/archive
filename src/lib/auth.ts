@@ -1,5 +1,7 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 import { UserRole } from '@/types';
 
 function getJwtSecret(): Uint8Array {
@@ -70,22 +72,77 @@ export async function clearSessionCookie(): Promise<void> {
   cookieStore.delete(COOKIE_NAME);
 }
 
-// Server-side RBAC Guard
+// Server-side RBAC Guard: Re-queries DB for real-time role, scope, and password state
 export async function requireAuth(options?: { allowMustChangePassword?: boolean }): Promise<SessionUser> {
   const session = await getSession();
   if (!session) {
     throw new Error('UNAUTHORIZED');
   }
-  if (session.mustChangePassword && !options?.allowMustChangePassword) {
-    throw new Error('MUST_CHANGE_PASSWORD');
+
+  const fresh = await prisma.user.findUnique({
+    where: { id: session.id },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      collegeId: true,
+      departmentId: true,
+      stage: true,
+      sectionId: true,
+      sectionName: true,
+      mustChangePassword: true,
+    },
+  });
+
+  if (!fresh) {
+    throw new Error('UNAUTHORIZED');
   }
-  return session;
+
+  if (fresh.mustChangePassword && !options?.allowMustChangePassword) {
+    throw new Error('PASSWORD_CHANGE_REQUIRED');
+  }
+
+  return {
+    id: fresh.id,
+    name: fresh.name,
+    email: fresh.email,
+    role: fresh.role as UserRole,
+    collegeId: fresh.collegeId,
+    departmentId: fresh.departmentId,
+    stage: fresh.stage,
+    sectionId: fresh.sectionId,
+    sectionName: fresh.sectionName,
+    mustChangePassword: fresh.mustChangePassword,
+  };
 }
 
-export async function requireRole(allowedRoles: UserRole[]): Promise<SessionUser> {
-  const session = await requireAuth();
+export async function requireRole(
+  allowedRoles: UserRole[],
+  options?: { allowMustChangePassword?: boolean }
+): Promise<SessionUser> {
+  const session = await requireAuth(options);
   if (!allowedRoles.includes(session.role)) {
     throw new Error('FORBIDDEN');
   }
   return session;
+}
+
+export function handleApiError(error: unknown) {
+  if (error instanceof Error) {
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول', code: 'UNAUTHORIZED' }, { status: 401 });
+    }
+    if (error.message === 'FORBIDDEN') {
+      return NextResponse.json({ error: 'صلاحيات غير كافية لتنفيذ هذا الإجراء', code: 'FORBIDDEN' }, { status: 403 });
+    }
+    if (error.message === 'PASSWORD_CHANGE_REQUIRED' || error.message === 'MUST_CHANGE_PASSWORD') {
+      return NextResponse.json(
+        { error: 'يجب تغيير كلمة المرور أولاً', code: 'PASSWORD_CHANGE_REQUIRED' },
+        { status: 403 }
+      );
+    }
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+  return NextResponse.json({ error: 'حدث خطأ في الخادم' }, { status: 500 });
 }
