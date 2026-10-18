@@ -12,7 +12,12 @@ import {
   Clock,
   Sparkles,
   GraduationCap,
+  Database,
+  UploadCloud,
+  FileCheck,
+  AlertTriangle,
 } from 'lucide-react';
+import { useApp } from '@/context/AppContext';
 
 interface StatsData {
   collegesCount: number;
@@ -41,25 +46,74 @@ interface StatsData {
 }
 
 export default function AnalyticsView() {
+  const { currentUser, refreshData } = useApp();
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [restoring, setRestoring] = useState(false);
+  const [restoreStatus, setRestoreStatus] = useState<string | null>(null);
+
+  const loadStats = async () => {
+    try {
+      const res = await fetch('/api/stats');
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data);
+      }
+    } catch (err) {
+      console.error('Failed to load stats:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function loadStats() {
-      try {
-        const res = await fetch('/api/stats');
-        if (res.ok) {
-          const data = await res.json();
-          setStats(data);
-        }
-      } catch (err) {
-        console.error('Failed to load stats:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
     loadStats();
   }, []);
+
+  const handleDownloadBackup = () => {
+    window.open('/api/backup', '_blank');
+  };
+
+  const handleFileRestore = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!confirm(`هل أنت متأكد من استرجاع البيانات من الملف "${file.name}"؟ سيتم تحديث ومطابقة البيانات في قاعدة البيانات.`)) {
+      e.target.value = '';
+      return;
+    }
+
+    try {
+      setRestoring(true);
+      setRestoreStatus('جاري فحص وقراءة ملف النسخة الاحتياطية...');
+
+      const text = await file.text();
+      const jsonData = JSON.parse(text);
+
+      setRestoreStatus('جاري حقن وتحديث الجداول في قاعدة البيانات...');
+      const res = await fetch('/api/backup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jsonData),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.error || 'فشل استرجاع النسخة الاحتياطية');
+      }
+
+      setRestoreStatus('تم الاسترجاع بنجاح! جاري تحديث واجهة المنظومة...');
+      await refreshData();
+      await loadStats();
+      setTimeout(() => setRestoreStatus(null), 4000);
+    } catch (err: any) {
+      alert(err.message || 'خطأ أثناء استرجاع الملف');
+      setRestoreStatus(null);
+    } finally {
+      setRestoring(false);
+      e.target.value = '';
+    }
+  };
 
   if (loading) {
     return (
@@ -208,6 +262,86 @@ export default function AnalyticsView() {
           </div>
         </div>
       </div>
+
+      {/* Database Backup & Disaster Recovery (Super Admin) */}
+      {currentUser.role === 'super_admin' && (
+        <div className="bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-2xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-slate-900 text-white rounded-xl">
+                <Database className="w-5 h-5 text-sky-400" />
+              </div>
+              <div>
+                <h3 className="font-bold text-sm text-slate-900">النسخ الاحتياطي واسترجاع البيانات (Backup & Recovery)</h3>
+                <p className="text-[11px] text-slate-500">حفظ كامل بيانات المنظومة والأكاديميات والمستخدمين في ملف آمن بصيغة JSON</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleDownloadBackup}
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+              >
+                <Download className="w-4 h-4 text-sky-400" />
+                <span>تصدير نسخة احتياطية</span>
+              </button>
+
+              <label className={`flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 border-2 border-slate-300 text-slate-800 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs ${
+                restoring ? 'opacity-50 pointer-events-none' : ''
+              }`}>
+                <UploadCloud className="w-4 h-4 text-emerald-600" />
+                <span>{restoring ? 'جاري الاسترجاع...' : 'استرجاع من ملف'}</span>
+                <input
+                  type="file"
+                  accept=".json"
+                  className="hidden"
+                  onChange={handleFileRestore}
+                  disabled={restoring}
+                />
+              </label>
+            </div>
+          </div>
+
+          {restoreStatus && (
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-xs font-bold text-emerald-800 animate-in fade-in">
+              <FileCheck className="w-4 h-4 shrink-0 text-emerald-600" />
+              <span>{restoreStatus}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+              <div className="font-bold text-slate-800 flex items-center gap-1.5 mb-1">
+                <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+                <span>شامل لجميع الجداول</span>
+              </div>
+              <p className="text-[10px] text-slate-500 leading-relaxed">
+                يحتوي ملف النسخة الاحتياطية على الكليات، الأقسام، الشُعب، المواد، المستخدمين، وسجلات التحميل والمحاضرات.
+              </p>
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+              <div className="font-bold text-slate-800 flex items-center gap-1.5 mb-1">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                <span>عملية ذرية (Atomic Transaction)</span>
+              </div>
+              <p className="text-[10px] text-slate-500 leading-relaxed">
+                تتم عملية الاسترجاع داخل معاملة بنكية موحدة لمنع فقدان البيانات أو تعارض العلاقات في حال انقطاع الاتصال.
+              </p>
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+              <div className="font-bold text-slate-800 flex items-center gap-1.5 mb-1">
+                <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                <span>توثيق في سجل الرقابة</span>
+              </div>
+              <p className="text-[10px] text-slate-500 leading-relaxed">
+                كل عملية تصدير أو استرجاع يتم تسجيلها تلقائياً بالوقت واسم المنفذ لضمان أعلى معايير الشفافية والأمان.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

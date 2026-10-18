@@ -13,10 +13,17 @@ import {
   Layers,
   GraduationCap,
   UserCheck,
+  FileSpreadsheet,
+  UploadCloud,
+  Download,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  X,
 } from 'lucide-react';
 
 export default function UserManager() {
-  const { users, colleges, sections, subjects, addUser, updateUser, deleteUser, currentUser } = useApp();
+  const { users, colleges, sections, subjects, addUser, updateUser, deleteUser, currentUser, refreshData } = useApp();
 
   const isSuper = currentUser.role === 'super_admin';
   const isCollegeAdmin = currentUser.role === 'college_admin';
@@ -34,6 +41,37 @@ export default function UserManager() {
   const [departmentId, setDepartmentId] = useState('');
   const [stage, setStage] = useState<number>(1);
   const [sectionId, setSectionId] = useState('');
+
+  // Excel Bulk Import States
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importResult, setImportResult] = useState<{ count: number; errors: string[] } | null>(null);
+
+  const handleImportExcel = async () => {
+    if (!importFile) return;
+    setIsImporting(true);
+    setImportResult(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', importFile);
+      const res = await fetch('/api/users/import', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setImportResult({ count: data.importedCount, errors: data.errors || [] });
+        await refreshData();
+      } else {
+        alert(data.error || 'فشل استيراد الملف');
+      }
+    } catch {
+      alert('حدث خطأ أثناء رفع ومعالجة ملف الإكسل');
+    } finally {
+      setIsImporting(false);
+    }
+  };
 
   // Visible users based on scope
   const visibleUsers = users.filter((u) => {
@@ -238,14 +276,29 @@ export default function UserManager() {
           </p>
         </div>
 
-        <button
-          onClick={openAddModal}
-          disabled={colleges.length === 0}
-          className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>إضافة مستخدم</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              setImportModalOpen(true);
+              setImportResult(null);
+              setImportFile(null);
+            }}
+            disabled={colleges.length === 0}
+            className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
+            <span>استيراد إكسل (Excel)</span>
+          </button>
+
+          <button
+            onClick={openAddModal}
+            disabled={colleges.length === 0}
+            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-xs"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span>إضافة مستخدم</span>
+          </button>
+        </div>
       </div>
 
       {colleges.length === 0 && (
@@ -533,6 +586,113 @@ export default function UserManager() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Excel Bulk Import */}
+      {importModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto border border-slate-200">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[10px] text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                  استيراد الحسابات دفعة واحدة
+                </span>
+                <h3 className="font-black text-base text-slate-900 mt-1">استيراد الطلاب والأساتذة من ملف إكسل</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  ارفع ملف .xlsx أو .csv لإنشاء مئات أو آلاف الحسابات ومطابقتها بالشعب تلقائياً.
+                </p>
+              </div>
+              <button
+                onClick={() => setImportModalOpen(false)}
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Template Download Alert */}
+            <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 text-xs">
+              <div>
+                <span className="font-bold text-slate-900 block">هل تحتاج قالب الإكسل النموذجي؟</span>
+                <span className="text-[11px] text-slate-500">حمل القالب الجاهز بالأعمدة المعتمدة واملأه ببياناتك.</span>
+              </div>
+              <a
+                href="/api/users/template"
+                download="alzahrawi_users_template.xlsx"
+                className="px-3 py-1.5 bg-white text-slate-800 border border-slate-300 hover:bg-slate-100 rounded-xl font-bold flex items-center gap-1.5 cursor-pointer shrink-0 shadow-2xs"
+              >
+                <Download className="w-3.5 h-3.5 text-sky-700" />
+                <span>تحميل القالب</span>
+              </a>
+            </div>
+
+            {/* File Drop / Select */}
+            <div className="space-y-2">
+              <label className="block text-xs font-black text-slate-900">اختر ملف الإكسل (.xlsx / .csv)</label>
+              <input
+                type="file"
+                accept=".xlsx, .xls, .csv"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setImportFile(e.target.files[0]);
+                    setImportResult(null);
+                  }
+                }}
+                className="w-full text-xs p-2.5 bg-white border-2 border-slate-300 rounded-2xl cursor-pointer"
+              />
+              {importFile && (
+                <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 p-2 bg-emerald-50 rounded-xl border border-emerald-200">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>الملف الجاهز للاستيراد: {importFile.name}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Import Results Banner */}
+            {importResult && (
+              <div className="space-y-2 p-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs">
+                <div className="flex items-center gap-2 font-bold text-emerald-800">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>تم استيراد وإنشاء {importResult.count} حساب بنجاح!</span>
+                </div>
+                {importResult.errors.length > 0 && (
+                  <div className="space-y-1 pt-1 border-t border-slate-200">
+                    <span className="font-bold text-amber-800 text-[11px] block">
+                      تنبيهات وتجاوزات ({importResult.errors.length}):
+                    </span>
+                    <div className="max-h-28 overflow-y-auto space-y-1">
+                      {importResult.errors.map((err, idx) => (
+                        <p key={idx} className="text-[10px] text-amber-900 font-mono bg-amber-50 p-1 rounded">
+                          {err}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setImportModalOpen(false)}
+                className="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl font-bold cursor-pointer"
+              >
+                إغلاق
+              </button>
+              <button
+                type="button"
+                onClick={handleImportExcel}
+                disabled={!importFile || isImporting}
+                className="px-5 py-2 text-xs bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold cursor-pointer disabled:opacity-50 flex items-center gap-2 shadow-xs"
+              >
+                {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
+                <span>{isImporting ? 'جاري قراءة واستيراد الحسابات...' : 'بدء الاستيراد للجامعة'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

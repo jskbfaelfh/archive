@@ -81,6 +81,7 @@ model User {
   taughtSubjects   Subject[]    @relation("DoctorSubjects")
   uploadedLectures Lecture[]    @relation("DoctorLectures")
   auditLogs        AuditLog[]
+  notifications    Notification[]
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 }
@@ -123,5 +124,16 @@ model AuditLog {
   details   String?
   ipAddress String?
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }

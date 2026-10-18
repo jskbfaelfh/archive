@@ -146,6 +146,34 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Notify targeted students
+    try {
+      const targetStudents = await prisma.user.findMany({
+        where: {
+          role: 'student',
+          collegeId,
+          departmentId,
+          stage: Number(stage),
+          ...(sectionTarget && sectionTarget !== 'all' ? { sectionId: sectionTarget } : {}),
+        },
+        select: { id: true },
+      });
+
+      if (targetStudents.length > 0) {
+        await prisma.notification.createMany({
+          data: targetStudents.map((st) => ({
+            userId: st.id,
+            title: `محاضرة جديدة: ${subject.name}`,
+            message: `أضاف التدريسي ${user.name} محاضرة جديدة بعنوان "${newLecture.title}".`,
+            link: `/lectures`,
+            isRead: false,
+          })),
+        });
+      }
+    } catch (notifErr) {
+      console.error('Failed to dispatch notifications:', notifErr);
+    }
+
     await logAuditEvent({
       userId: user.id,
       userName: user.name,
