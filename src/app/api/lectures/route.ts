@@ -5,8 +5,6 @@ import { logAuditEvent } from '@/lib/audit';
 import path from 'path';
 import { existsSync } from 'fs';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET(req: NextRequest) {
   try {
     const user = await requireAuth();

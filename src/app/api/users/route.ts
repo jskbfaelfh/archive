@@ -4,8 +4,6 @@ import { requireAuth, handleApiError } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 import bcrypt from 'bcryptjs';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
   try {
     const user = await requireAuth();
