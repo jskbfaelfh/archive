@@ -1,0 +1,127 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model College {
+  id          String       @id
+  name        String
+  departments Department[]
+  sections    Section[]
+  subjects    Subject[]
+  users       User[]
+  lectures    Lecture[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Department {
+  id          String    @id
+  name        String
+  stagesCount Int       @default(4)
+  collegeId   String
+  college     College   @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  sections    Section[]
+  subjects    Subject[]
+  users       User[]
+  lectures    Lecture[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Section {
+  id           String     @id
+  name         String
+  stage        Int
+  collegeId    String
+  departmentId String
+  college      College    @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  users        User[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Subject {
+  id           String     @id
+  name         String
+  stage        Int
+  semester     Int        @default(1)
+  collegeId    String
+  departmentId String
+  doctorId     String?
+  doctorName   String?
+  college      College    @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  doctor       User?      @relation("DoctorSubjects", fields: [doctorId], references: [id], onDelete: SetNull)
+  lectures     Lecture[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model User {
+  id               String       @id
+  name             String
+  email            String       @unique
+  password         String       // Hashed with bcrypt
+  role             String       // 'super_admin' | 'college_admin' | 'department_admin' | 'doctor' | 'student'
+  title            String?
+  collegeId        String?
+  departmentId     String?
+  stage            Int?
+  sectionId        String?
+  sectionName      String?
+  college          College?     @relation(fields: [collegeId], references: [id], onDelete: SetNull)
+  department       Department?  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  section          Section?     @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  taughtSubjects   Subject[]    @relation("DoctorSubjects")
+  uploadedLectures Lecture[]    @relation("DoctorLectures")
+  auditLogs        AuditLog[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model Lecture {
+  id            String      @id
+  title         String
+  description   String?
+  collegeId     String
+  departmentId  String
+  stage         Int
+  subjectId     String
+  subjectName   String?
+  sectionTarget String      @default("all")
+  sectionName   String?
+  doctorId      String
+  doctorName    String
+  fileType      String      @default("pdf")
+  fileName      String
+  fileSize      String
+  filePath      String?
+  uploadDate    String
+  viewsCount    Int         @default(0)
+  downloadsCount Int        @default(0)
+  college       College     @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  department    Department  @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  subject       Subject     @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  doctor        User        @relation("DoctorLectures", fields: [doctorId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  userName  String?
+  userRole  String?
+  action    String
+  target    String
+  details   String?
+  ipAddress String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+}

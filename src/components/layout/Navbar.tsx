@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Shield,
   User,
+  TrendingUp,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -79,6 +80,20 @@ export default function Navbar() {
             <FileText className="w-4 h-4" />
             <span>المحاضرات</span>
           </button>
+
+          {canSeeUsersTab && (
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                activeTab === 'analytics'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <TrendingUp className="w-4 h-4" />
+              <span>الإحصائيات والرقابة</span>
+            </button>
+          )}
         </nav>
 
         {/* User Switcher & Reset */}

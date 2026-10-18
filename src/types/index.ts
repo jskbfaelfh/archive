@@ -72,6 +72,7 @@ export interface Lecture {
   fileType: FileType;
   fileSize: string;
   fileName: string;
+  filePath?: string;
   description?: string;
   downloadsCount: number;
   viewsCount: number;

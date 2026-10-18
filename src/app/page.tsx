@@ -5,6 +5,7 @@ import Navbar from '@/components/layout/Navbar';
 import StructureManager from '@/components/hierarchy/StructureManager';
 import UserManager from '@/components/users/UserManager';
 import LectureManager from '@/components/lectures/LectureManager';
+import AnalyticsView from '@/components/analytics/AnalyticsView';
 import { useApp } from '@/context/AppContext';
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
         {activeTab === 'structure' && <StructureManager />}
         {activeTab === 'users' && <UserManager />}
         {activeTab === 'lectures' && <LectureManager />}
+        {activeTab === 'analytics' && <AnalyticsView />}
       </main>
 
       <footer className="py-4 border-t border-slate-200 text-center text-xs text-slate-400">
