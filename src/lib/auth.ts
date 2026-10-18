@@ -71,10 +71,13 @@ export async function clearSessionCookie(): Promise<void> {
 }
 
 // Server-side RBAC Guard
-export async function requireAuth(): Promise<SessionUser> {
+export async function requireAuth(options?: { allowMustChangePassword?: boolean }): Promise<SessionUser> {
   const session = await getSession();
   if (!session) {
     throw new Error('UNAUTHORIZED');
+  }
+  if (session.mustChangePassword && !options?.allowMustChangePassword) {
+    throw new Error('MUST_CHANGE_PASSWORD');
   }
   return session;
 }

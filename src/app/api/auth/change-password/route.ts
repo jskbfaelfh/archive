@@ -6,7 +6,7 @@ import { logAuditEvent } from '@/lib/audit';
 
 export async function POST(req: NextRequest) {
   try {
-    const userSession = await requireAuth();
+    const userSession = await requireAuth({ allowMustChangePassword: true });
     const body = await req.json();
     const { currentPassword, newPassword } = body;
 
