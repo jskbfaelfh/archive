@@ -128,7 +128,7 @@ export async function requireRole(
   return session;
 }
 
-export function handleApiError(error: unknown) {
+export function handleApiError(error: unknown, _context?: string) {
   if (error instanceof Error) {
     if (error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'يرجى تسجيل الدخول', code: 'UNAUTHORIZED' }, { status: 401 });
