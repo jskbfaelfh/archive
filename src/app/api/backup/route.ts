@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
+import bcrypt from 'bcryptjs';
 
 export async function GET() {
   try {
@@ -134,12 +135,16 @@ export async function POST(req: NextRequest) {
       // Upsert Users
       if (Array.isArray(users)) {
         for (const u of users) {
+          const securePassword = (u.password && typeof u.password === 'string' && u.password.startsWith('$2'))
+            ? u.password
+            : await bcrypt.hash(u.password || '123456', 10);
+
           await tx.user.upsert({
             where: { id: u.id },
             update: {
               name: u.name,
               email: u.email,
-              password: u.password || '123456',
+              password: securePassword,
               role: u.role,
               title: u.title || null,
               collegeId: u.collegeId,
@@ -152,7 +157,7 @@ export async function POST(req: NextRequest) {
               id: u.id,
               name: u.name,
               email: u.email,
-              password: u.password || '123456',
+              password: securePassword,
               role: u.role,
               title: u.title || null,
               collegeId: u.collegeId,
@@ -233,6 +238,7 @@ export async function POST(req: NextRequest) {
     if (error.message === 'FORBIDDEN') {
       return NextResponse.json({ error: 'صلاحية استرجاع البيانات للسوبر أدمن فقط' }, { status: 403 });
     }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Backup restore error:', error);
+    return NextResponse.json({ error: 'حدث خطأ أثناء معالجة واسترجاع النسخة الاحتياطية' }, { status: 500 });
   }
 }

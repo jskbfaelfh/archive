@@ -8,7 +8,6 @@ export type MainTab = 'structure' | 'users' | 'lectures' | 'analytics';
 interface AppContextType {
   currentUser: User;
   users: User[];
-  switchUser: (id: string) => Promise<void>;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   isLoginModalOpen: boolean;
@@ -83,13 +82,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const meData = await meRes.json();
         if (meData.user) {
           setCurrentUser(meData.user);
-        } else {
-          // Default to first user if no session
-          await fetch('/api/auth/switch', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: 'user-super-admin' }),
-          });
         }
       }
 
@@ -189,27 +181,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setIsLoginModalOpen(true);
     } catch (err) {
       console.error('Logout error:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Switch perspective (for testing / demo)
-  const switchUser = async (id: string) => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/auth/switch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: id }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setCurrentUser(data.user);
-        await refreshData();
-      }
-    } catch (e) {
-      console.error('Failed to switch user:', e);
     } finally {
       setIsLoading(false);
     }
@@ -378,11 +349,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetAll = async () => {
-    await fetch('/api/auth/switch', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: 'user-super-admin' }),
-    });
+    await logout();
     window.location.reload();
   };
 
@@ -391,7 +358,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       value={{
         currentUser,
         users,
-        switchUser,
         login,
         logout,
         isLoginModalOpen,

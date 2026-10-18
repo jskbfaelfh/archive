@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     // Extension check
     const allowedExtensions = ['.pdf', '.pptx', '.ppt', '.docx', '.mp4'];
-    const originalName = file.name;
+    const originalName = path.basename(file.name);
     const ext = path.extname(originalName).toLowerCase();
 
     if (!allowedExtensions.includes(ext)) {
@@ -35,35 +35,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Target upload directory
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    // Target private storage directory (OUTSIDE public to prevent unauthenticated direct downloads)
+    const uploadDir = path.resolve(process.cwd(), 'uploads');
     await mkdir(uploadDir, { recursive: true });
 
-    // Safe sanitized unique filename
-    const timestamp = Date.now();
-    const safeBaseName = originalName
-      .replace(/\.[^/.]+$/, '')
-      .replace(/[^a-zA-Z0-9_\u0600-\u06FF-]/g, '_')
-      .slice(0, 50);
-    const finalFileName = `${safeBaseName}_${timestamp}${ext}`;
-    const filePath = path.join(uploadDir, finalFileName);
+    // Cryptographically secure random file key
+    const fileKey = `${crypto.randomUUID()}${ext}`;
+    const targetFilePath = path.resolve(uploadDir, fileKey);
+
+    // Guard against directory traversal
+    if (!targetFilePath.startsWith(uploadDir)) {
+      return NextResponse.json({ error: 'مسار ملف غير صالح' }, { status: 400 });
+    }
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(filePath, buffer);
+    await writeFile(targetFilePath, buffer);
 
-    const relativeUrl = `/uploads/${finalFileName}`;
     const formattedSize = `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
 
     return NextResponse.json({
       success: true,
+      fileKey,
       fileName: originalName,
-      fileUrl: relativeUrl,
       fileSize: formattedSize,
       fileType: ext.replace('.', ''),
     });
   } catch (error: any) {
     console.error('Upload error:', error);
-    return NextResponse.json({ error: error.message || 'فشل رفع الملف' }, { status: 500 });
+    return NextResponse.json({ error: 'فشل رفع وحفظ الملف على الخادم' }, { status: 500 });
   }
 }

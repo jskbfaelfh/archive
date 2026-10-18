@@ -2,9 +2,11 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { UserRole } from '@/types';
 
-const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'alzahrawi_university_secure_secret_key_2026_jwt'
-);
+if (!process.env.JWT_SECRET) {
+  throw new Error('FATAL SECURITY ERROR: JWT_SECRET environment variable is missing! The application refuses to start with an insecure or default secret.');
+}
+
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 const COOKIE_NAME = 'alzahrawi_session';
 

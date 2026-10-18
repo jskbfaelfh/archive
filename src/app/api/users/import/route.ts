@@ -129,8 +129,8 @@ export async function POST(req: NextRequest) {
           },
         });
         successCount++;
-      } catch (err: any) {
-        errors.push(`صف ${rowNum}: حدث خطأ أثناء الحفظ (${err.message}).`);
+      } catch {
+        errors.push(`صف ${rowNum}: حدث خطأ أثناء حفظ السجل في قاعدة البيانات.`);
       }
     }
 
@@ -149,8 +149,8 @@ export async function POST(req: NextRequest) {
       errorsCount: errors.length,
       errors: errors.slice(0, 15), // return top 15 errors
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Import error:', error);
-    return NextResponse.json({ error: error.message || 'فشل استيراد الملف' }, { status: 500 });
+    return NextResponse.json({ error: 'حدث خطأ أثناء استيراد ومعالجة الملف' }, { status: 500 });
   }
 }

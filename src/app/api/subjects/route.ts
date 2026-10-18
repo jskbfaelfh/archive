@@ -27,7 +27,11 @@ export async function GET() {
 
     return NextResponse.json({ subjects });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Subjects GET error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء جلب المقررات' }, { status: 500 });
   }
 }
 
@@ -76,7 +80,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ subject });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Subjects POST error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء إضافة المقرر' }, { status: 500 });
   }
 }
 
@@ -121,7 +129,11 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ subject });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Subjects PUT error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء تعديل المقرر' }, { status: 500 });
   }
 }
 
@@ -159,6 +171,10 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Subjects DELETE error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء حذف المقرر' }, { status: 500 });
   }
 }

@@ -28,11 +28,16 @@ export async function POST(req: NextRequest) {
       userRole: user.role,
       action: 'CREATE_DEPARTMENT',
       target: dept.name,
+      details: `إضافة قسم جديد: ${dept.name}`,
     });
 
     return NextResponse.json({ department: dept });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Department POST error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء إضافة القسم' }, { status: 500 });
   }
 }
 
@@ -55,7 +60,11 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ department: dept });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Department PUT error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء تعديل القسم' }, { status: 500 });
   }
 }
 
@@ -74,6 +83,15 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'غير مصرح لك بحذف هذا القسم' }, { status: 403 });
     }
 
+    // Cascade delete lectures and unbind users
+    await prisma.lecture.deleteMany({ where: { departmentId: id } });
+    await prisma.subject.deleteMany({ where: { departmentId: id } });
+    await prisma.section.deleteMany({ where: { departmentId: id } });
+    await prisma.user.updateMany({
+      where: { departmentId: id },
+      data: { departmentId: null, sectionId: null, sectionName: null },
+    });
+
     await prisma.department.delete({ where: { id } });
 
     await logAuditEvent({
@@ -82,10 +100,15 @@ export async function DELETE(req: NextRequest) {
       userRole: user.role,
       action: 'DELETE_DEPARTMENT',
       target: existing.name,
+      details: 'حذف القسم وكافة المواد والمحاضرات والشعب التابعة له تسلسلياً.',
     });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Department DELETE error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء حذف القسم' }, { status: 500 });
   }
 }

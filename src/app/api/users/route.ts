@@ -68,7 +68,11 @@ export async function GET() {
 
     return NextResponse.json({ users });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Users GET error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء جلب المستخدمين' }, { status: 500 });
   }
 }
 
@@ -140,7 +144,11 @@ export async function POST(req: NextRequest) {
     if (error.code === 'P2002') {
       return NextResponse.json({ error: 'هذا البريد الإلكتروني مسجل مسبقاً' }, { status: 400 });
     }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Users POST error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء إنشاء المستخدم' }, { status: 500 });
   }
 }
 
@@ -192,7 +200,11 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ user: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Users PUT error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء تعديل المستخدم' }, { status: 500 });
   }
 }
 
@@ -238,6 +250,10 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Users DELETE error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء حذف المستخدم' }, { status: 500 });
   }
 }

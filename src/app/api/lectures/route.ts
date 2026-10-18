@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
+import path from 'path';
 
 export async function GET(req: NextRequest) {
   try {
@@ -126,6 +127,16 @@ export async function POST(req: NextRequest) {
     const ext = resolvedFileName.split('.').pop()?.toLowerCase() || 'pdf';
     const detectedFileType = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'mp4', 'zip'].includes(ext) ? ext : 'pdf';
 
+    // Strict sanitization of fileKey / filePath to prevent path traversal
+    let safeFileKey: string | null = null;
+    const rawKey = data.fileKey || filePath;
+    if (typeof rawKey === 'string' && rawKey.trim()) {
+      const baseKey = path.basename(rawKey.trim());
+      if (baseKey && !rawKey.includes('..') && !rawKey.includes('/') && !rawKey.includes('\\')) {
+        safeFileKey = baseKey;
+      }
+    }
+
     const newLecture = await prisma.lecture.create({
       data: {
         id: `lec-${crypto.randomUUID()}`,
@@ -143,7 +154,7 @@ export async function POST(req: NextRequest) {
         fileType: data.fileType || detectedFileType,
         fileName: resolvedFileName,
         fileSize: fileSize || '3.5 MB',
-        filePath: filePath || null,
+        filePath: safeFileKey,
         uploadDate: new Date().toISOString().split('T')[0],
         viewsCount: 1,
         downloadsCount: 0,
@@ -189,7 +200,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ lecture: newLecture });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Lecture upload error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء رفع المحاضرة' }, { status: 500 });
   }
 }
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Lecture } from '@/types';
+import { Lecture, FileType } from '@/types';
 import {
   FileText,
   UploadCloud,
@@ -180,7 +180,7 @@ export default function LectureManager() {
         });
         if (res.ok) {
           const upData = await res.json();
-          uploadedFilePath = upData.fileUrl;
+          uploadedFilePath = upData.fileKey;
         }
       } catch (err) {
         console.error('File upload failed:', err);
@@ -202,6 +202,8 @@ export default function LectureManager() {
         sectionName,
       });
     } else {
+      const ext = (selectedFile?.name || fileName || '').split('.').pop()?.toLowerCase();
+      const resolvedType: FileType = ext === 'pptx' || ext === 'ppt' ? 'pptx' : ext === 'docx' || ext === 'doc' ? 'docx' : ext === 'mp4' ? 'video' : 'pdf';
       await addLecture({
         title: title.trim(),
         description: description.trim(),
@@ -214,7 +216,7 @@ export default function LectureManager() {
         sectionName,
         doctorId: currentUser.id,
         doctorName: currentUser.name,
-        fileType: 'pdf',
+        fileType: resolvedType,
         fileSize: fileSize || '3.5 MB',
         fileName: fileName || `${title}.pdf`,
         filePath: uploadedFilePath,

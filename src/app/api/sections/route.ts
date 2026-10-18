@@ -27,7 +27,11 @@ export async function GET() {
 
     return NextResponse.json({ sections });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Sections GET error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء جلب الشُعب' }, { status: 500 });
   }
 }
 
@@ -66,7 +70,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ section });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Sections POST error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء إضافة الشعبة' }, { status: 500 });
   }
 }
 
@@ -92,7 +100,11 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ section });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Sections PUT error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء تعديل الشعبة' }, { status: 500 });
   }
 }
 
@@ -136,6 +148,10 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'يرجى تسجيل الدخول' }, { status: 401 });
+    }
+    console.error('Sections DELETE error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في الخادم أثناء حذف الشعبة' }, { status: 500 });
   }
 }
