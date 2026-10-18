@@ -40,7 +40,7 @@ interface AppContextType {
   deleteSubject: (id: string) => Promise<void>;
 
   // User CRUD
-  addUser: (data: Omit<User, 'id'>) => Promise<void>;
+  addUser: (data: Omit<User, 'id'> & { password?: string }) => Promise<{ tempPassword?: string; user?: User; [key: string]: any } | void>;
   updateUser: (id: string, updates: Partial<User>) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
 

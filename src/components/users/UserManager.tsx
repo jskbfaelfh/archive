@@ -199,8 +199,7 @@ export default function UserManager() {
         sectionId: role === 'student' ? sectionId : undefined,
         sectionName: role === 'student' ? sec?.name : undefined,
       });
-    } else {
-      const result = await addUser({
+      const result = (await addUser({
         name,
         email,
         role,
@@ -210,7 +209,7 @@ export default function UserManager() {
         stage: role === 'student' ? stage : undefined,
         sectionId: role === 'student' ? sectionId : undefined,
         sectionName: role === 'student' ? sec?.name : undefined,
-      });
+      })) as { tempPassword?: string } | undefined;
 
       if (result?.tempPassword) {
         setCreatedUserNotice({

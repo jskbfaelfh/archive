@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-import { requireAuth, setSessionCookie } from '@/lib/auth';
+import { requireAuth, setSessionCookie, handleApiError } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 
 export async function POST(req: NextRequest) {
