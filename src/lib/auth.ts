@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { UserRole } from '@/types';
 
 function getJwtSecret(): Uint8Array {
-  const secret = process.env.JWT_SECRET;
+  const secret = process.env.JWT_SECRET || (process.env.NEXT_PHASE === 'phase-production-build' ? 'temporary_build_secret_only_not_for_runtime' : undefined);
   if (!secret) {
     throw new Error('FATAL SECURITY ERROR: JWT_SECRET environment variable is missing! Set JWT_SECRET in your environment.');
   }

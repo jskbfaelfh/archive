@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import * as XLSX from 'xlsx';
 import { requireRole, handleApiError } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await requireRole(['super_admin', 'college_admin', 'department_admin']);
