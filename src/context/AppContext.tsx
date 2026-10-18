@@ -10,6 +10,7 @@ interface AppContextType {
   users: User[];
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
   isLoginModalOpen: boolean;
   setIsLoginModalOpen: (open: boolean) => void;
 
@@ -181,6 +182,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setIsLoginModalOpen(true);
     } catch (err) {
       console.error('Logout error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const changePassword = async (currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || 'فشل تغيير كلمة المرور' };
+      }
+      setCurrentUser((prev) => ({ ...prev, mustChangePassword: false }));
+      return { success: true };
+    } catch {
+      return { success: false, error: 'حدث خطأ في الاتصال بالخادم' };
     } finally {
       setIsLoading(false);
     }
@@ -360,6 +382,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         users,
         login,
         logout,
+        changePassword,
         isLoginModalOpen,
         setIsLoginModalOpen,
         colleges,

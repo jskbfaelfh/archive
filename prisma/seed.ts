@@ -378,9 +378,14 @@ async function main() {
   ];
 
   for (const u of usersData) {
-    await prisma.user.create({ data: u });
+    await prisma.user.create({
+      data: {
+        ...u,
+        mustChangePassword: u.role !== 'super_admin', // Require all seeded users to set their own password upon first access
+      },
+    });
   }
-  console.log('✅ Created 25 Users (Admin, Deans, Heads, Doctors, Students).');
+  console.log('✅ Created 25 Users (Admin, Deans, Heads, Doctors, Students with mandatory initial password reset).');
 
   // 4. Create Subjects (Linked to Doctors)
   const subjectsData = [

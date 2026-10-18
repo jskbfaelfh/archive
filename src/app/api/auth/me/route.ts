@@ -22,6 +22,7 @@ export async function GET() {
       stage: true,
       sectionId: true,
       sectionName: true,
+      mustChangePassword: true,
     },
   });
 

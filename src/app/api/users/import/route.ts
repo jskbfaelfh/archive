@@ -37,10 +37,9 @@ export async function POST(req: NextRequest) {
       prisma.section.findMany(),
     ]);
 
-    const defaultPasswordHash = await bcrypt.hash('123456', 10);
-
     let successCount = 0;
     const errors: string[] = [];
+    const createdAccounts: { name: string; email: string; tempPassword: string; role: string }[] = [];
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
@@ -113,12 +112,16 @@ export async function POST(req: NextRequest) {
       );
 
       try {
+        const tempPassword = `Alz@${crypto.randomUUID().slice(0, 8)}`;
+        const userPasswordHash = await bcrypt.hash(tempPassword, 10);
+
         await prisma.user.create({
           data: {
             id: `user-${crypto.randomUUID()}`,
             name,
             email,
-            password: defaultPasswordHash,
+            password: userPasswordHash,
+            mustChangePassword: true,
             role,
             title: role === 'student' ? 'طالب جامعي' : role === 'doctor' ? 'أستاذ مقرر' : undefined,
             collegeId: targetCollege?.id || null,
@@ -129,6 +132,7 @@ export async function POST(req: NextRequest) {
           },
         });
         successCount++;
+        createdAccounts.push({ name, email, tempPassword, role });
       } catch {
         errors.push(`صف ${rowNum}: حدث خطأ أثناء حفظ السجل في قاعدة البيانات.`);
       }
@@ -140,13 +144,14 @@ export async function POST(req: NextRequest) {
       userRole: currentUser.role,
       action: 'BULK_IMPORT_USERS',
       target: file.name,
-      details: `تم استيراد ${successCount} مستخدم من إكسل بنجاح (الأخطاء: ${errors.length})`,
+      details: `تم استيراد ${successCount} مستخدم من إكسل بنجاح وتوليد كلمات مرور مؤقتة فريدة (الأخطاء: ${errors.length})`,
     });
 
     return NextResponse.json({
       success: true,
       importedCount: successCount,
       errorsCount: errors.length,
+      createdAccounts,
       errors: errors.slice(0, 15), // return top 15 errors
     });
   } catch (error) {

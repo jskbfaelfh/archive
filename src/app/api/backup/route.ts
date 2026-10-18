@@ -134,10 +134,13 @@ export async function POST(req: NextRequest) {
 
       // Upsert Users
       if (Array.isArray(users)) {
+        const validRoles = ['super_admin', 'college_admin', 'department_admin', 'doctor', 'student'];
         for (const u of users) {
-          const securePassword = (u.password && typeof u.password === 'string' && u.password.startsWith('$2'))
-            ? u.password
-            : await bcrypt.hash(u.password || '123456', 10);
+          const isBcrypt = typeof u.password === 'string' && u.password.startsWith('$2');
+          const randomTempPass = `Alz#${crypto.randomUUID().slice(0, 8)}`;
+          const securePassword = isBcrypt ? u.password : await bcrypt.hash(randomTempPass, 10);
+          const forceChange = !isBcrypt || Boolean(u.mustChangePassword);
+          const targetRole = validRoles.includes(u.role) ? u.role : 'student';
 
           await tx.user.upsert({
             where: { id: u.id },
@@ -145,7 +148,8 @@ export async function POST(req: NextRequest) {
               name: u.name,
               email: u.email,
               password: securePassword,
-              role: u.role,
+              mustChangePassword: forceChange,
+              role: targetRole,
               title: u.title || null,
               collegeId: u.collegeId,
               departmentId: u.departmentId,
@@ -158,7 +162,8 @@ export async function POST(req: NextRequest) {
               name: u.name,
               email: u.email,
               password: securePassword,
-              role: u.role,
+              mustChangePassword: forceChange,
+              role: targetRole,
               title: u.title || null,
               collegeId: u.collegeId,
               departmentId: u.departmentId,

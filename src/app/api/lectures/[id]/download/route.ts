@@ -29,7 +29,11 @@ export async function GET(
     } else if (user.role === 'department_admin') {
       isAllowed = lecture.collegeId === user.collegeId && lecture.departmentId === user.departmentId;
     } else if (user.role === 'doctor') {
-      isAllowed = lecture.collegeId === user.collegeId && lecture.departmentId === user.departmentId;
+      // Doctor can ONLY download lectures belonging to their assigned subjects or authored by them
+      const isAssignedSubject = await prisma.subject.findFirst({
+        where: { id: lecture.subjectId, doctorId: user.id },
+      });
+      isAllowed = Boolean(isAssignedSubject || lecture.doctorId === user.id);
     } else if (user.role === 'student') {
       const sameDept = lecture.collegeId === user.collegeId && lecture.departmentId === user.departmentId;
       const sameStage = lecture.stage === user.stage;

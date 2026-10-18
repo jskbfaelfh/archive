@@ -39,7 +39,11 @@ export default function UserManager() {
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
-  const [importResult, setImportResult] = useState<{ count: number; errors: string[] } | null>(null);
+  const [importResult, setImportResult] = useState<{
+    count: number;
+    errors: string[];
+    createdAccounts?: { name: string; email: string; tempPassword: string; role: string }[];
+  } | null>(null);
 
   const handleImportExcel = async () => {
     if (!importFile) return;
@@ -54,7 +58,11 @@ export default function UserManager() {
       });
       const data = await res.json();
       if (res.ok) {
-        setImportResult({ count: data.importedCount, errors: data.errors || [] });
+        setImportResult({
+          count: data.importedCount,
+          errors: data.errors || [],
+          createdAccounts: data.createdAccounts || [],
+        });
         await refreshData();
       } else {
         alert(data.error || 'فشل استيراد الملف');
@@ -645,17 +653,55 @@ export default function UserManager() {
 
             {/* Import Results Banner */}
             {importResult && (
-              <div className="space-y-2 p-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs">
+              <div className="space-y-2.5 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs">
                 <div className="flex items-center gap-2 font-bold text-emerald-800">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>تم استيراد وإنشاء {importResult.count} حساب بنجاح!</span>
                 </div>
+
+                {importResult.createdAccounts && importResult.createdAccounts.length > 0 && (
+                  <div className="space-y-1.5 pt-2 border-t border-slate-200">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-800 text-[11px] block">
+                        بيانات الدخول المؤقتة المُولَّدة (يلزم تغييرها عند أول دخول):
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const text = importResult.createdAccounts!
+                            .map((a) => `${a.name}\t${a.email}\t${a.tempPassword}`)
+                            .join('\n');
+                          navigator.clipboard.writeText(text);
+                          alert('تم نسخ بيانات الحسابات المؤقتة إلى الحافظة!');
+                        }}
+                        className="text-[10px] text-sky-700 hover:text-sky-900 font-bold underline cursor-pointer"
+                      >
+                        نسخ الكل
+                      </button>
+                    </div>
+                    <div className="max-h-32 overflow-y-auto space-y-1">
+                      {importResult.createdAccounts.map((acc, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between text-[11px] font-mono bg-white p-1.5 rounded-lg border border-slate-200"
+                        >
+                          <span className="font-sans font-bold text-slate-800 truncate max-w-[120px]">{acc.name}</span>
+                          <span className="text-slate-600 truncate max-w-[150px]">{acc.email}</span>
+                          <span className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold font-mono">
+                            {acc.tempPassword}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {importResult.errors.length > 0 && (
                   <div className="space-y-1 pt-1 border-t border-slate-200">
                     <span className="font-bold text-amber-800 text-[11px] block">
                       تنبيهات وتجاوزات ({importResult.errors.length}):
                     </span>
-                    <div className="max-h-28 overflow-y-auto space-y-1">
+                    <div className="max-h-24 overflow-y-auto space-y-1">
                       {importResult.errors.map((err, idx) => (
                         <p key={idx} className="text-[10px] text-amber-900 font-mono bg-amber-50 p-1 rounded">
                           {err}

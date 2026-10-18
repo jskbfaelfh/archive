@@ -68,6 +68,7 @@ model User {
   name             String
   email            String       @unique
   password         String       // Hashed with bcrypt
+  mustChangePassword Boolean    @default(false)
   role             String       // 'super_admin' | 'college_admin' | 'department_admin' | 'doctor' | 'student'
   title            String?
   collegeId        String?

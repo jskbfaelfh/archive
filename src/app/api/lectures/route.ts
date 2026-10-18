@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 import path from 'path';
+import { existsSync } from 'fs';
 
 export async function GET(req: NextRequest) {
   try {
@@ -127,12 +128,26 @@ export async function POST(req: NextRequest) {
     const ext = resolvedFileName.split('.').pop()?.toLowerCase() || 'pdf';
     const detectedFileType = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'mp4', 'zip'].includes(ext) ? ext : 'pdf';
 
-    // Strict sanitization of fileKey / filePath to prevent path traversal
+    // Strict validation of fileKey / filePath: path traversal check, disk existence, and uploader ownership
     let safeFileKey: string | null = null;
     const rawKey = data.fileKey || filePath;
     if (typeof rawKey === 'string' && rawKey.trim()) {
       const baseKey = path.basename(rawKey.trim());
       if (baseKey && !rawKey.includes('..') && !rawKey.includes('/') && !rawKey.includes('\\')) {
+        const uploadDir = path.resolve(process.cwd(), 'uploads');
+        const diskPath = path.resolve(uploadDir, baseKey);
+
+        // 1. Check disk containment and existence
+        if (!diskPath.startsWith(uploadDir) || !existsSync(diskPath)) {
+          return NextResponse.json({ error: 'الملف المرفق غير موجود على الخادم' }, { status: 400 });
+        }
+
+        // 2. Check ownership: ensure this file was uploaded by the current user (or super_admin)
+        const safeUserId = user.id.replace(/[^a-zA-Z0-9_-]/g, '');
+        if (baseKey.startsWith('up_') && !baseKey.startsWith(`up_${safeUserId}_`) && user.role !== 'super_admin') {
+          return NextResponse.json({ error: 'غير مصرح لك بربط ملف لم تقم برفعه' }, { status: 403 });
+        }
+
         safeFileKey = baseKey;
       }
     }
@@ -248,8 +263,9 @@ export async function PUT(req: NextRequest) {
     });
 
     return NextResponse.json({ lecture: updated });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    console.error('Lecture update error:', error);
+    return NextResponse.json({ error: 'حدث خطأ في السيرفر أثناء تعديل المحاضرة' }, { status: 500 });
   }
 }
 

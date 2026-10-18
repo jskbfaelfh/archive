@@ -52,6 +52,7 @@ export interface User {
   stage?: number;
   sectionId?: string;
   sectionName?: string;
+  mustChangePassword?: boolean;
 }
 
 export type FileType = 'pdf' | 'pptx' | 'docx' | 'video';

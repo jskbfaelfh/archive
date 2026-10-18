@@ -27,6 +27,7 @@ export default function Navbar() {
     resetAll,
     login,
     logout,
+    changePassword,
     isLoginModalOpen,
     setIsLoginModalOpen,
   } = useApp();
@@ -35,6 +36,13 @@ export default function Navbar() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Forced Password Change State
+  const [curPass, setCurPass] = useState('');
+  const [newPass, setNewPass] = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
+  const [passChangeError, setPassChangeError] = useState<string | null>(null);
+  const [isChangingPass, setIsChangingPass] = useState(false);
 
   const isSuper = currentUser.role === 'super_admin';
   const isCollegeAdmin = currentUser.role === 'college_admin';
@@ -55,6 +63,33 @@ export default function Navbar() {
     } else {
       setLoginEmail('');
       setLoginPassword('');
+    }
+  };
+
+  const handleChangePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPassChangeError(null);
+    if (newPass.length < 8) {
+      setPassChangeError('يجب أن لا تقل كلمة المرور الجديدة عن 8 خانات');
+      return;
+    }
+    if (newPass === '123456' || newPass === '12345678') {
+      setPassChangeError('لا يمكن استخدام كلمة مرور سهلة التخمين');
+      return;
+    }
+    if (newPass !== confirmPass) {
+      setPassChangeError('كلمتا المرور غير متطابقتين');
+      return;
+    }
+    setIsChangingPass(true);
+    const res = await changePassword(curPass, newPass);
+    setIsChangingPass(false);
+    if (!res.success) {
+      setPassChangeError(res.error || 'فشل تغيير كلمة المرور');
+    } else {
+      setCurPass('');
+      setNewPass('');
+      setConfirmPass('');
     }
   };
 
@@ -284,6 +319,86 @@ export default function Navbar() {
                 >
                   <LogIn className="w-3.5 h-3.5 text-sky-400" />
                   <span>{isSubmitting ? 'جاري التحقق...' : 'دخول إلى المنظومة'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Mandatory Password Change Modal */}
+      {currentUser.id && currentUser.mustChangePassword && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl border-2 border-amber-500 space-y-4">
+            <div className="flex items-center gap-3 pb-3 border-b border-amber-100 text-amber-800">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                <Shield className="w-6 h-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-black text-slate-900">إجراء أمني إلزامي: تعيين كلمة مرور جديدة</h3>
+                <p className="text-xs text-slate-500 font-medium">حسابك يتطلب تعيين كلمة مرور شخصية وخاصة للمتابعة.</p>
+              </div>
+            </div>
+
+            {passChangeError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold rounded-xl">
+                {passChangeError}
+              </div>
+            )}
+
+            <form onSubmit={handleChangePasswordSubmit} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-black text-slate-900 mb-1">كلمة المرور الحالية (المؤقتة)</label>
+                <input
+                  type="password"
+                  required
+                  value={curPass}
+                  onChange={(e) => setCurPass(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full text-sm font-bold text-slate-900 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-amber-600 focus:outline-none shadow-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-900 mb-1">كلمة المرور الجديدة (8 خانات على الأقل)</label>
+                <input
+                  type="password"
+                  required
+                  value={newPass}
+                  onChange={(e) => setNewPass(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full text-sm font-bold text-slate-900 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-amber-600 focus:outline-none shadow-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-900 mb-1">تأكيد كلمة المرور الجديدة</label>
+                <input
+                  type="password"
+                  required
+                  value={confirmPass}
+                  onChange={(e) => setConfirmPass(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full text-sm font-bold text-slate-900 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-amber-600 focus:outline-none shadow-xs"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="text-xs font-bold text-rose-600 hover:text-rose-700 hover:underline cursor-pointer"
+                >
+                  تسجيل الخروج
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isChangingPass}
+                  className="flex items-center gap-1.5 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>{isChangingPass ? 'جاري الحفظ...' : 'تحديث كلمة المرور والمتابعة'}</span>
                 </button>
               </div>
             </form>

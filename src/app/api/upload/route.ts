@@ -39,8 +39,9 @@ export async function POST(req: NextRequest) {
     const uploadDir = path.resolve(process.cwd(), 'uploads');
     await mkdir(uploadDir, { recursive: true });
 
-    // Cryptographically secure random file key
-    const fileKey = `${crypto.randomUUID()}${ext}`;
+    // Cryptographically secure random file key bound to user ID
+    const safeUserId = user.id.replace(/[^a-zA-Z0-9_-]/g, '');
+    const fileKey = `up_${safeUserId}_${crypto.randomUUID()}${ext}`;
     const targetFilePath = path.resolve(uploadDir, fileKey);
 
     // Guard against directory traversal

@@ -2,11 +2,13 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { UserRole } from '@/types';
 
-if (!process.env.JWT_SECRET) {
-  throw new Error('FATAL SECURITY ERROR: JWT_SECRET environment variable is missing! The application refuses to start with an insecure or default secret.');
+function getJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('FATAL SECURITY ERROR: JWT_SECRET environment variable is missing! Set JWT_SECRET in your environment.');
+  }
+  return new TextEncoder().encode(secret);
 }
-
-const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 const COOKIE_NAME = 'alzahrawi_session';
 
@@ -20,6 +22,7 @@ export interface SessionUser {
   stage?: number | null;
   sectionId?: string | null;
   sectionName?: string | null;
+  mustChangePassword?: boolean;
 }
 
 export async function createSessionToken(user: SessionUser): Promise<string> {
@@ -27,12 +30,12 @@ export async function createSessionToken(user: SessionUser): Promise<string> {
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('7d')
-    .sign(SECRET);
+    .sign(getJwtSecret());
 }
 
 export async function verifySessionToken(token: string): Promise<SessionUser | null> {
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     return payload as unknown as SessionUser;
   } catch {
     return null;
