@@ -77,13 +77,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const refreshData = useCallback(async () => {
     try {
-      // 1. Fetch current user
+      // 1. Fetch current user session
       const meRes = await fetch('/api/auth/me');
+      let authedUser: User | null = null;
       if (meRes.ok) {
         const meData = await meRes.json();
         if (meData.user) {
+          authedUser = meData.user;
           setCurrentUser(meData.user);
+        } else {
+          setCurrentUser({
+            id: '',
+            name: '',
+            email: '',
+            role: 'student',
+          });
+          setIsLoginModalOpen(true);
+          return;
         }
+      } else {
+        setIsLoginModalOpen(true);
+        return;
+      }
+
+      if (!authedUser) {
+        setIsLoginModalOpen(true);
+        return;
       }
 
       // 2. Fetch Colleges
@@ -107,11 +126,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (subData.subjects) setSubjects(subData.subjects);
       }
 
-      // 5. Fetch Users
-      const usrRes = await fetch('/api/users');
-      if (usrRes.ok) {
-        const usrData = await usrRes.json();
-        if (usrData.users) setUsers(usrData.users);
+      // 5. Fetch Users (if admin)
+      if (['super_admin', 'college_admin', 'department_admin'].includes(authedUser.role)) {
+        const usrRes = await fetch('/api/users');
+        if (usrRes.ok) {
+          const usrData = await usrRes.json();
+          if (usrData.users) setUsers(usrData.users);
+        }
       }
 
       // 6. Fetch Lectures (Server filtered by role)

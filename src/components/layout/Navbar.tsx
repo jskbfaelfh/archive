@@ -285,8 +285,8 @@ export default function Navbar() {
                     { label: 'سوبر أدمن', email: 'admin@alzahrawi.edu.iq' },
                     { label: 'عميد الطب', email: 'dean.med@alzahrawi.edu.iq' },
                     { label: 'رئيس قسم الجراحة', email: 'head.surgery@alzahrawi.edu.iq' },
-                    { label: 'تدريسي (د. كمال)', email: 'kamal.surgery@alzahrawi.edu.iq' },
-                    { label: 'طالب (كرار)', email: 'karrar.student@alzahrawi.edu.iq' },
+                    { label: 'تدريسي (د. حيدر)', email: 'haider.k@alzahrawi.edu.iq' },
+                    { label: 'طالب (أحمد)', email: 'ahmed.badri@student.alzahrawi.edu.iq' },
                   ].map((acc) => (
                     <button
                       key={acc.email}

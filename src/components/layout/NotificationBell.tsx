@@ -22,6 +22,7 @@ export default function NotificationBell() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const fetchNotifications = async () => {
+    if (!currentUser.id) return;
     try {
       const res = await fetch('/api/notifications');
       if (res.ok) {
