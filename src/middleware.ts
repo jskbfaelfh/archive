@@ -15,6 +15,7 @@ export async function middleware(req: NextRequest) {
       '/api/auth/me',
       '/api/auth/change-password',
       '/api/users/template',
+      '/api/init',
     ];
 
     if (allowedAuthPaths.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
