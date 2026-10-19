@@ -199,6 +199,7 @@ export default function UserManager() {
         sectionId: role === 'student' ? sectionId : undefined,
         sectionName: role === 'student' ? sec?.name : undefined,
       });
+    } else {
       const result = (await addUser({
         name,
         email,
