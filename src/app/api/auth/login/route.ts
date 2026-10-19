@@ -130,8 +130,13 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, user: sessionPayload });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login error:', error);
-    return NextResponse.json({ error: 'حدث خطأ في السيرفر أثناء تسجيل الدخول' }, { status: 500 });
+    const detail = error?.message || '';
+    const isTableMissing = detail.includes('does not exist') || detail.includes('no such table');
+    const userMsg = isTableMissing
+      ? 'قاعدة البيانات قيد التهيئة. يرجى زيارة /api/init لإنشاء الجداول والحسابات الأولية.'
+      : 'حدث خطأ في السيرفر أثناء تسجيل الدخول: ' + (detail ? detail.slice(0, 100) : '');
+    return NextResponse.json({ error: userMsg, detail }, { status: 500 });
   }
 }
