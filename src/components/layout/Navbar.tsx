@@ -98,141 +98,143 @@ export default function Navbar() {
   };
 
   return (
-    <header className="bg-[#041633] text-white border-b border-cyan-500/20 sticky top-0 z-40 shadow-lg shadow-black/15 backdrop-blur-md">
-      {/* Top subtle cyan brand glow strip */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-sky-500 via-cyan-400 to-blue-600" />
+    <>
+      <header className="bg-[#041633] text-white border-b border-cyan-500/20 sticky top-0 z-40 shadow-lg shadow-black/15">
+        {/* Top subtle cyan brand glow strip */}
+        <div className="h-0.5 w-full bg-gradient-to-r from-sky-500 via-cyan-400 to-blue-600" />
 
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 min-h-18 py-2.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
-        {/* Brand with Official University Logo */}
-        <div className="flex items-center gap-3">
-          <img
-            src="/images/university-logo.png"
-            alt="شعار جامعة الزهراوي"
-            className="h-11 sm:h-12 w-auto object-contain drop-shadow"
-          />
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg font-black text-white tracking-wide">جامعة الزهراوي</h1>
-              <span className="hidden sm:inline-block text-[10px] font-extrabold text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-full border border-cyan-500/30">
-                منظومة الأرشفة
-              </span>
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 min-h-18 py-2.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+          {/* Brand with Official University Logo */}
+          <div className="flex items-center gap-3">
+            <img
+              src="/images/university-logo.png"
+              alt="شعار جامعة الزهراوي"
+              className="h-11 sm:h-12 w-auto object-contain drop-shadow"
+            />
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-base sm:text-lg font-black text-white tracking-wide">جامعة الزهراوي</h1>
+                <span className="hidden sm:inline-block text-[10px] font-extrabold text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-full border border-cyan-500/30">
+                  منظومة الأرشفة
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-300 font-medium">أرشفة المحاضرات والمناهج الأكاديمية</p>
             </div>
-            <p className="text-[11px] text-slate-300 font-medium">أرشفة المحاضرات والمناهج الأكاديمية</p>
           </div>
-        </div>
 
-        {/* 4 Main Tabs with University Theme */}
-        <nav className="flex items-center gap-1 bg-[#0a1e3b]/90 p-1.5 rounded-2xl border border-cyan-500/20 text-xs font-bold overflow-x-auto max-w-full backdrop-blur-sm">
-          <button
-            onClick={() => setActiveTab('structure')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
-              activeTab === 'structure'
-                ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
-                : 'text-slate-300 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <Layers className="w-4 h-4 text-cyan-300" />
-            <span>الهيكلية</span>
-          </button>
-
-          {canSeeUsersTab && (
+          {/* 4 Main Tabs with University Theme */}
+          <nav className="flex items-center gap-1 bg-[#0a1e3b]/90 p-1.5 rounded-2xl border border-cyan-500/20 text-xs font-bold overflow-x-auto max-w-full backdrop-blur-sm">
             <button
-              onClick={() => setActiveTab('users')}
+              onClick={() => setActiveTab('structure')}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
-                activeTab === 'users'
+                activeTab === 'structure'
                   ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
                   : 'text-slate-300 hover:text-white hover:bg-white/10'
               }`}
             >
-              <Users className="w-4 h-4 text-cyan-300" />
-              <span>المستخدمون</span>
+              <Layers className="w-4 h-4 text-cyan-300" />
+              <span>الهيكلية</span>
             </button>
-          )}
 
-          <button
-            onClick={() => setActiveTab('lectures')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
-              activeTab === 'lectures'
-                ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
-                : 'text-slate-300 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <FileText className="w-4 h-4 text-cyan-300" />
-            <span>المحاضرات</span>
-          </button>
+            {canSeeUsersTab && (
+              <button
+                onClick={() => setActiveTab('users')}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'users'
+                    ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
+                    : 'text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <Users className="w-4 h-4 text-cyan-300" />
+                <span>المستخدمون</span>
+              </button>
+            )}
 
-          {canSeeUsersTab && (
             <button
-              onClick={() => setActiveTab('analytics')}
+              onClick={() => setActiveTab('lectures')}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
-                activeTab === 'analytics'
+                activeTab === 'lectures'
                   ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
                   : 'text-slate-300 hover:text-white hover:bg-white/10'
               }`}
             >
-              <TrendingUp className="w-4 h-4 text-cyan-300" />
-              <span>الإحصائيات</span>
+              <FileText className="w-4 h-4 text-cyan-300" />
+              <span>المحاضرات</span>
             </button>
-          )}
-        </nav>
 
-        {/* User Info & Actions */}
-        <div className="flex items-center gap-2">
-          {currentUser.id && <NotificationBell />}
+            {canSeeUsersTab && (
+              <button
+                onClick={() => setActiveTab('analytics')}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'analytics'
+                    ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
+                    : 'text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <TrendingUp className="w-4 h-4 text-cyan-300" />
+                <span>الإحصائيات</span>
+              </button>
+            )}
+          </nav>
 
-          {currentUser.id ? (
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0a1e3b] border border-cyan-500/30 rounded-xl text-xs font-black text-white shadow-xs">
-                <Shield className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                <div className="text-right">
-                  <div className="leading-tight text-white">{currentUser.name}</div>
-                  <div className="text-[10px] text-cyan-200/80 font-normal">
-                    {isSuper && 'سوبر أدمن'}
-                    {isCollegeAdmin && `عميد • ${userCol?.name || 'كلية'}`}
-                    {isDeptAdmin && `رئيس قسم`}
-                    {currentUser.role === 'doctor' && `تدريسي`}
-                    {currentUser.role === 'student' && `طالب • م${currentUser.stage || 1}`}
+          {/* User Info & Actions */}
+          <div className="flex items-center gap-2">
+            {currentUser.id && <NotificationBell />}
+
+            {currentUser.id ? (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0a1e3b] border border-cyan-500/30 rounded-xl text-xs font-black text-white shadow-xs">
+                  <Shield className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <div className="text-right">
+                    <div className="leading-tight text-white">{currentUser.name}</div>
+                    <div className="text-[10px] text-cyan-200/80 font-normal">
+                      {isSuper && 'سوبر أدمن'}
+                      {isCollegeAdmin && `عميد • ${userCol?.name || 'كلية'}`}
+                      {isDeptAdmin && `رئيس قسم`}
+                      {currentUser.role === 'doctor' && `تدريسي`}
+                      {currentUser.role === 'student' && `طالب • م${currentUser.stage || 1}`}
+                    </div>
                   </div>
                 </div>
+
+                <button
+                  onClick={logout}
+                  title="تسجيل الخروج"
+                  className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 rounded-xl transition-all cursor-pointer font-bold"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>خروج</span>
+                </button>
               </div>
-
+            ) : (
               <button
-                onClick={logout}
-                title="تسجيل الخروج"
-                className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 rounded-xl transition-all cursor-pointer font-bold"
+                onClick={() => setIsLoginModalOpen(true)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer shadow-md shadow-sky-600/30 border border-cyan-400/30"
               >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>خروج</span>
+                <LogIn className="w-3.5 h-3.5 text-cyan-200" />
+                <span>دخول</span>
               </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setIsLoginModalOpen(true)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer shadow-md shadow-sky-600/30 border border-cyan-400/30"
-            >
-              <LogIn className="w-3.5 h-3.5 text-cyan-200" />
-              <span>دخول</span>
-            </button>
-          )}
+            )}
 
-          <button
-            onClick={() => {
-              if (confirm('تصفير البيانات والعودة للبيانات الأولية؟')) {
-                resetAll();
-              }
-            }}
-            title="تصفير البيانات"
-            className="p-2 text-slate-400 hover:text-rose-400 hover:bg-white/5 rounded-xl transition-all cursor-pointer"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
+            <button
+              onClick={() => {
+                if (confirm('تصفير البيانات والعودة للبيانات الأولية؟')) {
+                  resetAll();
+                }
+              }}
+              title="تصفير البيانات"
+              className="p-2 text-slate-400 hover:text-rose-400 hover:bg-white/5 rounded-xl transition-all cursor-pointer"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* LOGIN MODAL */}
       {isLoginModalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#02091b]/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-4 border border-slate-200 text-slate-900">
+        <div className="fixed inset-0 z-50 bg-[#02091b]/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-4 border border-slate-200 text-slate-900 my-auto">
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-3">
@@ -415,6 +417,6 @@ export default function Navbar() {
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 }
