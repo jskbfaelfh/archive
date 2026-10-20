@@ -343,7 +343,7 @@ export default function UserManager() {
           <button
             onClick={openAddModal}
             disabled={colleges.length === 0}
-            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-xs"
+            className="px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white text-xs font-black rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             <UserPlus className="w-4 h-4" />
             <span>إضافة مستخدم</span>
@@ -621,7 +621,7 @@ export default function UserManager() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs bg-slate-900 text-white rounded-lg cursor-pointer font-bold"
+                  className="px-5 py-2 text-xs bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl cursor-pointer font-black shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   حفظ
                 </button>
@@ -757,7 +757,7 @@ export default function UserManager() {
                 type="button"
                 onClick={handleImportExcel}
                 disabled={!importFile || isImporting}
-                className="px-5 py-2 text-xs bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold cursor-pointer disabled:opacity-50 flex items-center gap-2 shadow-xs"
+                className="px-5 py-2 text-xs bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl font-black cursor-pointer disabled:opacity-50 flex items-center gap-2 shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span>{isImporting ? 'جاري الاستيراد...' : 'بدء الاستيراد'}</span>

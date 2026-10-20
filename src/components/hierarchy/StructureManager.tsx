@@ -124,7 +124,7 @@ export default function StructureManager() {
         {isSuper && (
           <button
             onClick={() => setCollegeModal({ open: true, name: '' })}
-            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs"
+            className="px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white text-xs font-black rounded-xl flex items-center gap-1.5 cursor-pointer shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             <Plus className="w-4 h-4" />
             <span>إضافة كلية</span>

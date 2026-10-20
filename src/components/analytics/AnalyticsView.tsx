@@ -274,7 +274,7 @@ export default function AnalyticsView() {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleDownloadBackup}
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl text-xs font-black transition-all cursor-pointer shadow-md shadow-sky-600/30"
               >
                 <Download className="w-4 h-4 text-sky-400" />
                 <span>تصدير نسخة</span>

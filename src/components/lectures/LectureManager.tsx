@@ -259,7 +259,7 @@ export default function LectureManager() {
           <button
             onClick={openUploadModal}
             disabled={colleges.length === 0 || (currentUser.role === 'doctor' && myDoctorSubjects.length === 0)}
-            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-xs"
+            className="px-4 py-2.5 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white text-xs font-black rounded-xl flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             <UploadCloud className="w-4 h-4" />
             <span>إضافة محاضرة</span>
@@ -493,7 +493,7 @@ export default function LectureManager() {
                   onClick={() => {
                     handleDownload(previewLecture);
                   }}
-                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white text-xs font-black rounded-xl flex items-center gap-1.5 cursor-pointer shadow-md shadow-sky-600/30"
                 >
                   <Download className="w-4 h-4" />
                   <span>تحميل</span>
@@ -712,7 +712,7 @@ export default function LectureManager() {
                 <button
                   type="submit"
                   disabled={isUploading}
-                  className="px-4 py-1.5 text-xs bg-slate-900 hover:bg-slate-800 text-white rounded-lg cursor-pointer font-bold flex items-center gap-1.5 disabled:opacity-50"
+                  className="px-5 py-2 text-xs bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl cursor-pointer font-black flex items-center gap-1.5 disabled:opacity-50 shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   {isUploading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>{isUploading ? 'جاري الرفع...' : 'حفظ'}</span>

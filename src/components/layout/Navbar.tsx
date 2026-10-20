@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
-  BookOpen,
   Layers,
   Users,
   FileText,
@@ -99,68 +98,79 @@ export default function Navbar() {
   };
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 min-h-16 py-2 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
-        {/* Brand */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold shrink-0">
-            <BookOpen className="w-5 h-5" />
-          </div>
+    <header className="bg-[#041633] text-white border-b border-cyan-500/20 sticky top-0 z-40 shadow-lg shadow-black/15 backdrop-blur-md">
+      {/* Top subtle cyan brand glow strip */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-sky-500 via-cyan-400 to-blue-600" />
+
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 min-h-18 py-2.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+        {/* Brand with Official University Logo */}
+        <div className="flex items-center gap-3">
+          <img
+            src="/images/university-logo.png"
+            alt="شعار جامعة الزهراوي"
+            className="h-11 sm:h-12 w-auto object-contain drop-shadow"
+          />
           <div>
-            <h1 className="text-sm sm:text-base font-black text-slate-900 leading-tight">جامعة الزهراوي</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-base sm:text-lg font-black text-white tracking-wide">جامعة الزهراوي</h1>
+              <span className="hidden sm:inline-block text-[10px] font-extrabold text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-full border border-cyan-500/30">
+                منظومة الأرشفة
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-300 font-medium">أرشفة المحاضرات والمناهج الأكاديمية</p>
           </div>
         </div>
 
-        {/* 4 Main Tabs */}
-        <nav className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold overflow-x-auto max-w-full">
+        {/* 4 Main Tabs with University Theme */}
+        <nav className="flex items-center gap-1 bg-[#0a1e3b]/90 p-1.5 rounded-2xl border border-cyan-500/20 text-xs font-bold overflow-x-auto max-w-full backdrop-blur-sm">
           <button
             onClick={() => setActiveTab('structure')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
               activeTab === 'structure'
-                ? 'bg-white text-slate-900 shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
+                : 'text-slate-300 hover:text-white hover:bg-white/10'
             }`}
           >
-            <Layers className="w-4 h-4" />
+            <Layers className="w-4 h-4 text-cyan-300" />
             <span>الهيكلية</span>
           </button>
 
           {canSeeUsersTab && (
             <button
               onClick={() => setActiveTab('users')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'users'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
+                  : 'text-slate-300 hover:text-white hover:bg-white/10'
               }`}
             >
-              <Users className="w-4 h-4" />
+              <Users className="w-4 h-4 text-cyan-300" />
               <span>المستخدمون</span>
             </button>
           )}
 
           <button
             onClick={() => setActiveTab('lectures')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
               activeTab === 'lectures'
-                ? 'bg-white text-slate-900 shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
+                : 'text-slate-300 hover:text-white hover:bg-white/10'
             }`}
           >
-            <FileText className="w-4 h-4" />
+            <FileText className="w-4 h-4 text-cyan-300" />
             <span>المحاضرات</span>
           </button>
 
           {canSeeUsersTab && (
             <button
               onClick={() => setActiveTab('analytics')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'analytics'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
+                  : 'text-slate-300 hover:text-white hover:bg-white/10'
               }`}
             >
-              <TrendingUp className="w-4 h-4" />
+              <TrendingUp className="w-4 h-4 text-cyan-300" />
               <span>الإحصائيات</span>
             </button>
           )}
@@ -172,11 +182,11 @@ export default function Navbar() {
 
           {currentUser.id ? (
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-black text-slate-900 shadow-2xs">
-                <Shield className="w-3.5 h-3.5 text-sky-700 shrink-0" />
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0a1e3b] border border-cyan-500/30 rounded-xl text-xs font-black text-white shadow-xs">
+                <Shield className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                 <div className="text-right">
-                  <div className="leading-tight text-slate-900">{currentUser.name}</div>
-                  <div className="text-[10px] text-slate-500 font-normal">
+                  <div className="leading-tight text-white">{currentUser.name}</div>
+                  <div className="text-[10px] text-cyan-200/80 font-normal">
                     {isSuper && 'سوبر أدمن'}
                     {isCollegeAdmin && `عميد • ${userCol?.name || 'كلية'}`}
                     {isDeptAdmin && `رئيس قسم`}
@@ -188,8 +198,8 @@ export default function Navbar() {
 
               <button
                 onClick={logout}
-                title="خروج"
-                className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-all cursor-pointer font-bold shadow-2xs"
+                title="تسجيل الخروج"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 rounded-xl transition-all cursor-pointer font-bold"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>خروج</span>
@@ -198,9 +208,9 @@ export default function Navbar() {
           ) : (
             <button
               onClick={() => setIsLoginModalOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer shadow-md shadow-sky-600/30 border border-cyan-400/30"
             >
-              <LogIn className="w-3.5 h-3.5 text-sky-400" />
+              <LogIn className="w-3.5 h-3.5 text-cyan-200" />
               <span>دخول</span>
             </button>
           )}
@@ -211,8 +221,8 @@ export default function Navbar() {
                 resetAll();
               }
             }}
-            title="تصفير"
-            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all cursor-pointer"
+            title="تصفير البيانات"
+            className="p-2 text-slate-400 hover:text-rose-400 hover:bg-white/5 rounded-xl transition-all cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
@@ -221,20 +231,24 @@ export default function Navbar() {
 
       {/* LOGIN MODAL */}
       {isLoginModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-4 border border-slate-200">
+        <div className="fixed inset-0 z-50 bg-[#02091b]/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-4 border border-slate-200 text-slate-900">
+            {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-slate-900 text-white rounded-xl">
-                  <Lock className="w-5 h-5 text-sky-400" />
-                </div>
+              <div className="flex items-center gap-3">
+                <img
+                  src="/images/university-logo.png"
+                  alt="شعار جامعة الزهراوي"
+                  className="h-10 w-auto object-contain"
+                />
                 <div>
-                  <h3 className="font-black text-base text-slate-900">تسجيل الدخول</h3>
+                  <h3 className="font-black text-base text-[#041633]">تسجيل الدخول المركزي</h3>
+                  <p className="text-[11px] text-slate-500 font-medium">جامعة الزهراوي • منظومة المحاضرات</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsLoginModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -248,15 +262,15 @@ export default function Navbar() {
 
             <form onSubmit={handleLoginSubmit} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">البريد</label>
+                <label className="block text-xs font-black text-slate-900 mb-1">البريد الإلكتروني الجامعي</label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute right-3 top-3" />
+                  <Mail className="w-4 h-4 absolute right-3 top-3 text-slate-400" />
                   <input
                     type="email"
                     required
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
-                    placeholder="user@alzahrawi.edu.iq"
+                    placeholder="name@alzahrawi.edu.iq"
                     className="w-full text-sm font-bold text-slate-900 pr-9 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
                   />
                 </div>
@@ -265,7 +279,7 @@ export default function Navbar() {
               <div>
                 <label className="block text-xs font-black text-slate-900 mb-1">كلمة المرور</label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute right-3 top-3" />
+                  <Lock className="w-4 h-4 absolute right-3 top-3 text-slate-400" />
                   <input
                     type="password"
                     required
@@ -279,7 +293,7 @@ export default function Navbar() {
 
               {/* Quick Fill Pills for Demo */}
               <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-[10px] text-slate-600 font-bold block mb-1.5">حسابات تجريبية:</span>
+                <span className="text-[10px] text-slate-600 font-bold block mb-1.5">حسابات تجريبية سريعة:</span>
                 <div className="flex flex-wrap gap-1.5">
                   {[
                     { label: 'سوبر أدمن', email: 'admin@alzahrawi.edu.iq' },
@@ -292,7 +306,7 @@ export default function Navbar() {
                       key={acc.email}
                       type="button"
                       onClick={() => handleQuickFill(acc.email)}
-                      className="px-2 py-1 bg-white hover:bg-sky-50 text-slate-800 hover:text-sky-900 border border-slate-300 rounded-lg text-[10px] font-bold cursor-pointer transition-all"
+                      className="px-2.5 py-1 bg-white hover:bg-cyan-50 text-slate-800 hover:text-cyan-900 border border-slate-300 hover:border-cyan-400 rounded-lg text-[10px] font-bold cursor-pointer transition-all"
                     >
                       {acc.label}
                     </button>
@@ -304,17 +318,17 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setIsLoginModalOpen(false)}
-                  className="px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+                  className="px-3.5 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl text-xs font-black transition-all cursor-pointer shadow-md shadow-sky-600/30 disabled:opacity-50"
                 >
-                  <LogIn className="w-3.5 h-3.5 text-sky-400" />
-                  <span>{isSubmitting ? 'جاري التحقق...' : 'دخول'}</span>
+                  <LogIn className="w-3.5 h-3.5 text-cyan-200" />
+                  <span>{isSubmitting ? 'جاري التحقق...' : 'دخول المنظومة'}</span>
                 </button>
               </div>
             </form>
@@ -324,8 +338,8 @@ export default function Navbar() {
 
       {/* Mandatory Password Change Modal */}
       {currentUser.id && currentUser.mustChangePassword && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl border-2 border-amber-500 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#02091b]/80 backdrop-blur-md">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl border-2 border-amber-500 space-y-4 text-slate-900">
             <div className="flex items-center gap-3 pb-3 border-b border-amber-100 text-amber-800">
               <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
                 <Shield className="w-6 h-6 text-amber-600" />
@@ -391,7 +405,7 @@ export default function Navbar() {
                 <button
                   type="submit"
                   disabled={isChangingPass}
-                  className="flex items-center gap-1.5 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-50"
                 >
                   <Lock className="w-3.5 h-3.5" />
                   <span>{isChangingPass ? 'جاري الحفظ...' : 'حفظ ومتابعة'}</span>
