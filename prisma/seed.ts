@@ -43,6 +43,27 @@ async function main() {
 
   await prisma.college.create({
     data: {
+      id: 'col-dentistry',
+      name: 'كلية طب الأسنان',
+      departments: {
+        create: [
+          {
+            id: 'dept-ortho',
+            name: 'قسم تقويم الأسنان وجراحة الفم',
+            stagesCount: 5,
+          },
+          {
+            id: 'dept-perio',
+            name: 'قسم معالجة وأمراض وجراحة اللثة',
+            stagesCount: 5,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.college.create({
+    data: {
       id: 'col-pharmacy',
       name: 'كلية الصيدلة',
       departments: {
@@ -50,11 +71,32 @@ async function main() {
           {
             id: 'dept-pharmaceutics',
             name: 'قسم الصيدلانيات والسموم',
-            stagesCount: 4,
+            stagesCount: 5,
           },
           {
             id: 'dept-medchem',
             name: 'قسم الكيمياء الصيدلانية',
+            stagesCount: 5,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.college.create({
+    data: {
+      id: 'col-health-tech',
+      name: 'كلية التقنيات الصحية والطبية',
+      departments: {
+        create: [
+          {
+            id: 'dept-pathology',
+            name: 'قسم تقنيات التحليلات المرضية',
+            stagesCount: 4,
+          },
+          {
+            id: 'dept-anesthesia',
+            name: 'قسم تقنيات التخدير والعناية المركزة',
             stagesCount: 4,
           },
         ],
@@ -62,7 +104,7 @@ async function main() {
     },
   });
 
-  console.log('✅ Created 2 Colleges with 4 Departments.');
+  console.log('✅ Created 4 Colleges with 8 Departments.');
 
   // 2. Create Sections
   const sectionsData = [
@@ -382,7 +424,7 @@ async function main() {
     await prisma.user.create({
       data: {
         ...u,
-        mustChangePassword: true, // Require all seeded users to set their own password upon first access
+        mustChangePassword: false, // Ready for instant demo access without blocking password prompt
       },
     });
   }

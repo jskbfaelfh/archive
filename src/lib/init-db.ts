@@ -15,8 +15,8 @@ export async function ensureDatabaseInitialized() {
 
     const defaultPasswordHash = await bcrypt.hash('123456', 10);
 
-    // 1. Create Colleges & Departments if they do not exist
-    const med = await prisma.college.upsert({
+    // 1. Create Colleges & Departments
+    await prisma.college.upsert({
       where: { id: 'col-medicine' },
       update: {},
       create: {
@@ -31,7 +31,22 @@ export async function ensureDatabaseInitialized() {
       },
     });
 
-    const pharm = await prisma.college.upsert({
+    await prisma.college.upsert({
+      where: { id: 'col-dentistry' },
+      update: {},
+      create: {
+        id: 'col-dentistry',
+        name: 'كلية طب الأسنان',
+        departments: {
+          create: [
+            { id: 'dept-ortho', name: 'قسم تقويم الأسنان وجراحة الفم', stagesCount: 5 },
+            { id: 'dept-perio', name: 'قسم معالجة وأمراض وجراحة اللثة', stagesCount: 5 },
+          ],
+        },
+      },
+    });
+
+    await prisma.college.upsert({
       where: { id: 'col-pharmacy' },
       update: {},
       create: {
@@ -41,6 +56,21 @@ export async function ensureDatabaseInitialized() {
           create: [
             { id: 'dept-pharmaceutics', name: 'قسم الصيدلانيات والسموم', stagesCount: 5 },
             { id: 'dept-medchem', name: 'قسم الكيمياء الصيدلانية', stagesCount: 5 },
+          ],
+        },
+      },
+    });
+
+    await prisma.college.upsert({
+      where: { id: 'col-health-tech' },
+      update: {},
+      create: {
+        id: 'col-health-tech',
+        name: 'كلية التقنيات الصحية والطبية',
+        departments: {
+          create: [
+            { id: 'dept-pathology', name: 'قسم تقنيات التحليلات المرضية', stagesCount: 4 },
+            { id: 'dept-anesthesia', name: 'قسم تقنيات التخدير والعناية المركزة', stagesCount: 4 },
           ],
         },
       },
@@ -64,7 +94,7 @@ export async function ensureDatabaseInitialized() {
       });
     }
 
-    // 3. Super Admin & Core Users
+    // 3. Super Admin & Core Users (mustChangePassword: false for smooth testing)
     const users = [
       {
         id: 'user-super-admin',
@@ -126,7 +156,9 @@ export async function ensureDatabaseInitialized() {
     for (const u of users) {
       await prisma.user.upsert({
         where: { email: u.email },
-        update: {},
+        update: {
+          mustChangePassword: false,
+        },
         create: u,
       });
     }
