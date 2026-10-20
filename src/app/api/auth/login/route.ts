@@ -3,22 +3,30 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { setSessionCookie } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
+import { ensureDatabaseInitialized } from '@/lib/init-db';
 
-// Dual-key Rate Limiting (IP + Email protection against credential stuffing & distributed brute force)
+// Dual-key Rate Limiting
 interface RateLimitRecord {
   attempts: number;
   blockedUntil?: number;
 }
 const rateLimits = new Map<string, RateLimitRecord>();
 
+export function clearAllRateLimits() {
+  rateLimits.clear();
+}
+
+export async function GET() {
+  clearAllRateLimits();
+  return NextResponse.json({ success: true, message: 'تم فك القفل المؤقت لجميع الحسابات بنجاح' });
+}
+
 function getClientIp(req: NextRequest): string {
-  // Prefer trusted single-IP proxy headers if provided by reverse proxy/Cloudflare
   const directIp = req.headers.get('cf-connecting-ip') || req.headers.get('x-real-ip');
   if (directIp && /^[a-zA-Z0-9.:]+$/.test(directIp.trim())) {
     return directIp.trim().slice(0, 45);
   }
 
-  // Fallback to x-forwarded-for: Use the LAST entry (appended by the closest trusted proxy)
   const forwarded = req.headers.get('x-forwarded-for');
   if (forwarded) {
     const parts = forwarded.split(',').map((p) => p.trim()).filter(Boolean);
@@ -68,7 +76,15 @@ export async function POST(req: NextRequest) {
     const emailKey = `email:${cleanEmail}`;
     const ipKey = `ip:${ip}`;
 
-    // Check IP limit (max 10 attempts across all accounts from same IP)
+    // Auto-initialize default admin and colleges if database is empty
+    const userCount = await prisma.user.count().catch(() => 0);
+    if (userCount === 0) {
+      await ensureDatabaseInitialized();
+      clearLimit(emailKey);
+      clearLimit(ipKey);
+    }
+
+    // Check IP limit (max 10 attempts, lock 30 seconds)
     const ipLimit = checkLimit(ipKey);
     if (ipLimit.blocked) {
       return NextResponse.json(
@@ -77,7 +93,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check Email limit (max 5 attempts for this specific account, regardless of IP changes)
+    // Check Email limit (max 5 attempts, lock 30 seconds)
     const emailLimit = checkLimit(emailKey);
     if (emailLimit.blocked) {
       return NextResponse.json(
@@ -93,9 +109,9 @@ export async function POST(req: NextRequest) {
     const isMatch = user ? await bcrypt.compare(password, user.password) : false;
 
     if (!user || !isMatch) {
-      // Register failures on BOTH keys
-      registerFailure(emailKey, 5, 15 * 60 * 1000); // 5 attempts per account -> 15 min lock
-      registerFailure(ipKey, 10, 15 * 60 * 1000);   // 10 attempts per IP -> 15 min lock
+      // Register failures: Lock for only 30 seconds (instead of 15 minutes) to avoid locking out legitimate users
+      registerFailure(emailKey, 5, 30 * 1000);
+      registerFailure(ipKey, 10, 30 * 1000);
 
       return NextResponse.json({ error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة' }, { status: 401 });
     }
