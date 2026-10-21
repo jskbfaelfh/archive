@@ -7,7 +7,9 @@
     "build": "node scripts/prepare-db.js && prisma generate && next build",
     "start": "node scripts/prepare-db.js && prisma db push && next start",
     "lint": "eslint",
-    "test:rbac": "tsx scripts/test-rbac.ts"
+    "test:rbac": "tsx scripts/test-rbac.ts",
+    "map:update": "node scripts/update-project-map.mjs",
+    "check:lines": "node scripts/check-line-limits.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",

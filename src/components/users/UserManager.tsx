@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   X,
 } from 'lucide-react';
+import Select from '@/components/common/Select';
 
 export default function UserManager() {
   const { users, colleges, sections, subjects, addUser, updateUser, deleteUser, currentUser, refreshData } = useApp();
@@ -471,58 +472,59 @@ export default function UserManager() {
               {editId ? 'تعديل مستخدم' : 'إضافة مستخدم'}
             </h3>
 
-            <form onSubmit={handleSave} className="space-y-3 text-xs">
+            <form onSubmit={handleSave} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">الاسم</label>
+                <label className="block text-[13px] font-bold text-slate-800 mb-1 text-right">الاسم الكامل</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="الاسم"
-                  className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                  placeholder="الاسم الرباعي واللقب..."
+                  className={`w-full text-[13px] font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-[7px] bg-white border border-slate-300 focus:border-sky-600 focus:outline-none transition-all shadow-2xs ${
+                    !name.trim() ? 'border-s-[3px] border-s-rose-500' : 'border-s-[3px] border-s-emerald-500'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">البريد</label>
+                <label className="block text-[13px] font-bold text-slate-800 mb-1 text-right">البريد الإلكتروني الجامعي</label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@domain.com"
-                  className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                  placeholder="user@alzahrawi.edu.iq"
+                  className={`w-full text-[13px] font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-[7px] bg-white border border-slate-300 focus:border-sky-600 focus:outline-none transition-all shadow-2xs ${
+                    !email.trim() ? 'border-s-[3px] border-s-rose-500' : 'border-s-[3px] border-s-emerald-500'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">الدور</label>
-                <select
+                <Select
+                  label="الدور / الصلاحية الأكاديمية"
                   value={role}
-                  onChange={(e) => setRole(e.target.value as UserRole)}
-                  className="w-full text-sm font-black text-slate-900 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs cursor-pointer"
-                >
-                  {getAllowedRoles().map((item) => (
-                    <option key={item.role} value={item.role}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setRole(val as UserRole)}
+                  options={getAllowedRoles().map((item) => ({
+                    value: item.role,
+                    label: item.label,
+                  }))}
+                />
               </div>
 
               {/* Strict Hierarchy Selection */}
               {role !== 'super_admin' && (
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+                <div className="p-3 bg-slate-50/90 rounded-[10px] border border-slate-200 space-y-3">
                   {/* 1. College */}
                   <div>
-                    <label className="block text-xs font-black text-slate-800 mb-1">الكلية</label>
                     {isSuper ? (
-                      <select
+                      <Select
+                        label="الكلية"
                         value={collegeId}
-                        onChange={(e) => {
-                          setCollegeId(e.target.value);
-                          const c = colleges.find((col) => col.id === e.target.value);
+                        onChange={(val) => {
+                          setCollegeId(val);
+                          const c = colleges.find((col) => col.id === val);
                           if (c && c.departments.length > 0) {
                             setDepartmentId(c.departments[0].id);
                           } else {
@@ -530,18 +532,18 @@ export default function UserManager() {
                           }
                         }}
                         required
-                        className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
-                      >
-                        <option value="">-- الكلية --</option>
-                        {colleges.map((col) => (
-                          <option key={col.id} value={col.id}>
-                            {col.name}
-                          </option>
-                        ))}
-                      </select>
+                        placeholder="اختر الكلية..."
+                        options={colleges.map((col) => ({
+                          value: col.id,
+                          label: col.name,
+                        }))}
+                      />
                     ) : (
-                      <div className="p-2.5 bg-slate-200/80 rounded-lg text-slate-900 font-bold text-xs border border-slate-300">
-                        {userColName}
+                      <div>
+                        <span className="block text-[13px] font-bold text-slate-800 mb-1">الكلية</span>
+                        <div className="p-2.5 bg-slate-200/80 rounded-[7px] text-slate-900 font-bold text-xs border border-slate-300">
+                          {userColName}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -549,62 +551,59 @@ export default function UserManager() {
                   {/* 2. Department */}
                   {(role === 'department_admin' || role === 'doctor' || role === 'student') && (
                     <div>
-                      <label className="block text-xs font-black text-slate-800 mb-1">القسم</label>
                       {isDeptAdmin ? (
-                        <div className="p-2.5 bg-slate-200/80 rounded-lg text-slate-900 font-bold text-xs border border-slate-300">
-                          {userDeptName}
+                        <div>
+                          <span className="block text-[13px] font-bold text-slate-800 mb-1">القسم</span>
+                          <div className="p-2.5 bg-slate-200/80 rounded-[7px] text-slate-900 font-bold text-xs border border-slate-300">
+                            {userDeptName}
+                          </div>
                         </div>
                       ) : (
-                        <select
+                        <Select
+                          label="القسم العلمي"
                           value={departmentId}
-                          onChange={(e) => setDepartmentId(e.target.value)}
+                          onChange={(val) => setDepartmentId(val)}
                           required
-                          className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
-                        >
-                          <option value="">-- القسم --</option>
-                          {availableDepts.map((d) => (
-                            <option key={d.id} value={d.id}>
-                              {d.name}
-                            </option>
-                          ))}
-                        </select>
+                          placeholder="اختر القسم..."
+                          options={availableDepts.map((d) => ({
+                            value: d.id,
+                            label: d.name,
+                          }))}
+                        />
                       )}
                     </div>
                   )}
 
                   {/* 3. Stage & Section for Student */}
                   {role === 'student' && (
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-2.5">
                       <div>
-                        <label className="block text-xs font-black text-slate-800 mb-1">المرحلة</label>
+                        <span className="block text-[13px] font-bold text-slate-800 mb-1">المرحلة</span>
                         <select
                           value={stage}
                           onChange={(e) => setStage(Number(e.target.value))}
-                          className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
+                          className="w-full text-[13px] font-bold text-slate-900 p-2.5 bg-white rounded-[7px] border border-slate-300 cursor-pointer shadow-2xs"
                         >
                           {[1, 2, 3, 4, 5, 6].map((s) => (
                             <option key={s} value={s}>
-                              م{s}
+                              المرحلة {s}
                             </option>
                           ))}
                         </select>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-black text-slate-800 mb-1">الشعبة</label>
-                        <select
+                        <Select
+                          label="الشعبة"
                           value={sectionId}
-                          onChange={(e) => setSectionId(e.target.value)}
+                          onChange={(val) => setSectionId(val)}
                           required
-                          className="w-full text-sm font-black text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
-                        >
-                          <option value="">-- الشعبة --</option>
-                          {availableSections.map((sec) => (
-                            <option key={sec.id} value={sec.id}>
-                              {sec.name}
-                            </option>
-                          ))}
-                        </select>
+                          placeholder="اختر الشعبة..."
+                          options={availableSections.map((sec) => ({
+                            value: sec.id,
+                            label: sec.name,
+                          }))}
+                        />
                       </div>
                     </div>
                   )}

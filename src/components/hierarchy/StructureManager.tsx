@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronRight,
 } from 'lucide-react';
+import Select from '@/components/common/Select';
 
 export default function StructureManager() {
   const {
@@ -520,25 +521,28 @@ export default function StructureManager() {
 
       {/* MODAL: College */}
       {collegeModal.open && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-5 space-y-3">
-            <h3 className="font-bold text-sm text-slate-900">
-              {collegeModal.editId ? 'تعديل كلية' : 'إضافة كلية'}
+        <div className="fixed inset-0 z-50 bg-[#02091b]/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-[10px] shadow-2xl w-full max-w-sm p-5 space-y-3.5 border border-slate-200">
+            <h3 className="font-black text-sm text-[#041633] text-right">
+              {collegeModal.editId ? 'تعديل بيانات الكلية' : 'إضافة كلية جديدة'}
             </h3>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">الاسم</label>
+              <label className="block text-[13px] font-bold text-slate-800 mb-1 text-right">اسم الكلية</label>
               <input
                 type="text"
+                required
                 value={collegeModal.name}
                 onChange={(e) => setCollegeModal({ ...collegeModal, name: e.target.value })}
-                placeholder="اسم الكلية"
-                className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                placeholder="مثال: كلية العلوم الطبية..."
+                className={`w-full text-[13px] font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-[7px] bg-white border border-slate-300 focus:border-sky-600 focus:outline-none transition-all shadow-2xs ${
+                  !collegeModal.name.trim() ? 'border-s-[3px] border-s-rose-500' : 'border-s-[3px] border-s-emerald-500'
+                }`}
               />
             </div>
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
                 onClick={() => setCollegeModal({ ...collegeModal, open: false })}
-                className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer font-bold"
+                className="px-3.5 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer font-bold"
               >
                 إلغاء
               </button>
@@ -556,9 +560,9 @@ export default function StructureManager() {
                   }
                   setCollegeModal({ ...collegeModal, open: false });
                 }}
-                className="px-4 py-1.5 text-xs bg-slate-900 text-white rounded-lg cursor-pointer font-bold"
+                className="px-5 py-2 text-xs bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl cursor-pointer font-black shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                حفظ
+                حفظ الكلية
               </button>
             </div>
           </div>
@@ -567,27 +571,30 @@ export default function StructureManager() {
 
       {/* MODAL: Department */}
       {deptModal.open && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-5 space-y-3">
-            <h3 className="font-bold text-sm text-slate-900">
-              {deptModal.editId ? 'تعديل قسم' : 'إضافة قسم'}
+        <div className="fixed inset-0 z-50 bg-[#02091b]/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-[10px] shadow-2xl w-full max-w-sm p-5 space-y-3.5 border border-slate-200">
+            <h3 className="font-black text-sm text-[#041633] text-right">
+              {deptModal.editId ? 'تعديل بيانات القسم' : 'إضافة قسم علمي جديد'}
             </h3>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">الاسم</label>
+              <label className="block text-[13px] font-bold text-slate-800 mb-1 text-right">اسم القسم</label>
               <input
                 type="text"
+                required
                 value={deptModal.name}
                 onChange={(e) => setDeptModal({ ...deptModal, name: e.target.value })}
-                placeholder="اسم القسم"
-                className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                placeholder="مثال: قسم التخدير والعناية..."
+                className={`w-full text-[13px] font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-[7px] bg-white border border-slate-300 focus:border-sky-600 focus:outline-none transition-all shadow-2xs ${
+                  !deptModal.name.trim() ? 'border-s-[3px] border-s-rose-500' : 'border-s-[3px] border-s-emerald-500'
+                }`}
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">المراحل</label>
+              <label className="block text-[13px] font-bold text-slate-800 mb-1 text-right">عدد المراحل الدراسية</label>
               <select
                 value={deptModal.stagesCount}
                 onChange={(e) => setDeptModal({ ...deptModal, stagesCount: Number(e.target.value) })}
-                className="w-full text-sm font-bold text-slate-900 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                className="w-full text-[13px] font-bold text-slate-900 p-2.5 rounded-[7px] bg-white border border-slate-300 focus:border-sky-600 focus:outline-none shadow-2xs"
               >
                 {[1, 2, 3, 4, 5, 6].map((n) => (
                   <option key={n} value={n}>
@@ -599,7 +606,7 @@ export default function StructureManager() {
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
                 onClick={() => setDeptModal({ ...deptModal, open: false })}
-                className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer font-bold"
+                className="px-3.5 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer font-bold"
               >
                 إلغاء
               </button>
@@ -619,9 +626,9 @@ export default function StructureManager() {
                   }
                   setDeptModal({ ...deptModal, open: false });
                 }}
-                className="px-4 py-1.5 text-xs bg-slate-900 text-white rounded-lg cursor-pointer font-bold"
+                className="px-5 py-2 text-xs bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl cursor-pointer font-black shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                حفظ
+                حفظ القسم
               </button>
             </div>
           </div>
@@ -630,25 +637,28 @@ export default function StructureManager() {
 
       {/* MODAL: Section */}
       {sectionModal.open && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-5 space-y-3">
-            <h3 className="font-bold text-sm text-slate-900">
-              {sectionModal.editId ? 'تعديل شعبة' : `إضافة شعبة • م${sectionModal.stage}`}
+        <div className="fixed inset-0 z-50 bg-[#02091b]/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-[10px] shadow-2xl w-full max-w-sm p-5 space-y-3.5 border border-slate-200">
+            <h3 className="font-black text-sm text-[#041633] text-right">
+              {sectionModal.editId ? 'تعديل الشعبة' : `إضافة شعبة • المرحلة ${sectionModal.stage}`}
             </h3>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">الاسم</label>
+              <label className="block text-[13px] font-bold text-slate-800 mb-1 text-right">اسم أو رمز الشعبة</label>
               <input
                 type="text"
+                required
                 value={sectionModal.name}
                 onChange={(e) => setSectionModal({ ...sectionModal, name: e.target.value })}
-                placeholder="أ، ب، ج..."
-                className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                placeholder="شعبة (أ)، شعبة (ب)..."
+                className={`w-full text-[13px] font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-[7px] bg-white border border-slate-300 focus:border-sky-600 focus:outline-none transition-all shadow-2xs ${
+                  !sectionModal.name.trim() ? 'border-s-[3px] border-s-rose-500' : 'border-s-[3px] border-s-emerald-500'
+                }`}
               />
             </div>
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
                 onClick={() => setSectionModal({ ...sectionModal, open: false })}
-                className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer font-bold"
+                className="px-3.5 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer font-bold"
               >
                 إلغاء
               </button>
@@ -669,9 +679,9 @@ export default function StructureManager() {
                   }
                   setSectionModal({ ...sectionModal, open: false });
                 }}
-                className="px-4 py-1.5 text-xs bg-slate-900 text-white rounded-lg cursor-pointer font-bold"
+                className="px-5 py-2 text-xs bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl cursor-pointer font-black shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                حفظ
+                حفظ الشعبة
               </button>
             </div>
           </div>
@@ -680,42 +690,42 @@ export default function StructureManager() {
 
       {/* MODAL: Subject */}
       {subjectModal.open && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-5 space-y-3">
-            <h3 className="font-bold text-sm text-slate-900">
-              {subjectModal.editId ? 'تعديل مادة' : `إضافة مادة • م${subjectModal.stage}`}
+        <div className="fixed inset-0 z-50 bg-[#02091b]/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-[10px] shadow-2xl w-full max-w-sm p-5 space-y-3.5 border border-slate-200">
+            <h3 className="font-black text-sm text-[#041633] text-right">
+              {subjectModal.editId ? 'تعديل المادة الدراسية' : `إضافة مادة • المرحلة ${subjectModal.stage}`}
             </h3>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">الاسم</label>
+              <label className="block text-[13px] font-bold text-slate-800 mb-1 text-right">اسم المادة</label>
               <input
                 type="text"
+                required
                 value={subjectModal.name}
                 onChange={(e) => setSubjectModal({ ...subjectModal, name: e.target.value })}
-                placeholder="اسم المادة"
-                className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                placeholder="اسم المادة العلمية..."
+                className={`w-full text-[13px] font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-[7px] bg-white border border-slate-300 focus:border-sky-600 focus:outline-none transition-all shadow-2xs ${
+                  !subjectModal.name.trim() ? 'border-s-[3px] border-s-rose-500' : 'border-s-[3px] border-s-emerald-500'
+                }`}
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-900 mb-1.5">التدريسي</label>
-              <select
+              <Select
+                label="التدريسي المسؤول"
                 value={subjectModal.doctorId || ''}
-                onChange={(e) => setSubjectModal({ ...subjectModal, doctorId: e.target.value })}
-                className="w-full text-sm font-bold text-slate-900 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs cursor-pointer"
-              >
-                <option value="">-- بدون تدريسي --</option>
-                {users
-                  .filter((u) => u.role === 'doctor' && u.departmentId === subjectModal.departmentId)
-                  .map((doc) => (
-                    <option key={doc.id} value={doc.id}>
-                      {doc.name}
-                    </option>
-                  ))}
-              </select>
+                onChange={(val) => setSubjectModal({ ...subjectModal, doctorId: val })}
+                placeholder="-- بدون تدريسي --"
+                options={[
+                  { value: '', label: '-- بدون تدريسي --' },
+                  ...users
+                    .filter((u) => u.role === 'doctor' && u.departmentId === subjectModal.departmentId)
+                    .map((doc) => ({ value: doc.id, label: doc.name })),
+                ]}
+              />
             </div>
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
                 onClick={() => setSubjectModal({ ...subjectModal, open: false })}
-                className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer font-bold"
+                className="px-3.5 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer font-bold"
               >
                 إلغاء
               </button>
@@ -744,9 +754,9 @@ export default function StructureManager() {
                   }
                   setSubjectModal({ ...subjectModal, open: false });
                 }}
-                className="px-4 py-1.5 text-xs bg-slate-900 text-white rounded-lg cursor-pointer font-bold"
+                className="px-5 py-2 text-xs bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl cursor-pointer font-black shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                حفظ
+                حفظ المادة
               </button>
             </div>
           </div>

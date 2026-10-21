@@ -13,6 +13,11 @@
   --alzahrawi-bg: #f4f7fb;
 }
 
+html {
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
 body {
   background-color: #f4f7fb;
   color: #041633;
@@ -50,10 +55,10 @@ input:focus, select:focus, textarea:focus {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #e2e8f0;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
+  background: #cbd5e1;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {

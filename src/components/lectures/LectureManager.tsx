@@ -14,6 +14,7 @@ import {
   X,
   Loader2,
 } from 'lucide-react';
+import Select from '@/components/common/Select';
 
 export default function LectureManager() {
   const {
@@ -512,191 +513,172 @@ export default function LectureManager() {
               {editId ? 'تعديل محاضرة' : 'إضافة محاضرة'}
             </h3>
 
-            <form onSubmit={handleSave} className="space-y-3 text-xs">
+            <form onSubmit={handleSave} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">العنوان</label>
+                <label className="block text-[13px] font-bold text-slate-800 mb-1 text-right">عنوان المحاضرة</label>
                 <input
                   type="text"
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="عنوان المحاضرة"
-                  className="w-full text-sm font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                  placeholder="اكتب عنوان المحاضرة بدقة..."
+                  className={`w-full text-[13px] font-bold text-slate-900 placeholder:text-slate-400 p-2.5 rounded-[7px] bg-white border border-slate-300 focus:border-sky-600 focus:outline-none transition-all shadow-2xs ${
+                    !title.trim() ? 'border-s-[3px] border-s-rose-500' : 'border-s-[3px] border-s-emerald-500'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">الوصف</label>
+                <label className="block text-[13px] font-bold text-slate-800 mb-1 text-right">الوصف أو الملاحظات</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="ملاحظات..."
+                  placeholder="ملاحظات حول المحاضرة..."
                   rows={2}
-                  className="w-full text-xs font-bold text-slate-900 placeholder:text-slate-400 p-2 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none"
+                  className="w-full text-[13px] font-medium text-slate-900 placeholder:text-slate-400 p-2.5 rounded-[7px] bg-white border border-slate-300 focus:border-sky-600 focus:outline-none"
                 />
               </div>
 
               {/* Cascading Selection */}
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+              <div className="p-3 bg-slate-50/90 rounded-[10px] border border-slate-200 space-y-3">
                 {/* 1. College */}
                 <div>
-                  <label className="block text-xs font-black text-slate-800 mb-1">الكلية</label>
                   {currentUser.role === 'super_admin' ? (
-                    <select
+                    <Select
+                      label="الكلية"
                       value={collegeId}
-                      onChange={(e) => {
-                        setCollegeId(e.target.value);
-                        const c = colleges.find((col) => col.id === e.target.value);
+                      onChange={(val) => {
+                        setCollegeId(val);
+                        const c = colleges.find((col) => col.id === val);
                         if (c && c.departments.length > 0) setDepartmentId(c.departments[0].id);
                       }}
                       required
-                      className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
-                    >
-                      <option value="">-- الكلية --</option>
-                      {colleges.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="اختر الكلية..."
+                      options={colleges.map((c) => ({ value: c.id, label: c.name }))}
+                    />
                   ) : (
-                    <div className="p-2.5 bg-slate-200/80 rounded-lg text-slate-900 font-bold text-xs border border-slate-300">
-                      {colleges.find((c) => c.id === currentUser.collegeId)?.name}
+                    <div>
+                      <span className="block text-[13px] font-bold text-slate-800 mb-1">الكلية</span>
+                      <div className="p-2.5 bg-slate-200/80 rounded-[7px] text-slate-900 font-bold text-xs border border-slate-300">
+                        {colleges.find((c) => c.id === currentUser.collegeId)?.name}
+                      </div>
                     </div>
                   )}
                 </div>
 
                 {/* 2. Department */}
                 <div>
-                  <label className="block text-xs font-black text-slate-800 mb-1">القسم</label>
                   {currentUser.role === 'department_admin' || currentUser.role === 'doctor' ? (
-                    <div className="p-2.5 bg-slate-200/80 rounded-lg text-slate-900 font-bold text-xs border border-slate-300">
-                      {availableDepts.find((d) => d.id === currentUser.departmentId)?.name}
+                    <div>
+                      <span className="block text-[13px] font-bold text-slate-800 mb-1">القسم</span>
+                      <div className="p-2.5 bg-slate-200/80 rounded-[7px] text-slate-900 font-bold text-xs border border-slate-300">
+                        {availableDepts.find((d) => d.id === currentUser.departmentId)?.name}
+                      </div>
                     </div>
                   ) : (
-                    <select
+                    <Select
+                      label="القسم العلمي"
                       value={departmentId}
-                      onChange={(e) => setDepartmentId(e.target.value)}
+                      onChange={(val) => setDepartmentId(val)}
                       required
-                      className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
-                    >
-                      <option value="">-- القسم --</option>
-                      {availableDepts.map((d) => (
-                        <option key={d.id} value={d.id}>
-                          {d.name}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="اختر القسم..."
+                      options={availableDepts.map((d) => ({ value: d.id, label: d.name }))}
+                    />
                   )}
                 </div>
 
                 {/* Doctor specific subject selection */}
                 {currentUser.role === 'doctor' ? (
-                  <div className="space-y-2.5">
-                    <div>
-                      <label className="block text-xs font-black text-slate-800 mb-1">المادة</label>
-                      <select
-                        value={subjectId}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setSubjectId(val);
-                          const chosen = myDoctorSubjects.find((s) => s.id === val);
-                          if (chosen) {
-                            setStage(chosen.stage);
-                            setSectionTarget('all');
-                          }
-                        }}
-                        required
-                        className="w-full text-sm font-black text-slate-900 p-2.5 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
-                      >
-                        <option value="">-- المادة --</option>
-                        {myDoctorSubjects.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name} (م{s.stage})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="space-y-3">
+                    <Select
+                      label="المادة الدراسية"
+                      value={subjectId}
+                      onChange={(val) => {
+                        setSubjectId(val);
+                        const chosen = myDoctorSubjects.find((s) => s.id === val);
+                        if (chosen) {
+                          setStage(chosen.stage);
+                          setSectionTarget('all');
+                        }
+                      }}
+                      required
+                      placeholder="اختر المادة المسندة إليك..."
+                      options={myDoctorSubjects.map((s) => ({
+                        value: s.id,
+                        label: s.name,
+                        description: `المرحلة ${s.stage}`,
+                      }))}
+                    />
 
-                    <div>
-                      <label className="block text-xs font-black text-slate-800 mb-1">الشعبة</label>
-                      <select
-                        value={sectionTarget}
-                        onChange={(e) => setSectionTarget(e.target.value)}
-                        className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
-                      >
-                        <option value="all">كافة الشُعب</option>
-                        {availableSections.map((sec) => (
-                          <option key={sec.id} value={sec.id}>
-                            {sec.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <Select
+                      label="الشعبة المستهدفة"
+                      value={sectionTarget}
+                      onChange={(val) => setSectionTarget(val)}
+                      placeholder="كافة الشُعب"
+                      options={[
+                        { value: 'all', label: 'كافة الشُعب' },
+                        ...availableSections.map((sec) => ({ value: sec.id, label: sec.name })),
+                      ]}
+                    />
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-2.5">
                       <div>
-                        <label className="block text-xs font-black text-slate-800 mb-1">المرحلة</label>
+                        <span className="block text-[13px] font-bold text-slate-800 mb-1">المرحلة</span>
                         <select
                           value={stage}
                           onChange={(e) => setStage(Number(e.target.value))}
-                          className="w-full text-sm font-bold text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
+                          className="w-full text-[13px] font-bold text-slate-900 p-2.5 bg-white rounded-[7px] border border-slate-300 cursor-pointer shadow-2xs"
                         >
                           {[1, 2, 3, 4, 5, 6].map((s) => (
                             <option key={s} value={s}>
-                              م{s}
+                              المرحلة {s}
                             </option>
                           ))}
                         </select>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-black text-slate-800 mb-1">الشعبة</label>
-                        <select
+                        <Select
+                          label="الشعبة"
                           value={sectionTarget}
-                          onChange={(e) => setSectionTarget(e.target.value)}
-                          className="w-full text-sm font-black text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
-                        >
-                          <option value="all">كافة الشُعب</option>
-                          {availableSections.map((sec) => (
-                            <option key={sec.id} value={sec.id}>
-                              {sec.name}
-                            </option>
-                          ))}
-                        </select>
+                          onChange={(val) => setSectionTarget(val)}
+                          placeholder="كافة الشُعب"
+                          options={[
+                            { value: 'all', label: 'كافة الشُعب' },
+                            ...availableSections.map((sec) => ({ value: sec.id, label: sec.name })),
+                          ]}
+                        />
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-xs font-black text-slate-800 mb-1">المادة</label>
-                      <select
-                        value={subjectId}
-                        onChange={(e) => setSubjectId(e.target.value)}
-                        required
-                        className="w-full text-sm font-black text-slate-900 p-2 bg-white rounded-lg border-2 border-slate-300 cursor-pointer"
-                      >
-                        <option value="">-- المادة --</option>
-                        {availableSubjects.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <Select
+                      label="المادة الدراسية"
+                      value={subjectId}
+                      onChange={(val) => setSubjectId(val)}
+                      required
+                      placeholder="اختر المادة الدراسية..."
+                      options={availableSubjects.map((s) => ({
+                        value: s.id,
+                        label: s.name,
+                        description: `المرحلة ${s.stage}`,
+                      }))}
+                    />
                   </>
                 )}
               </div>
 
               {/* File upload */}
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">الملف</label>
+                <label className="block text-[13px] font-bold text-slate-800 mb-1 text-right">ملف المحاضرة (PDF / PPTX / DOCX / MP4)</label>
                 <input
                   type="file"
                   onChange={handleFile}
                   accept=".pdf,.pptx,.ppt,.docx,.mp4"
-                  className="w-full text-xs p-2 bg-white border-2 border-slate-300 rounded-xl cursor-pointer"
+                  className={`w-full text-xs p-2 bg-white border rounded-[7px] cursor-pointer transition-all shadow-2xs ${
+                    !selectedFile && !fileName ? 'border-s-[3px] border-s-rose-500' : 'border-s-[3px] border-s-emerald-500'
+                  }`}
                 />
                 {fileName && <p className="text-[11px] font-bold text-emerald-800 mt-1">{fileName} ({fileSize})</p>}
               </div>
