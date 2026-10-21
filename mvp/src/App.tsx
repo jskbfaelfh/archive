@@ -16,6 +16,14 @@ import { ExternalLink, ShieldCheck, Sparkles, UserCheck, RefreshCw } from 'lucid
 export default function App() {
   const { activeTab, currentUser, users, login, resetAll } = useApp();
 
+  const demoRoles = [
+    { label: 'سوبر ادمن', role: 'super_admin' },
+    { label: 'عميد كليه', role: 'college_admin' },
+    { label: 'رئيس القسم', role: 'department_admin' },
+    { label: 'الاستاذ', role: 'doctor' },
+    { label: 'الطالب', role: 'student' },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-[#f4f7fb]">
       <Navbar />
@@ -34,19 +42,25 @@ export default function App() {
 
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-[11px] font-bold text-slate-500 ml-1">تبديل فوري:</span>
-            {users.slice(0, 5).map(u => (
-              <button
-                key={u.id}
-                onClick={() => login(u.email, '123456')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
-                  currentUser.id === u.id
-                    ? 'bg-amber-600 text-white shadow-sm'
-                    : 'bg-white/80 hover:bg-white text-slate-700 border border-slate-200'
-                }`}
-              >
-                {u.role === 'super_admin' ? 'سوبر أدمن' : u.role === 'college_admin' ? 'عميد' : u.role === 'department_admin' ? 'رئيس قسم' : u.role === 'doctor' ? 'أستاذ' : 'طالب'}
-              </button>
-            ))}
+            {demoRoles.map(item => {
+              const targetUser = users.find(u => u.role === item.role);
+              const isActive = currentUser.role === item.role;
+              return (
+                <button
+                  key={item.role}
+                  onClick={() => {
+                    if (targetUser) login(targetUser.email, '123456');
+                  }}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all shadow-sm ${
+                    isActive
+                      ? 'bg-amber-600 text-white border border-amber-700 shadow-md scale-105'
+                      : 'bg-white hover:bg-amber-50 text-slate-700 border border-slate-200 hover:border-amber-300'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
             <button
               onClick={resetAll}
               title="إعادة ضبط البيانات الافتراضية"
