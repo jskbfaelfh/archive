@@ -12,6 +12,7 @@ import LectureManager from '@/components/lectures/LectureManager';
 import AnalyticsView from '@/components/analytics/AnalyticsView';
 import ScheduleManager from '@/components/schedules/ScheduleManager';
 import StudentPortalView from '@/components/student/StudentPortalView';
+import DoctorPortalView from '@/components/doctor/DoctorPortalView';
 import { useApp } from '@/context/AppContext';
 import { ExternalLink, ShieldCheck, Sparkles, UserCheck, RefreshCw } from 'lucide-react';
 
@@ -77,6 +78,8 @@ export default function App() {
         <div>
           {currentUser.role === 'student' ? (
             <StudentPortalView />
+          ) : currentUser.role === 'doctor' ? (
+            <DoctorPortalView />
           ) : (
             <>
               {activeTab === 'structure' && <StructureManager />}

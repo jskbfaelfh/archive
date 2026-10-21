@@ -47,7 +47,9 @@ export default function Navbar() {
   const isSuper = currentUser.role === 'super_admin';
   const isCollegeAdmin = currentUser.role === 'college_admin';
   const isDeptAdmin = currentUser.role === 'department_admin';
+  const isDoctor = currentUser.role === 'doctor';
   const isStudent = currentUser.role === 'student';
+  const canSeeStructure = isSuper || isCollegeAdmin || isDeptAdmin;
   const canSeeUsersTab = isSuper || isCollegeAdmin || isDeptAdmin;
 
   const userCol = colleges.find((c) => c.id === currentUser.collegeId);
@@ -120,7 +122,7 @@ export default function Navbar() {
 
           {/* 4 Main Tabs with University Theme */}
           <nav className="flex items-center gap-1 bg-[#0a1e3b]/90 p-1.5 rounded-2xl border border-cyan-500/20 text-xs font-bold overflow-x-auto max-w-full backdrop-blur-sm">
-            {!isStudent && (
+            {canSeeStructure && (
               <button
                 onClick={() => setActiveTab('structure')}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
@@ -193,7 +195,7 @@ export default function Navbar() {
 
             {currentUser.id ? (
               <div className="flex items-center gap-2">
-                {!isStudent && (
+                {!isStudent && !isDoctor && (
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0a1e3b] border border-cyan-500/30 rounded-xl text-xs font-black text-white shadow-xs">
                     <Shield className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                     <div className="text-right">
