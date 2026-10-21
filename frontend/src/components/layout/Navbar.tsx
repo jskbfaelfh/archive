@@ -180,19 +180,21 @@ export default function Navbar() {
 
             {currentUser.id ? (
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0a1e3b] border border-cyan-500/30 rounded-xl text-xs font-black text-white shadow-xs">
-                  <Shield className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                  <div className="text-right">
-                    <div className="leading-tight text-white">{currentUser.name}</div>
-                    <div className="text-[10px] text-cyan-200/80 font-normal">
-                      {isSuper && 'سوبر أدمن'}
-                      {isCollegeAdmin && `عميد • ${userCol?.name || 'كلية'}`}
-                      {isDeptAdmin && `رئيس قسم`}
-                      {currentUser.role === 'doctor' && `تدريسي`}
-                      {currentUser.role === 'student' && `طالب • م${currentUser.stage || 1}`}
+                {!isStudent && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0a1e3b] border border-cyan-500/30 rounded-xl text-xs font-black text-white shadow-xs">
+                    <Shield className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                    <div className="text-right">
+                      <div className="leading-tight text-white">{currentUser.name}</div>
+                      <div className="text-[10px] text-cyan-200/80 font-normal">
+                        {isSuper && 'سوبر أدمن'}
+                        {isCollegeAdmin && `عميد • ${userCol?.name || 'كلية'}`}
+                        {isDeptAdmin && `رئيس قسم`}
+                        {currentUser.role === 'doctor' && `تدريسي`}
+                        {currentUser.role === 'student' && `طالب • م${currentUser.stage || 1}`}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 <button
                   onClick={logout}
