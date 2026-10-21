@@ -5,11 +5,11 @@
  * @created 2026-10-21
  */
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, College, Department, Section, Subject, Lecture } from '@/types';
-import { initialColleges, initialSections, initialSubjects, initialUsers, initialLectures } from '@/data/initialData';
+import { User, College, Department, Section, Subject, Lecture, Schedule } from '@/types';
+import { initialColleges, initialSections, initialSubjects, initialUsers, initialLectures, initialSchedules } from '@/data/initialData';
 import { supabase } from '@/lib/supabase';
 
-export type MainTab = 'structure' | 'users' | 'lectures' | 'analytics';
+export type MainTab = 'structure' | 'users' | 'lectures' | 'schedules' | 'analytics';
 
 interface AppContextType {
   currentUser: User;
@@ -24,6 +24,7 @@ interface AppContextType {
   sections: Section[];
   subjects: Subject[];
   lectures: Lecture[];
+  schedules: Schedule[];
 
   addCollege: (data: { name: string }) => Promise<void>;
   updateCollege: (id: string, updates: Partial<College>) => Promise<void>;
@@ -48,6 +49,10 @@ interface AppContextType {
   addLecture: (data: Omit<Lecture, 'id' | 'uploadDate' | 'downloadsCount' | 'viewsCount'>) => Promise<void>;
   updateLecture: (id: string, updates: Partial<Lecture>) => Promise<void>;
   deleteLecture: (id: string) => Promise<void>;
+
+  addSchedule: (data: Omit<Schedule, 'id' | 'createdAt'>) => Promise<void>;
+  updateSchedule: (id: string, updates: Partial<Schedule>) => Promise<void>;
+  deleteSchedule: (id: string) => Promise<void>;
 
   activeTab: MainTab;
   setActiveTab: (tab: MainTab) => void;
@@ -80,6 +85,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [sections, setSections] = useState<Section[]>(() => loadStorage('sections', initialSections));
   const [subjects, setSubjects] = useState<Subject[]>(() => loadStorage('subjects', initialSubjects));
   const [lectures, setLectures] = useState<Lecture[]>(() => loadStorage('lectures', initialLectures));
+  const [schedules, setSchedules] = useState<Schedule[]>(() => loadStorage('schedules', initialSchedules));
   const [activeTab, setActiveTab] = useState<MainTab>('structure');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -90,21 +96,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => { saveStorage('sections', sections); }, [sections]);
   useEffect(() => { saveStorage('subjects', subjects); }, [subjects]);
   useEffect(() => { saveStorage('lectures', lectures); }, [lectures]);
+  useEffect(() => { saveStorage('schedules', schedules); }, [schedules]);
 
   const refreshData = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Optional: Sync from Supabase tables if connected
       const { data: dbColleges } = await supabase.from('colleges').select('*');
-      if (dbColleges && dbColleges.length > 0) {
-        setColleges(dbColleges as any);
-      }
+      if (dbColleges && dbColleges.length > 0) setColleges(dbColleges as any);
     } catch {} finally {
       setIsLoading(false);
     }
   }, []);
 
-  const login = async (email: string, pass: string) => {
+  const login = async (email: string, _pass: string) => {
     const found = users.find(u => u.email.toLowerCase() === email.toLowerCase());
     if (found) {
       setCurrentUser(found);
@@ -114,68 +118,51 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return { success: false, error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.' };
   };
 
-  const logout = async () => {
-    setCurrentUser(users[0]);
-  };
-
-  const changePassword = async (_curr: string, _new: string) => {
-    return { success: true };
-  };
+  const logout = async () => { setCurrentUser(users[0]); };
+  const changePassword = async () => ({ success: true });
 
   const addCollege = async (data: { name: string }) => {
-    const newCol: College = { id: `col-${Date.now()}`, name: data.name, departments: [] };
-    setColleges(prev => [...prev, newCol]);
+    setColleges(prev => [...prev, { id: `col-${Date.now()}`, name: data.name, departments: [] }]);
   };
-
   const updateCollege = async (id: string, updates: Partial<College>) => {
     setColleges(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
   };
-
   const deleteCollege = async (id: string) => {
     setColleges(prev => prev.filter(c => c.id !== id));
   };
 
   const addDepartment = async (collegeId: string, data: { name: string; stagesCount: number }) => {
-    const newDept: Department = { id: `dept-${Date.now()}`, collegeId, name: data.name, stagesCount: data.stagesCount };
-    setColleges(prev => prev.map(c => c.id === collegeId ? { ...c, departments: [...c.departments, newDept] } : c));
-  };
-
-  const updateDepartment = async (collegeId: string, deptId: string, updates: Partial<Department>) => {
     setColleges(prev => prev.map(c => c.id === collegeId ? {
-      ...c,
-      departments: c.departments.map(d => d.id === deptId ? { ...d, ...updates } : d)
+      ...c, departments: [...c.departments, { id: `dept-${Date.now()}`, collegeId, ...data }]
     } : c));
   };
-
+  const updateDepartment = async (collegeId: string, deptId: string, updates: Partial<Department>) => {
+    setColleges(prev => prev.map(c => c.id === collegeId ? {
+      ...c, departments: c.departments.map(d => d.id === deptId ? { ...d, ...updates } : d)
+    } : c));
+  };
   const deleteDepartment = async (collegeId: string, deptId: string) => {
     setColleges(prev => prev.map(c => c.id === collegeId ? {
-      ...c,
-      departments: c.departments.filter(d => d.id !== deptId)
+      ...c, departments: c.departments.filter(d => d.id !== deptId)
     } : c));
   };
 
   const addSection = async (data: { name: string; collegeId: string; departmentId: string; stage: number }) => {
-    const newSec: Section = { id: `sec-${Date.now()}`, ...data };
-    setSections(prev => [...prev, newSec]);
+    setSections(prev => [...prev, { id: `sec-${Date.now()}`, ...data }]);
   };
-
   const updateSection = async (id: string, updates: Partial<Section>) => {
     setSections(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
   };
-
   const deleteSection = async (id: string) => {
     setSections(prev => prev.filter(s => s.id !== id));
   };
 
   const addSubject = async (data: Omit<Subject, 'id'>) => {
-    const newSub: Subject = { id: `sub-${Date.now()}`, ...data };
-    setSubjects(prev => [...prev, newSub]);
+    setSubjects(prev => [...prev, { id: `sub-${Date.now()}`, ...data }]);
   };
-
   const updateSubject = async (id: string, updates: Partial<Subject>) => {
     setSubjects(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
   };
-
   const deleteSubject = async (id: string) => {
     setSubjects(prev => prev.filter(s => s.id !== id));
   };
@@ -185,32 +172,40 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setUsers(prev => [...prev, newUser]);
     return { user: newUser };
   };
-
   const updateUser = async (id: string, updates: Partial<User>) => {
     setUsers(prev => prev.map(u => u.id === id ? { ...u, ...updates } : u));
   };
-
   const deleteUser = async (id: string) => {
     setUsers(prev => prev.filter(u => u.id !== id));
   };
 
   const addLecture = async (data: Omit<Lecture, 'id' | 'uploadDate' | 'downloadsCount' | 'viewsCount'>) => {
     const newLec: Lecture = {
-      id: `lec-${Date.now()}`,
-      ...data,
+      id: `lec-${Date.now()}`, ...data,
       uploadDate: new Date().toISOString().split('T')[0],
-      downloadsCount: 0,
-      viewsCount: 0,
+      downloadsCount: 0, viewsCount: 0,
     };
     setLectures(prev => [newLec, ...prev]);
   };
-
   const updateLecture = async (id: string, updates: Partial<Lecture>) => {
     setLectures(prev => prev.map(l => l.id === id ? { ...l, ...updates } : l));
   };
-
   const deleteLecture = async (id: string) => {
     setLectures(prev => prev.filter(l => l.id !== id));
+  };
+
+  const addSchedule = async (data: Omit<Schedule, 'id' | 'createdAt'>) => {
+    const newSched: Schedule = {
+      id: `sched-${Date.now()}`, ...data,
+      createdAt: new Date().toISOString().split('T')[0],
+    };
+    setSchedules(prev => [newSched, ...prev]);
+  };
+  const updateSchedule = async (id: string, updates: Partial<Schedule>) => {
+    setSchedules(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+  };
+  const deleteSchedule = async (id: string) => {
+    setSchedules(prev => prev.filter(s => s.id !== id));
   };
 
   const resetAll = async () => {
@@ -220,46 +215,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSubjects(initialSubjects);
     setUsers(initialUsers);
     setLectures(initialLectures);
+    setSchedules(initialSchedules);
     setCurrentUser(initialUsers[0]);
   };
 
   return (
     <AppContext.Provider
       value={{
-        currentUser,
-        users,
-        login,
-        logout,
-        changePassword,
-        isLoginModalOpen,
-        setIsLoginModalOpen,
-        colleges,
-        sections,
-        subjects,
-        lectures,
-        addCollege,
-        updateCollege,
-        deleteCollege,
-        addDepartment,
-        updateDepartment,
-        deleteDepartment,
-        addSection,
-        updateSection,
-        deleteSection,
-        addSubject,
-        updateSubject,
-        deleteSubject,
-        addUser,
-        updateUser,
-        deleteUser,
-        addLecture,
-        updateLecture,
-        deleteLecture,
-        activeTab,
-        setActiveTab,
-        isLoading,
-        refreshData,
-        resetAll,
+        currentUser, users, login, logout, changePassword, isLoginModalOpen, setIsLoginModalOpen,
+        colleges, sections, subjects, lectures, schedules,
+        addCollege, updateCollege, deleteCollege,
+        addDepartment, updateDepartment, deleteDepartment,
+        addSection, updateSection, deleteSection,
+        addSubject, updateSubject, deleteSubject,
+        addUser, updateUser, deleteUser,
+        addLecture, updateLecture, deleteLecture,
+        addSchedule, updateSchedule, deleteSchedule,
+        activeTab, setActiveTab, isLoading, refreshData, resetAll,
       }}
     >
       {children}

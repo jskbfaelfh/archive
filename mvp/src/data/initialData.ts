@@ -4,7 +4,7 @@
  * @description البيانات الافتراضية المركزية لمنظومة جامعة الزهراوي
  * @created 2026-10-21
  */
-import { College, Section, Subject, User, Lecture } from '@/types';
+import { College, Section, Subject, User, Lecture, Schedule } from '@/types';
 
 export const initialColleges: College[] = [
   {
@@ -179,5 +179,26 @@ export const initialLectures: Lecture[] = [
     description: 'شرح تفصيلي لآليات الالتئام ومراحل الاستجابة النسيجية الحيوية',
     downloadsCount: 98,
     viewsCount: 245,
+  },
+];
+
+export const initialSchedules: Schedule[] = [
+  {
+    id: 'sched-surgery-stage1',
+    title: 'جدول المحاضرات الأسبوعي — قسم الجراحة العامة (المرحلة الأولى)',
+    collegeId: 'col-medicine',
+    departmentId: 'dept-surgery',
+    stage: 1,
+    sectionTarget: 'all',
+    sectionName: 'كافة الشعب (شعبة أ + شعبة ب)',
+    semester: 1,
+    academicYear: '2026-2027',
+    type: 'image',
+    imageUrl: '/images/schedule-placeholder.svg',
+    daysRange: 'من السبت إلى الأربعاء',
+    notes: 'الدوام يبدأ يومياً الساعة 8:30 صباحاً في القاعة المركزية رقم (1) ومختبر التشريح السريري.',
+    createdById: 'user-head-surgery',
+    createdByName: 'د. وسام الربيعي (رئيس قسم الجراحة العامة)',
+    createdAt: '2026-10-21',
   },
 ];

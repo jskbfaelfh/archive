@@ -6,6 +6,7 @@ import {
   Layers,
   Users,
   FileText,
+  Calendar,
   RotateCcw,
   Shield,
   TrendingUp,
@@ -157,6 +158,18 @@ export default function Navbar() {
             >
               <FileText className="w-4 h-4 text-cyan-300" />
               <span>المحاضرات</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('schedules')}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+                activeTab === 'schedules'
+                  ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
+                  : 'text-slate-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Calendar className="w-4 h-4 text-cyan-300" />
+              <span>الجداول</span>
             </button>
 
             {canSeeUsersTab && (

@@ -1,8 +1,8 @@
 # خريطة بنية المشروع (PROJECT_MAP.md)
 ## منظومة الهيكلية المركزية وإدارة البيانات المرجعية للجامعة
 
-**تاريخ التحديث الآلي:** 2026-10-21T09:38:33.370Z
-**إجمالي الملفات غير المولدة:** 110
+**تاريخ التحديث الآلي:** 2026-10-21T10:09:01.917Z
+**إجمالي الملفات غير المولدة:** 114
 **حدود الخريطة:** جرد ملفات؛ لا يمثل إثبات صحة الوظائف أو جاهزية الإنتاج. يستثني الأسرار والتبعيات وملفات العمل المولدة.
 
 ### المكدس التقني
@@ -20,8 +20,8 @@
 | `root` | 7 |
 | `backend` | 7 |
 | `docs` | 5 |
-| `frontend` | 35 |
-| `mvp` | 35 |
+| `frontend` | 37 |
+| `mvp` | 37 |
 | `prisma` | 3 |
 | `scripts` | 8 |
 | `uploads` | 1 |
@@ -35,6 +35,7 @@
 - [`frontend/src/components/layout/Navbar.tsx`](frontend/src/components/layout/Navbar.tsx)
 - [`frontend/src/components/layout/NotificationBell.tsx`](frontend/src/components/layout/NotificationBell.tsx)
 - [`frontend/src/components/lectures/LectureManager.tsx`](frontend/src/components/lectures/LectureManager.tsx)
+- [`frontend/src/components/schedules/ScheduleManager.tsx`](frontend/src/components/schedules/ScheduleManager.tsx)
 - [`frontend/src/components/student/StudentPortalView.tsx`](frontend/src/components/student/StudentPortalView.tsx)
 - [`frontend/src/components/users/UserManager.tsx`](frontend/src/components/users/UserManager.tsx)
 - [`frontend/src/main.tsx`](frontend/src/main.tsx)

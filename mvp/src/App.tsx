@@ -10,6 +10,7 @@ import StructureManager from '@/components/hierarchy/StructureManager';
 import UserManager from '@/components/users/UserManager';
 import LectureManager from '@/components/lectures/LectureManager';
 import AnalyticsView from '@/components/analytics/AnalyticsView';
+import ScheduleManager from '@/components/schedules/ScheduleManager';
 import StudentPortalView from '@/components/student/StudentPortalView';
 import { useApp } from '@/context/AppContext';
 import { ExternalLink, ShieldCheck, Sparkles, UserCheck, RefreshCw } from 'lucide-react';
@@ -81,6 +82,7 @@ export default function App() {
               {activeTab === 'structure' && <StructureManager />}
               {activeTab === 'users' && <UserManager />}
               {activeTab === 'lectures' && <LectureManager />}
+              {activeTab === 'schedules' && <ScheduleManager />}
               {activeTab === 'analytics' && <AnalyticsView />}
             </>
           )}

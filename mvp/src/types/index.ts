@@ -78,3 +78,22 @@ export interface Lecture {
   downloadsCount: number;
   viewsCount: number;
 }
+
+export interface Schedule {
+  id: string;
+  title: string;
+  collegeId: string;
+  departmentId: string;
+  stage: number;
+  sectionTarget: 'all' | string;
+  sectionName?: string;
+  semester: 1 | 2;
+  academicYear: string;
+  type: 'image' | 'api';
+  imageUrl?: string;
+  notes?: string;
+  daysRange: string;
+  createdById: string;
+  createdByName: string;
+  createdAt: string;
+}
