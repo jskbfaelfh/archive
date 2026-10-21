@@ -10,6 +10,7 @@ import StructureManager from '@/components/hierarchy/StructureManager';
 import UserManager from '@/components/users/UserManager';
 import LectureManager from '@/components/lectures/LectureManager';
 import AnalyticsView from '@/components/analytics/AnalyticsView';
+import StudentPortalView from '@/components/student/StudentPortalView';
 import { useApp } from '@/context/AppContext';
 import { ExternalLink, ShieldCheck, Sparkles, UserCheck, RefreshCw } from 'lucide-react';
 
@@ -112,10 +113,16 @@ export default function App() {
 
         {/* Dynamic Views */}
         <div>
-          {activeTab === 'structure' && <StructureManager />}
-          {activeTab === 'users' && <UserManager />}
-          {activeTab === 'lectures' && <LectureManager />}
-          {activeTab === 'analytics' && <AnalyticsView />}
+          {currentUser.role === 'student' ? (
+            <StudentPortalView />
+          ) : (
+            <>
+              {activeTab === 'structure' && <StructureManager />}
+              {activeTab === 'users' && <UserManager />}
+              {activeTab === 'lectures' && <LectureManager />}
+              {activeTab === 'analytics' && <AnalyticsView />}
+            </>
+          )}
         </div>
       </main>
 

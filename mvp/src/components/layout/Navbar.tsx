@@ -46,6 +46,7 @@ export default function Navbar() {
   const isSuper = currentUser.role === 'super_admin';
   const isCollegeAdmin = currentUser.role === 'college_admin';
   const isDeptAdmin = currentUser.role === 'department_admin';
+  const isStudent = currentUser.role === 'student';
   const canSeeUsersTab = isSuper || isCollegeAdmin || isDeptAdmin;
 
   const userCol = colleges.find((c) => c.id === currentUser.collegeId);
@@ -124,17 +125,19 @@ export default function Navbar() {
 
           {/* 4 Main Tabs with University Theme */}
           <nav className="flex items-center gap-1 bg-[#0a1e3b]/90 p-1.5 rounded-2xl border border-cyan-500/20 text-xs font-bold overflow-x-auto max-w-full backdrop-blur-sm">
-            <button
-              onClick={() => setActiveTab('structure')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
-                activeTab === 'structure'
-                  ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
-                  : 'text-slate-300 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              <Layers className="w-4 h-4 text-cyan-300" />
-              <span>الهيكلية</span>
-            </button>
+            {!isStudent && (
+              <button
+                onClick={() => setActiveTab('structure')}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'structure'
+                    ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
+                    : 'text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <Layers className="w-4 h-4 text-cyan-300" />
+                <span>الهيكلية</span>
+              </button>
+            )}
 
             {canSeeUsersTab && (
               <button
