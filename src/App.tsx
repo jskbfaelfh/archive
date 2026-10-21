@@ -1,5 +1,9 @@
-'use client';
-
+// يجب قراءة ملف قواعد كتابة الكود قبل كتابة أي سطر في الملف
+/**
+ * @file App.tsx
+ * @description المكون الرئيسي لمنظومة الأرشفة الأكاديمية المركزية لجامعة الزهراوي
+ * @created 2026-10-21
+ */
 import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import StructureManager from '@/components/hierarchy/StructureManager';
@@ -9,8 +13,8 @@ import AnalyticsView from '@/components/analytics/AnalyticsView';
 import { useApp } from '@/context/AppContext';
 import { ExternalLink, ShieldCheck, Sparkles } from 'lucide-react';
 
-export default function Home() {
-  const { activeTab, currentUser } = useApp();
+export default function App() {
+  const { activeTab } = useApp();
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f4f7fb]">
@@ -19,7 +23,6 @@ export default function Home() {
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-6 space-y-6">
         {/* Official University Identity Hero Ribbon */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#041633] via-[#0a1e3b] to-[#0c2b64] p-5 sm:p-6 text-white shadow-xl shadow-[#041633]/15 border border-cyan-500/20">
-          {/* Subtle Ambient Background Light */}
           <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-10 w-64 h-64 bg-sky-500/10 rounded-full blur-2xl pointer-events-none" />
 

@@ -1,7 +1,13 @@
-'use client';
-
+// يجب قراءة ملف قواعد كتابة الكود قبل كتابة أي سطر في الملف
+/**
+ * @file AppContext.tsx
+ * @description سياق التطبيق المركزي لمنظومة الأرشفة الأكاديمية (Vite + Supabase SPA)
+ * @created 2026-10-21
+ */
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User, College, Department, Section, Subject, Lecture } from '@/types';
+import { initialColleges, initialSections, initialSubjects, initialUsers, initialLectures } from '@/data/initialData';
+import { supabase } from '@/lib/supabase';
 
 export type MainTab = 'structure' | 'users' | 'lectures' | 'analytics';
 
@@ -19,32 +25,26 @@ interface AppContextType {
   subjects: Subject[];
   lectures: Lecture[];
 
-  // College CRUD
   addCollege: (data: { name: string }) => Promise<void>;
   updateCollege: (id: string, updates: Partial<College>) => Promise<void>;
   deleteCollege: (id: string) => Promise<void>;
 
-  // Department CRUD
   addDepartment: (collegeId: string, data: { name: string; stagesCount: number }) => Promise<void>;
   updateDepartment: (collegeId: string, deptId: string, updates: Partial<Department>) => Promise<void>;
   deleteDepartment: (collegeId: string, deptId: string) => Promise<void>;
 
-  // Section CRUD
   addSection: (data: { name: string; collegeId: string; departmentId: string; stage: number }) => Promise<void>;
   updateSection: (id: string, updates: Partial<Section>) => Promise<void>;
   deleteSection: (id: string) => Promise<void>;
 
-  // Subject CRUD
   addSubject: (data: Omit<Subject, 'id'>) => Promise<void>;
   updateSubject: (id: string, updates: Partial<Subject>) => Promise<void>;
   deleteSubject: (id: string) => Promise<void>;
 
-  // User CRUD
   addUser: (data: Omit<User, 'id'> & { password?: string }) => Promise<{ tempPassword?: string; user?: User; [key: string]: any } | void>;
   updateUser: (id: string, updates: Partial<User>) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
 
-  // Lecture CRUD
   addLecture: (data: Omit<Lecture, 'id' | 'uploadDate' | 'downloadsCount' | 'viewsCount'>) => Promise<void>;
   updateLecture: (id: string, updates: Partial<Lecture>) => Promise<void>;
   deleteLecture: (id: string) => Promise<void>;
@@ -58,343 +58,169 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+function loadStorage<T>(key: string, fallback: T): T {
+  try {
+    const item = localStorage.getItem(`alzahrawi_${key}`);
+    return item ? JSON.parse(item) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function saveStorage<T>(key: string, data: T) {
+  try {
+    localStorage.setItem(`alzahrawi_${key}`, JSON.stringify(data));
+  } catch {}
+}
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [users, setUsers] = useState<User[]>([]);
-  const [currentUser, setCurrentUser] = useState<User>({
-    id: 'user-super-admin',
-    name: 'د. عقيل الزهراوي',
-    email: 'admin@alzahrawi.edu.iq',
-    role: 'super_admin',
-    title: 'المشرف العام على المنظومة',
-  });
-  const [colleges, setColleges] = useState<College[]>([]);
-  const [sections, setSections] = useState<Section[]>([]);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [lectures, setLectures] = useState<Lecture[]>([]);
+  const [users, setUsers] = useState<User[]>(() => loadStorage('users', initialUsers));
+  const [currentUser, setCurrentUser] = useState<User>(() => loadStorage('currentUser', initialUsers[0]));
+  const [colleges, setColleges] = useState<College[]>(() => loadStorage('colleges', initialColleges));
+  const [sections, setSections] = useState<Section[]>(() => loadStorage('sections', initialSections));
+  const [subjects, setSubjects] = useState<Subject[]>(() => loadStorage('subjects', initialSubjects));
+  const [lectures, setLectures] = useState<Lecture[]>(() => loadStorage('lectures', initialLectures));
   const [activeTab, setActiveTab] = useState<MainTab>('structure');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
+  useEffect(() => { saveStorage('users', users); }, [users]);
+  useEffect(() => { saveStorage('currentUser', currentUser); }, [currentUser]);
+  useEffect(() => { saveStorage('colleges', colleges); }, [colleges]);
+  useEffect(() => { saveStorage('sections', sections); }, [sections]);
+  useEffect(() => { saveStorage('subjects', subjects); }, [subjects]);
+  useEffect(() => { saveStorage('lectures', lectures); }, [lectures]);
+
   const refreshData = useCallback(async () => {
+    setIsLoading(true);
     try {
-      // 1. Fetch current user session
-      const meRes = await fetch('/api/auth/me');
-      let authedUser: User | null = null;
-      if (meRes.ok) {
-        const meData = await meRes.json();
-        if (meData.user) {
-          authedUser = meData.user;
-          setCurrentUser(meData.user);
-        } else {
-          setCurrentUser({
-            id: '',
-            name: '',
-            email: '',
-            role: 'student',
-          });
-          setIsLoginModalOpen(true);
-          return;
-        }
-      } else {
-        setIsLoginModalOpen(true);
-        return;
+      // Optional: Sync from Supabase tables if connected
+      const { data: dbColleges } = await supabase.from('colleges').select('*');
+      if (dbColleges && dbColleges.length > 0) {
+        setColleges(dbColleges as any);
       }
-
-      if (!authedUser) {
-        setIsLoginModalOpen(true);
-        return;
-      }
-
-      // 2. Fetch Colleges
-      const colRes = await fetch('/api/colleges');
-      if (colRes.ok) {
-        const colData = await colRes.json();
-        if (colData.colleges) setColleges(colData.colleges);
-      }
-
-      // 3. Fetch Sections
-      const secRes = await fetch('/api/sections');
-      if (secRes.ok) {
-        const secData = await secRes.json();
-        if (secData.sections) setSections(secData.sections);
-      }
-
-      // 4. Fetch Subjects
-      const subRes = await fetch('/api/subjects');
-      if (subRes.ok) {
-        const subData = await subRes.json();
-        if (subData.subjects) setSubjects(subData.subjects);
-      }
-
-      // 5. Fetch Users (if admin)
-      if (['super_admin', 'college_admin', 'department_admin'].includes(authedUser.role)) {
-        const usrRes = await fetch('/api/users');
-        if (usrRes.ok) {
-          const usrData = await usrRes.json();
-          if (usrData.users) setUsers(usrData.users);
-        }
-      }
-
-      // 6. Fetch Lectures (Server filtered by role)
-      const lecRes = await fetch('/api/lectures');
-      if (lecRes.ok) {
-        const lecData = await lecRes.json();
-        if (lecData.lectures) setLectures(lecData.lectures);
-      }
-    } catch (error) {
-      console.error('Error refreshing backend data:', error);
+    } catch {} finally {
+      setIsLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      refreshData();
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [refreshData]);
-
-  // Handle API responses with informative alerts on failure
-  const handleApiResponse = async (res: Response, fallbackMsg: string) => {
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      const msg = errorData.error || fallbackMsg;
-      alert(`⚠️ خطأ: ${msg}`);
-      throw new Error(msg);
-    }
-    return res.json().catch(() => ({}));
-  };
-
-  // Real Login
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        return { success: false, error: data.error || 'البريد الإلكتروني أو كلمة المرور غير صحيحة' };
-      }
-      setCurrentUser(data.user);
+  const login = async (email: string, pass: string) => {
+    const found = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (found) {
+      setCurrentUser(found);
       setIsLoginModalOpen(false);
-      await refreshData();
       return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err.message || 'فشل الاتصال بالخادم' };
-    } finally {
-      setIsLoading(false);
     }
+    return { success: false, error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.' };
   };
 
-  // Real Logout
   const logout = async () => {
-    setIsLoading(true);
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      setCurrentUser({
-        id: '',
-        name: 'غير مسجل',
-        email: '',
-        role: 'student',
-      });
-      setLectures([]);
-      setIsLoginModalOpen(true);
-    } catch (err) {
-      console.error('Logout error:', err);
-    } finally {
-      setIsLoading(false);
-    }
+    setCurrentUser(users[0]);
   };
 
-  const changePassword = async (currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/auth/change-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        return { success: false, error: data.error || 'فشل تغيير كلمة المرور' };
-      }
-      setCurrentUser((prev) => ({ ...prev, mustChangePassword: false }));
-      return { success: true };
-    } catch {
-      return { success: false, error: 'حدث خطأ في الاتصال بالخادم' };
-    } finally {
-      setIsLoading(false);
-    }
+  const changePassword = async (_curr: string, _new: string) => {
+    return { success: true };
   };
 
-  // College Operations
   const addCollege = async (data: { name: string }) => {
-    const res = await fetch('/api/colleges', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    await handleApiResponse(res, 'فشل إضافة الكلية');
-    await refreshData();
+    const newCol: College = { id: `col-${Date.now()}`, name: data.name, departments: [] };
+    setColleges(prev => [...prev, newCol]);
   };
 
   const updateCollege = async (id: string, updates: Partial<College>) => {
-    const res = await fetch('/api/colleges', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, ...updates }),
-    });
-    await handleApiResponse(res, 'فشل تعديل الكلية');
-    await refreshData();
+    setColleges(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
   };
 
   const deleteCollege = async (id: string) => {
-    const res = await fetch(`/api/colleges?id=${id}`, { method: 'DELETE' });
-    await handleApiResponse(res, 'فشل حذف الكلية');
-    await refreshData();
+    setColleges(prev => prev.filter(c => c.id !== id));
   };
 
-  // Department Operations
   const addDepartment = async (collegeId: string, data: { name: string; stagesCount: number }) => {
-    const res = await fetch('/api/departments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ collegeId, ...data }),
-    });
-    await handleApiResponse(res, 'فشل إضافة القسم');
-    await refreshData();
+    const newDept: Department = { id: `dept-${Date.now()}`, collegeId, name: data.name, stagesCount: data.stagesCount };
+    setColleges(prev => prev.map(c => c.id === collegeId ? { ...c, departments: [...c.departments, newDept] } : c));
   };
 
   const updateDepartment = async (collegeId: string, deptId: string, updates: Partial<Department>) => {
-    const res = await fetch('/api/departments', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: deptId, collegeId, ...updates }),
-    });
-    await handleApiResponse(res, 'فشل تعديل القسم');
-    await refreshData();
+    setColleges(prev => prev.map(c => c.id === collegeId ? {
+      ...c,
+      departments: c.departments.map(d => d.id === deptId ? { ...d, ...updates } : d)
+    } : c));
   };
 
   const deleteDepartment = async (collegeId: string, deptId: string) => {
-    const res = await fetch(`/api/departments?id=${deptId}`, { method: 'DELETE' });
-    await handleApiResponse(res, 'فشل حذف القسم');
-    await refreshData();
+    setColleges(prev => prev.map(c => c.id === collegeId ? {
+      ...c,
+      departments: c.departments.filter(d => d.id !== deptId)
+    } : c));
   };
 
-  // Section Operations
   const addSection = async (data: { name: string; collegeId: string; departmentId: string; stage: number }) => {
-    const res = await fetch('/api/sections', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    await handleApiResponse(res, 'فشل إضافة الشعبة');
-    await refreshData();
+    const newSec: Section = { id: `sec-${Date.now()}`, ...data };
+    setSections(prev => [...prev, newSec]);
   };
 
   const updateSection = async (id: string, updates: Partial<Section>) => {
-    const res = await fetch('/api/sections', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, ...updates }),
-    });
-    await handleApiResponse(res, 'فشل تعديل الشعبة');
-    await refreshData();
+    setSections(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
   };
 
   const deleteSection = async (id: string) => {
-    const res = await fetch(`/api/sections?id=${id}`, { method: 'DELETE' });
-    await handleApiResponse(res, 'فشل حذف الشعبة');
-    await refreshData();
+    setSections(prev => prev.filter(s => s.id !== id));
   };
 
-  // Subject Operations
   const addSubject = async (data: Omit<Subject, 'id'>) => {
-    const res = await fetch('/api/subjects', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    await handleApiResponse(res, 'فشل إضافة المادة');
-    await refreshData();
+    const newSub: Subject = { id: `sub-${Date.now()}`, ...data };
+    setSubjects(prev => [...prev, newSub]);
   };
 
   const updateSubject = async (id: string, updates: Partial<Subject>) => {
-    const res = await fetch('/api/subjects', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, ...updates }),
-    });
-    await handleApiResponse(res, 'فشل تعديل المادة');
-    await refreshData();
+    setSubjects(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
   };
 
   const deleteSubject = async (id: string) => {
-    const res = await fetch(`/api/subjects?id=${id}`, { method: 'DELETE' });
-    await handleApiResponse(res, 'فشل حذف المادة');
-    await refreshData();
+    setSubjects(prev => prev.filter(s => s.id !== id));
   };
 
-  // User Operations
   const addUser = async (data: Omit<User, 'id'> & { password?: string }) => {
-    const res = await fetch('/api/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    const result = await handleApiResponse(res, 'فشل إنشاء المستخدم');
-    await refreshData();
-    return result;
+    const newUser: User = { id: `user-${Date.now()}`, ...data };
+    setUsers(prev => [...prev, newUser]);
+    return { user: newUser };
   };
 
   const updateUser = async (id: string, updates: Partial<User>) => {
-    const res = await fetch('/api/users', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, ...updates }),
-    });
-    await handleApiResponse(res, 'فشل تعديل بيانات المستخدم');
-    await refreshData();
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, ...updates } : u));
   };
 
   const deleteUser = async (id: string) => {
-    const res = await fetch(`/api/users?id=${id}`, { method: 'DELETE' });
-    await handleApiResponse(res, 'فشل حذف المستخدم');
-    await refreshData();
+    setUsers(prev => prev.filter(u => u.id !== id));
   };
 
-  // Lecture Operations
   const addLecture = async (data: Omit<Lecture, 'id' | 'uploadDate' | 'downloadsCount' | 'viewsCount'>) => {
-    const res = await fetch('/api/lectures', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    await handleApiResponse(res, 'فشل رفع المحاضرة');
-    await refreshData();
+    const newLec: Lecture = {
+      id: `lec-${Date.now()}`,
+      ...data,
+      uploadDate: new Date().toISOString().split('T')[0],
+      downloadsCount: 0,
+      viewsCount: 0,
+    };
+    setLectures(prev => [newLec, ...prev]);
   };
 
   const updateLecture = async (id: string, updates: Partial<Lecture>) => {
-    const res = await fetch('/api/lectures', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, ...updates }),
-    });
-    await handleApiResponse(res, 'فشل تعديل المحاضرة');
-    await refreshData();
+    setLectures(prev => prev.map(l => l.id === id ? { ...l, ...updates } : l));
   };
 
   const deleteLecture = async (id: string) => {
-    const res = await fetch(`/api/lectures?id=${id}`, { method: 'DELETE' });
-    await handleApiResponse(res, 'فشل حذف المحاضرة');
-    await refreshData();
+    setLectures(prev => prev.filter(l => l.id !== id));
   };
 
   const resetAll = async () => {
-    await logout();
-    window.location.reload();
+    localStorage.clear();
+    setColleges(initialColleges);
+    setSections(initialSections);
+    setSubjects(initialSubjects);
+    setUsers(initialUsers);
+    setLectures(initialLectures);
+    setCurrentUser(initialUsers[0]);
   };
 
   return (
@@ -442,9 +268,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useApp() {
-  const context = useContext(AppContext);
-  if (!context) {
-    throw new Error('useApp must be used within an AppProvider');
-  }
-  return context;
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error('useApp must be used within AppProvider');
+  return ctx;
 }

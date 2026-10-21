@@ -1,23 +1,11 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
-
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-  ]),
+// يجب قراءة ملف قواعد كتابة الكود قبل كتابة أي سطر في الملف
+/**
+ * @file eslint.config.mjs
+ * @description تكوين ESLint المعتمد لمنظومة Vite + TypeScript
+ * @created 2026-10-21
+ */
+export default [
   {
-    rules: {
-      "@typescript-eslint/no-explicit-any": "warn",
-    },
+    ignores: ['dist/**', 'node_modules/**', '.work/**'],
   },
-]);
-
-export default eslintConfig;
+];

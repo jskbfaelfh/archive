@@ -1,12 +1,11 @@
 # خريطة بنية المشروع (PROJECT_MAP.md)
 ## منظومة الهيكلية المركزية وإدارة البيانات المرجعية للجامعة
 
-**تاريخ التحديث الآلي:** 2026-10-21T08:38:36.027Z
-**إجمالي الملفات غير المولدة:** 82
+**تاريخ التحديث الآلي:** 2026-10-21T09:00:44.739Z
+**إجمالي الملفات غير المولدة:** 64
 **حدود الخريطة:** جرد ملفات؛ لا يمثل إثبات صحة الوظائف أو جاهزية الإنتاج. يستثني الأسرار والتبعيات وملفات العمل المولدة.
 
 ### المكدس التقني
-- **next 16.4.2**
 - **react ^19.3.1**
 - **typescript ^5.8.2**
 - **tailwindcss ^4.3.3**
@@ -18,22 +17,33 @@
 | المجلد | العدد |
 |---|---:|
 | `.agent-skills` | 9 |
-| `root` | 12 |
-| `docs` | 3 |
+| `root` | 11 |
+| `docs` | 4 |
 | `prisma` | 3 |
 | `public` | 7 |
 | `scripts` | 8 |
-| `src/app` | 22 |
+| `src/App.tsx` | 1 |
 | `src/components` | 8 |
 | `src/context` | 1 |
+| `src/data` | 1 |
+| `src/index.css` | 1 |
 | `src/lib` | 6 |
-| `src/middleware.ts` | 1 |
+| `src/main.tsx` | 1 |
 | `src/types` | 1 |
+| `src/vite-env.d.ts` | 1 |
 | `uploads` | 1 |
 
-### صفحات Next.js
-- [`src/app/layout.tsx`](src/app/layout.tsx)
-- [`src/app/page.tsx`](src/app/page.tsx)
+### واجهات التطبيق (Vite + React)
+- [`src/App.tsx`](src/App.tsx)
+- [`src/components/analytics/AnalyticsView.tsx`](src/components/analytics/AnalyticsView.tsx)
+- [`src/components/common/Select.tsx`](src/components/common/Select.tsx)
+- [`src/components/common/SelectMenuPortal.tsx`](src/components/common/SelectMenuPortal.tsx)
+- [`src/components/hierarchy/StructureManager.tsx`](src/components/hierarchy/StructureManager.tsx)
+- [`src/components/layout/Navbar.tsx`](src/components/layout/Navbar.tsx)
+- [`src/components/layout/NotificationBell.tsx`](src/components/layout/NotificationBell.tsx)
+- [`src/components/lectures/LectureManager.tsx`](src/components/lectures/LectureManager.tsx)
+- [`src/components/users/UserManager.tsx`](src/components/users/UserManager.tsx)
+- [`src/main.tsx`](src/main.tsx)
 
 ### خدمات البيانات والمصادقة
 لا توجد ملفات في هذا النطاق.
@@ -46,6 +56,7 @@
 
 ### التوثيق
 - [`README.md`](README.md)
+- [`docs/Alzahrawi_System_Executive_Proposal.docx`](docs/Alzahrawi_System_Executive_Proposal.docx)
 - [`docs/EDGE_FUNCTIONS_GUIDE.md`](docs/EDGE_FUNCTIONS_GUIDE.md)
 - [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md)
 - [`docs/SUPERADMIN_FUNCTION_GUIDE.md`](docs/SUPERADMIN_FUNCTION_GUIDE.md)

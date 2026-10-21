@@ -46,8 +46,8 @@ ${stack}
 |---|---:|
 ${[...groups].map(([name, count]) => `| \`${name}\` | ${count} |`).join('\n')}
 
-### صفحات Next.js
-${links(files.filter(path => /^src\/app\/.*(?:page|layout|error|loading)\.tsx$/.test(path)))}
+### واجهات التطبيق (Vite + React)
+${links(files.filter(path => /^src\/(?:App|main|components\/.*)\.tsx$/.test(path)))}
 
 ### خدمات البيانات والمصادقة
 ${links(files.filter(path => path.startsWith('src/services/') || path.startsWith('src/hooks/')))}

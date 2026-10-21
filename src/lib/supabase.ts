@@ -6,7 +6,12 @@
  */
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://api.supabase.alzahu.edu.iq';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseUrl =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_URL) ||
+  'https://api.supabase.alzahu.edu.iq';
+
+const supabaseAnonKey =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_ANON_KEY) ||
+  'eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJyb2xlIjogImFub24iLCAiaXNzIjogInN1cGFiYXNlIiwgImlhdCI6IDE3OTE2MzA0ODEsICJleHAiOiAyMTA2OTkwNDgxfQ.SR3-R_GE6lwuENPcSWfcCzxdAEyfUE3NvpFiKgrE4Pc';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

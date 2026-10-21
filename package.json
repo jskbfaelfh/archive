@@ -2,24 +2,21 @@
   "name": "alzahrawi-archive",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "node scripts/prepare-db.js && prisma generate && next dev",
-    "build": "node scripts/prepare-db.js && prisma generate && next build",
-    "start": "node scripts/prepare-db.js && prisma db push && next start",
-    "lint": "eslint",
-    "test:rbac": "tsx scripts/test-rbac.ts",
-    "test:e2e": "node scripts/run-e2e.mjs",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "test:e2e": "node scripts/ensure-playwright.mjs && npx playwright test",
     "map:update": "node scripts/update-project-map.mjs",
-    "check:lines": "node scripts/check-line-limits.mjs"
+    "check:lines": "node scripts/check-line-limits.mjs",
+    "check:headers": "node scripts/check-file-headers.mjs"
   },
   "dependencies": {
-    "@prisma/client": "^6.4.1",
     "@supabase/supabase-js": "^2.118.0",
-    "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
-    "jose": "^6.2.12",
     "lucide-react": "^1.59.0",
-    "next": "16.4.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "tailwind-merge": "^3.7.0",
@@ -28,19 +25,15 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
-    "@tailwindcss/turbopack": "^4.3.3",
-    "@types/bcryptjs": "^2.4.6",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9",
-    "eslint-config-next": "16.4.2",
-    "prisma": "^6.4.1",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
-    "typescript": "^5.8.2"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0"
   }
 }
