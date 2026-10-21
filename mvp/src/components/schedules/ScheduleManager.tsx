@@ -58,7 +58,7 @@ export default function ScheduleManager() {
             </div>
             <div>
               <h3 className="text-base font-black text-slate-900">
-                جداول المحاضرات الأسبوعية (السبت — الأربعاء)
+                جداول المحاضرات الأسبوعية
               </h3>
               <p className="text-xs text-slate-500 font-semibold">
                 صور الجداول اليومية المعتمدة رسمياً من رئاسة القسم العلمي لمواعيد القاعات والمختبرات

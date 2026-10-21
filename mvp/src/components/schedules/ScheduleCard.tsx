@@ -46,9 +46,6 @@ export default function ScheduleCard({
             <span className="px-3 py-1 rounded-full text-[11px] font-black bg-cyan-100 text-cyan-900">
               المرحلة {schedule.stage} • {schedule.sectionName}
             </span>
-            <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold bg-blue-100 text-blue-900">
-              {schedule.daysRange}
-            </span>
           </div>
 
           {canManage && (
