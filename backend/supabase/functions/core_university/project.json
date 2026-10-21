@@ -1,0 +1,17 @@
+{
+  "name": "core_university",
+  "version": "1.0.0",
+  "description": "منظومة الهيكلية المركزية وأرشفة المحاضرات لجامعة الزهراوي",
+  "operations": [
+    {
+      "operation": "superadmin",
+      "method": "POST",
+      "auth": "public"
+    },
+    {
+      "operation": "lectures",
+      "method": "POST",
+      "auth": "authenticated"
+    }
+  ]
+}

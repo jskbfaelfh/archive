@@ -1,39 +1,14 @@
 {
-  "name": "alzahrawi-archive",
-  "version": "0.1.0",
+  "name": "alzahrawi-system",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "lint": "eslint .",
-    "test:e2e": "node scripts/ensure-playwright.mjs && npx playwright test",
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview",
+    "test:e2e": "npm --prefix frontend run test:e2e",
     "map:update": "node scripts/update-project-map.mjs",
-    "check:lines": "node scripts/check-line-limits.mjs",
-    "check:headers": "node scripts/check-file-headers.mjs"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.118.0",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.59.0",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1",
-    "tailwind-merge": "^3.7.0",
-    "xlsx": "^0.18.5",
-    "zod": "^4.6.7"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.64.1",
-    "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9",
-    "tailwindcss": "^4.3.3",
-    "tsx": "^4.23.15",
-    "typescript": "^5.8.2",
-    "vite": "^6.2.0"
+    "check:lines": "node scripts/check-line-limits.mjs"
   }
 }

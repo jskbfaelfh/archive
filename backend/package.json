@@ -1,0 +1,13 @@
+{
+  "name": "alzahrawi-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:db": "node run-db-tests.mjs",
+    "test:edge": "node run-edge-tests.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0"
+  }
+}

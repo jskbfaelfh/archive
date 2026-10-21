@@ -5,7 +5,7 @@
  * @created 2026-09-26
  * @modified 2026-10-18
  */
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -20,8 +20,10 @@ function scan(dir) {
   });
 }
 const files = scan(root).map(path => relative(root, path).replace(/\\/g, '/')).sort();
-const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
-const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+const targetPkg = existsSync(resolve(root, 'frontend/package.json'))
+  ? JSON.parse(readFileSync(resolve(root, 'frontend/package.json'), 'utf8'))
+  : JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
+const deps = { ...targetPkg.dependencies, ...targetPkg.devDependencies };
 const stack = ['next', 'react', 'typescript', 'tailwindcss', '@supabase/supabase-js', 'zod', '@playwright/test']
   .filter(name => deps[name]).map(name => `- **${name} ${deps[name]}**`).join('\n');
 const groups = new Map();
@@ -47,13 +49,13 @@ ${stack}
 ${[...groups].map(([name, count]) => `| \`${name}\` | ${count} |`).join('\n')}
 
 ### واجهات التطبيق (Vite + React)
-${links(files.filter(path => /^src\/(?:App|main|components\/.*)\.tsx$/.test(path)))}
+${links(files.filter(path => /^frontend\/src\/(?:App|main|components\/.*)\.tsx$/.test(path)))}
 
 ### خدمات البيانات والمصادقة
-${links(files.filter(path => path.startsWith('src/services/') || path.startsWith('src/hooks/')))}
+${links(files.filter(path => path.startsWith('frontend/src/lib/') || path.startsWith('frontend/src/context/')))}
 
-### قاعدة البيانات والدوال
-${links(files.filter(path => path.startsWith('supabase/')))}
+### قاعدة البيانات والدوال (Backend & Supabase)
+${links(files.filter(path => path.startsWith('backend/supabase/')))}
 
 ### الاختبارات
 ${links(files.filter(path => path.startsWith('tests/') || path.startsWith('e2e/')))}

@@ -1,8 +1,8 @@
 # خريطة بنية المشروع (PROJECT_MAP.md)
 ## منظومة الهيكلية المركزية وإدارة البيانات المرجعية للجامعة
 
-**تاريخ التحديث الآلي:** 2026-10-21T09:00:44.739Z
-**إجمالي الملفات غير المولدة:** 64
+**تاريخ التحديث الآلي:** 2026-10-21T09:08:29.122Z
+**إجمالي الملفات غير المولدة:** 74
 **حدود الخريطة:** جرد ملفات؛ لا يمثل إثبات صحة الوظائف أو جاهزية الإنتاج. يستثني الأسرار والتبعيات وملفات العمل المولدة.
 
 ### المكدس التقني
@@ -17,39 +17,39 @@
 | المجلد | العدد |
 |---|---:|
 | `.agent-skills` | 9 |
-| `root` | 11 |
-| `docs` | 4 |
+| `root` | 7 |
+| `backend` | 7 |
+| `docs` | 5 |
+| `frontend` | 34 |
 | `prisma` | 3 |
-| `public` | 7 |
 | `scripts` | 8 |
-| `src/App.tsx` | 1 |
-| `src/components` | 8 |
-| `src/context` | 1 |
-| `src/data` | 1 |
-| `src/index.css` | 1 |
-| `src/lib` | 6 |
-| `src/main.tsx` | 1 |
-| `src/types` | 1 |
-| `src/vite-env.d.ts` | 1 |
 | `uploads` | 1 |
 
 ### واجهات التطبيق (Vite + React)
-- [`src/App.tsx`](src/App.tsx)
-- [`src/components/analytics/AnalyticsView.tsx`](src/components/analytics/AnalyticsView.tsx)
-- [`src/components/common/Select.tsx`](src/components/common/Select.tsx)
-- [`src/components/common/SelectMenuPortal.tsx`](src/components/common/SelectMenuPortal.tsx)
-- [`src/components/hierarchy/StructureManager.tsx`](src/components/hierarchy/StructureManager.tsx)
-- [`src/components/layout/Navbar.tsx`](src/components/layout/Navbar.tsx)
-- [`src/components/layout/NotificationBell.tsx`](src/components/layout/NotificationBell.tsx)
-- [`src/components/lectures/LectureManager.tsx`](src/components/lectures/LectureManager.tsx)
-- [`src/components/users/UserManager.tsx`](src/components/users/UserManager.tsx)
-- [`src/main.tsx`](src/main.tsx)
+- [`frontend/src/App.tsx`](frontend/src/App.tsx)
+- [`frontend/src/components/analytics/AnalyticsView.tsx`](frontend/src/components/analytics/AnalyticsView.tsx)
+- [`frontend/src/components/common/Select.tsx`](frontend/src/components/common/Select.tsx)
+- [`frontend/src/components/common/SelectMenuPortal.tsx`](frontend/src/components/common/SelectMenuPortal.tsx)
+- [`frontend/src/components/hierarchy/StructureManager.tsx`](frontend/src/components/hierarchy/StructureManager.tsx)
+- [`frontend/src/components/layout/Navbar.tsx`](frontend/src/components/layout/Navbar.tsx)
+- [`frontend/src/components/layout/NotificationBell.tsx`](frontend/src/components/layout/NotificationBell.tsx)
+- [`frontend/src/components/lectures/LectureManager.tsx`](frontend/src/components/lectures/LectureManager.tsx)
+- [`frontend/src/components/users/UserManager.tsx`](frontend/src/components/users/UserManager.tsx)
+- [`frontend/src/main.tsx`](frontend/src/main.tsx)
 
 ### خدمات البيانات والمصادقة
-لا توجد ملفات في هذا النطاق.
+- [`frontend/src/context/AppContext.tsx`](frontend/src/context/AppContext.tsx)
+- [`frontend/src/lib/audit.ts`](frontend/src/lib/audit.ts)
+- [`frontend/src/lib/auth.ts`](frontend/src/lib/auth.ts)
+- [`frontend/src/lib/init-db.ts`](frontend/src/lib/init-db.ts)
+- [`frontend/src/lib/prisma.ts`](frontend/src/lib/prisma.ts)
+- [`frontend/src/lib/storage.ts`](frontend/src/lib/storage.ts)
+- [`frontend/src/lib/supabase.ts`](frontend/src/lib/supabase.ts)
 
-### قاعدة البيانات والدوال
-لا توجد ملفات في هذا النطاق.
+### قاعدة البيانات والدوال (Backend & Supabase)
+- [`backend/supabase/functions/core_university.superadmin/index.ts`](backend/supabase/functions/core_university.superadmin/index.ts)
+- [`backend/supabase/functions/core_university/project.json`](backend/supabase/functions/core_university/project.json)
+- [`backend/supabase/migrations/20261021_init_core_university.sql`](backend/supabase/migrations/20261021_init_core_university.sql)
 
 ### الاختبارات
 لا توجد ملفات في هذا النطاق.
@@ -58,6 +58,7 @@
 - [`README.md`](README.md)
 - [`docs/Alzahrawi_System_Executive_Proposal.docx`](docs/Alzahrawi_System_Executive_Proposal.docx)
 - [`docs/EDGE_FUNCTIONS_GUIDE.md`](docs/EDGE_FUNCTIONS_GUIDE.md)
+- [`docs/MVP.md`](docs/MVP.md)
 - [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md)
 - [`docs/SUPERADMIN_FUNCTION_GUIDE.md`](docs/SUPERADMIN_FUNCTION_GUIDE.md)
 
