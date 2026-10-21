@@ -79,6 +79,16 @@ export interface Lecture {
   viewsCount: number;
 }
 
+export type DayKey = 'saturday' | 'sunday' | 'monday' | 'tuesday' | 'wednesday';
+
+export const WEEK_DAYS: { key: DayKey; label: string }[] = [
+  { key: 'saturday', label: 'السبت' },
+  { key: 'sunday', label: 'الأحد' },
+  { key: 'monday', label: 'الاثنين' },
+  { key: 'tuesday', label: 'الثلاثاء' },
+  { key: 'wednesday', label: 'الأربعاء' },
+];
+
 export interface Schedule {
   id: string;
   title: string;
@@ -91,6 +101,7 @@ export interface Schedule {
   academicYear: string;
   type: 'image' | 'api';
   imageUrl?: string;
+  dailyImages?: Partial<Record<DayKey, string>>;
   notes?: string;
   daysRange: string;
   createdById: string;

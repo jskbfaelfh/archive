@@ -134,7 +134,7 @@ function scanDirectory(dir) {
 }
 
 // Automatically scan standard source directories if they exist, or the project root
-const DEFAULT_SCAN_DIRS = ['src', 'lib', 'app', 'backend', 'api', 'services', 'scripts', 'supabase', 'tests', 'e2e'];
+const DEFAULT_SCAN_DIRS = ['src', 'lib', 'app', 'backend', 'frontend', 'mvp', 'api', 'services', 'scripts', 'supabase', 'tests', 'e2e'];
 let scannedAnyDir = false;
 
 for (const dirName of DEFAULT_SCAN_DIRS) {
