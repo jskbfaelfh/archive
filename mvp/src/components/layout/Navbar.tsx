@@ -110,17 +110,11 @@ export default function Navbar() {
             <img
               src="/images/university-logo.png"
               alt="شعار جامعة الزهراوي"
-              className="h-11 sm:h-12 w-auto object-contain drop-shadow"
+              className="h-10 sm:h-11 w-auto object-contain drop-shadow"
             />
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-lg font-black text-white tracking-wide">جامعة الزهراوي</h1>
-                <span className="hidden sm:inline-block text-[10px] font-extrabold text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-full border border-cyan-500/30">
-                  منظومة الأرشفة
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-300 font-medium">أرشفة المحاضرات والمناهج الأكاديمية</p>
-            </div>
+            <h1 className="text-base sm:text-lg font-black text-white tracking-wide">
+              المحاضرات
+            </h1>
           </div>
 
           {/* 4 Main Tabs with University Theme */}
