@@ -1,29 +1,32 @@
 # خريطة بنية المشروع (PROJECT_MAP.md)
 ## منظومة الهيكلية المركزية وإدارة البيانات المرجعية للجامعة
 
-**تاريخ التحديث الآلي:** 2026-10-21T08:34:07.911Z
-**إجمالي الملفات غير المولدة:** 76
+**تاريخ التحديث الآلي:** 2026-10-21T08:38:36.027Z
+**إجمالي الملفات غير المولدة:** 82
 **حدود الخريطة:** جرد ملفات؛ لا يمثل إثبات صحة الوظائف أو جاهزية الإنتاج. يستثني الأسرار والتبعيات وملفات العمل المولدة.
 
 ### المكدس التقني
 - **next 16.4.2**
-- **react 19.3.0**
-- **typescript ^5**
-- **tailwindcss ^4**
+- **react ^19.3.1**
+- **typescript ^5.8.2**
+- **tailwindcss ^4.3.3**
+- **@supabase/supabase-js ^2.118.0**
 - **zod ^4.6.7**
+- **@playwright/test ^1.64.1**
 
 ### توزيع الملفات
 | المجلد | العدد |
 |---|---:|
 | `.agent-skills` | 9 |
 | `root` | 12 |
+| `docs` | 3 |
 | `prisma` | 3 |
 | `public` | 7 |
-| `scripts` | 6 |
+| `scripts` | 8 |
 | `src/app` | 22 |
 | `src/components` | 8 |
 | `src/context` | 1 |
-| `src/lib` | 5 |
+| `src/lib` | 6 |
 | `src/middleware.ts` | 1 |
 | `src/types` | 1 |
 | `uploads` | 1 |
@@ -43,6 +46,9 @@
 
 ### التوثيق
 - [`README.md`](README.md)
+- [`docs/EDGE_FUNCTIONS_GUIDE.md`](docs/EDGE_FUNCTIONS_GUIDE.md)
+- [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md)
+- [`docs/SUPERADMIN_FUNCTION_GUIDE.md`](docs/SUPERADMIN_FUNCTION_GUIDE.md)
 
 ### قواعد المشروع
 - جميع الملفات والتنزيلات والسجلات داخل مجلد النظام.
