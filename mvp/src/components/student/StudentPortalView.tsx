@@ -8,12 +8,12 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Lecture } from '@/types';
 import ScheduleManager from '@/components/schedules/ScheduleManager';
+import Select from '@/components/common/Select';
 import {
   BookOpen,
   FileText,
   Download,
   Eye,
-  Search,
   Calendar,
   UserCheck,
   X,
@@ -27,7 +27,6 @@ export default function StudentPortalView() {
   const isScheduleTab = activeTab === 'schedules';
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('all');
   const [semesterFilter, setSemesterFilter] = useState<'all' | 1 | 2>('all');
-  const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [previewLecture, setPreviewLecture] = useState<Lecture | null>(null);
 
@@ -49,12 +48,6 @@ export default function StudentPortalView() {
     if (semesterFilter !== 'all') {
       const sub = subjects.find(s => s.id === lec.subjectId);
       if (sub && sub.semester !== semesterFilter) return false;
-    }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim();
-      const match = lec.title.toLowerCase().includes(q) || lec.doctorName.toLowerCase().includes(q) ||
-        (lec.description && lec.description.toLowerCase().includes(q));
-      if (!match) return false;
     }
     return true;
   });
@@ -113,55 +106,33 @@ export default function StudentPortalView() {
         <ScheduleManager />
       ) : (
         <>
-          {/* Subjects Filter Chips */}
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => setSelectedSubjectId('all')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedSubjectId === 'all'
-                  ? 'bg-gradient-to-r from-[#041633] to-[#0c2b64] text-white shadow-md'
-                  : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200'
-              }`}
-            >
-              جميع المقررات ({myLectures.length})
-            </button>
-            {mySubjects.map(sub => (
-              <button
-                key={sub.id}
-                onClick={() => setSelectedSubjectId(sub.id)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                  selectedSubjectId === sub.id
-                    ? 'bg-gradient-to-r from-[#041633] to-[#0c2b64] text-white shadow-md'
-                    : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200'
-                }`}
-              >
-                <span>{sub.name}</span>
-                <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-cyan-100 text-cyan-900 border border-cyan-200">
-                  {sub.subjectType === 'theory' ? 'نظري' : sub.subjectType === 'practical' ? 'عملي' : 'نظري وعملي'}
-                </span>
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-700">
-                  {lectures.filter(l => l.subjectId === sub.id).length}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* Search Controls */}
-          <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="relative flex-1 w-full">
-              <Search className="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="ابحث بالمحاضرة أو التدريسي..."
-                className={`w-full pr-10 pl-4 py-2 text-xs font-semibold rounded-xl border outline-none ${
-                  searchQuery.trim() ? 'border-s-[3px] border-s-emerald-500 border-slate-300' : 'border-s-[3px] border-s-cyan-500 border-slate-200'
-                }`}
+          {/* Controls Bar: Neat Subject Selector Dropdown + Semester Filter + View Toggle */}
+          <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Subject Selector Dropdown */}
+            <div className="flex-1 w-full sm:max-w-md">
+              <Select
+                value={selectedSubjectId}
+                onChange={setSelectedSubjectId}
+                placeholder="اختر المادة الدراسية..."
+                options={[
+                  {
+                    value: 'all',
+                    label: `جميع المقررات الدراسية (${lectures.filter(l => !currentUser.stage || l.stage === currentUser.stage).length} محاضرة)`,
+                  },
+                  ...mySubjects.map(sub => {
+                    const count = lectures.filter(l => l.subjectId === sub.id).length;
+                    const typeLabel = sub.subjectType === 'theory' ? 'نظري' : sub.subjectType === 'practical' ? 'عملي' : 'نظري وعملي';
+                    return {
+                      value: sub.id,
+                      label: `${sub.name} (${typeLabel})`,
+                      description: `${count} محاضرة • ${sub.theoryDoctorName || sub.doctorName || ''}`,
+                    };
+                  }),
+                ]}
               />
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 self-end sm:self-auto">
               <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-bold">
                 <button onClick={() => setSemesterFilter('all')} className={`px-2.5 py-1 rounded-lg ${semesterFilter === 'all' ? 'bg-white shadow-xs' : ''}`}>الكل</button>
                 <button onClick={() => setSemesterFilter(1)} className={`px-2.5 py-1 rounded-lg ${semesterFilter === 1 ? 'bg-white shadow-xs' : ''}`}>فصل 1</button>
@@ -178,7 +149,7 @@ export default function StudentPortalView() {
           {myLectures.length === 0 ? (
             <div className="bg-white rounded-2xl p-12 text-center border border-slate-200">
               <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <h4 className="font-bold text-slate-800 text-sm">لا توجد محاضرات مطابقة لبحثك</h4>
+              <h4 className="font-bold text-slate-800 text-sm">لا توجد محاضرات منشورة لهذا المقرر حالياً</h4>
             </div>
           ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
