@@ -53,8 +53,13 @@ export default function LectureManager() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Assigned subjects for doctor
-  const myDoctorSubjects = subjects.filter((s) => s.doctorId === currentUser.id);
+  // Assigned subjects for doctor (Theory, Practical, or Primary)
+  const myDoctorSubjects = subjects.filter(
+    (s) =>
+      s.theoryDoctorId === currentUser.id ||
+      s.practicalDoctorId === currentUser.id ||
+      s.doctorId === currentUser.id
+  );
   const myDoctorSubjectIds = myDoctorSubjects.map((s) => s.id);
 
   // Filter accessible lectures based on user scope and search
@@ -603,11 +608,19 @@ export default function LectureManager() {
                       }}
                       required
                       placeholder="اختر المادة المسندة إليك..."
-                      options={myDoctorSubjects.map((s) => ({
-                        value: s.id,
-                        label: s.name,
-                        description: `المرحلة ${s.stage}`,
-                      }))}
+                      options={myDoctorSubjects.map((s) => {
+                        const isTheory = s.theoryDoctorId === currentUser.id;
+                        const isPractical = s.practicalDoctorId === currentUser.id;
+                        let typeDesc = 'نظري وعملي';
+                        if (isTheory && isPractical) typeDesc = 'نظري وعملي';
+                        else if (isTheory) typeDesc = 'محاضرات نظرية';
+                        else if (isPractical) typeDesc = 'مختبر وعملي';
+                        return {
+                          value: s.id,
+                          label: s.name,
+                          description: `المرحلة ${s.stage} (${typeDesc})`,
+                        };
+                      })}
                     />
 
                     <Select

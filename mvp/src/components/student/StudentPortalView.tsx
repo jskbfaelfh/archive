@@ -136,6 +136,9 @@ export default function StudentPortalView() {
                 }`}
               >
                 <span>{sub.name}</span>
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-cyan-100 text-cyan-900 border border-cyan-200">
+                  {sub.subjectType === 'theory' ? 'نظري' : sub.subjectType === 'practical' ? 'عملي' : 'نظري وعملي'}
+                </span>
                 <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-700">
                   {lectures.filter(l => l.subjectId === sub.id).length}
                 </span>

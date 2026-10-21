@@ -29,6 +29,8 @@ export interface College {
   departments: Department[];
 }
 
+export type SubjectType = 'both' | 'theory' | 'practical';
+
 export interface Subject {
   id: string;
   name: string;
@@ -37,8 +39,13 @@ export interface Subject {
   departmentId: string;
   stage: number;
   semester: 1 | 2;
+  subjectType?: SubjectType;
   doctorId?: string;
   doctorName?: string;
+  theoryDoctorId?: string;
+  theoryDoctorName?: string;
+  practicalDoctorId?: string;
+  practicalDoctorName?: string;
 }
 
 export interface User {
@@ -75,6 +82,7 @@ export interface Lecture {
   fileName: string;
   filePath?: string;
   description?: string;
+  category?: 'theory' | 'practical';
   downloadsCount: number;
   viewsCount: number;
 }

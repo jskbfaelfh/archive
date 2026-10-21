@@ -25,10 +25,12 @@ export default function DoctorPortalView() {
   const myCollege = colleges.find(c => c.id === currentUser.collegeId);
   const myDept = myCollege?.departments.find(d => d.id === currentUser.departmentId);
 
-  // Doctor's assigned subjects
+  // Doctor's assigned subjects (Theory, Practical, or Both)
   const mySubjects = subjects.filter(s =>
+    s.theoryDoctorId === currentUser.id ||
+    s.practicalDoctorId === currentUser.id ||
     s.doctorId === currentUser.id ||
-    (!s.doctorId && s.departmentId === currentUser.departmentId)
+    (!s.doctorId && !s.theoryDoctorId && !s.practicalDoctorId && s.departmentId === currentUser.departmentId)
   );
 
   // Doctor's uploaded or assigned lectures
@@ -64,18 +66,32 @@ export default function DoctorPortalView() {
               </span>
             </div>
 
-            {/* Assigned Subjects Badges */}
+            {/* Assigned Subjects Badges with Theory / Practical indicators */}
             {mySubjects.length > 0 && (
-              <div className="flex flex-wrap items-center gap-1.5 mt-2">
+              <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
                 <span className="text-[11px] font-bold text-slate-400">المقررات المكلّف بها:</span>
-                {mySubjects.map(sub => (
-                  <span
-                    key={sub.id}
-                    className="px-2 py-0.5 rounded-lg text-[11px] font-black bg-cyan-50 text-cyan-800 border border-cyan-200/60"
-                  >
-                    {sub.name} (المرحلة {sub.stage})
-                  </span>
-                ))}
+                {mySubjects.map(sub => {
+                  const isTheory = sub.theoryDoctorId === currentUser.id;
+                  const isPractical = sub.practicalDoctorId === currentUser.id;
+                  let roleTag = 'نظري + عملي';
+                  if (isTheory && isPractical) roleTag = 'نظري + عملي';
+                  else if (isTheory) roleTag = 'نظري';
+                  else if (isPractical) roleTag = 'عملي';
+                  else if (sub.subjectType === 'practical') roleTag = 'عملي';
+                  else if (sub.subjectType === 'theory') roleTag = 'نظري';
+
+                  return (
+                    <span
+                      key={sub.id}
+                      className="px-2.5 py-1 rounded-xl text-[11px] font-black bg-cyan-50 text-cyan-950 border border-cyan-200/80 flex items-center gap-1.5"
+                    >
+                      <span>{sub.name}</span>
+                      <span className="px-1.5 py-0.5 rounded-md bg-white text-cyan-800 text-[10px] font-extrabold border border-cyan-200">
+                        المرحلة {sub.stage} • {roleTag}
+                      </span>
+                    </span>
+                  );
+                })}
               </div>
             )}
           </div>

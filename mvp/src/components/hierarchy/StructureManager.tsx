@@ -79,14 +79,18 @@ export default function StructureManager() {
     stage: number;
     editId?: string;
     name: string;
-    doctorId?: string;
+    subjectType: 'both' | 'theory' | 'practical';
+    theoryDoctorId?: string;
+    practicalDoctorId?: string;
   }>({
     open: false,
     collegeId: '',
     departmentId: '',
     stage: 1,
     name: '',
-    doctorId: '',
+    subjectType: 'both',
+    theoryDoctorId: '',
+    practicalDoctorId: '',
   });
 
   const toggleCollege = (id: string) => {
@@ -390,7 +394,9 @@ export default function StructureManager() {
                                                     departmentId: dept.id,
                                                     stage: stg,
                                                     name: '',
-                                                    doctorId: '',
+                                                    subjectType: 'both',
+                                                    theoryDoctorId: '',
+                                                    practicalDoctorId: '',
                                                   })
                                                 }
                                                 className="px-2 py-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded text-[11px] font-bold flex items-center gap-1 cursor-pointer"
@@ -460,13 +466,22 @@ export default function StructureManager() {
                                                 className="bg-emerald-50 text-emerald-950 border border-emerald-300 px-2.5 py-1 rounded-lg flex items-center gap-1.5 text-[11px]"
                                               >
                                                 <span className="font-bold">{sub.name}</span>
-                                                {sub.doctorName ? (
+                                                <span className="text-[9px] px-1.5 py-0.5 rounded font-black bg-cyan-100 text-cyan-900 border border-cyan-300">
+                                                  {sub.subjectType === 'theory' ? 'نظري' : sub.subjectType === 'practical' ? 'عملي' : 'نظري + عملي'}
+                                                </span>
+                                                {sub.subjectType === 'theory' ? (
                                                   <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-bold border border-emerald-300">
-                                                    {sub.doctorName}
+                                                    {sub.theoryDoctorName || sub.doctorName || 'شاغر'}
+                                                  </span>
+                                                ) : sub.subjectType === 'practical' ? (
+                                                  <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-bold border border-emerald-300">
+                                                    {sub.practicalDoctorName || sub.doctorName || 'شاغر'}
                                                   </span>
                                                 ) : (
-                                                  <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-medium border border-amber-300">
-                                                    شاغر
+                                                  <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-bold border border-emerald-300">
+                                                    {sub.theoryDoctorId === sub.practicalDoctorId && sub.theoryDoctorName
+                                                      ? `${sub.theoryDoctorName}`
+                                                      : `ن: ${sub.theoryDoctorName || 'شاغر'} • ع: ${sub.practicalDoctorName || 'شاغر'}`}
                                                   </span>
                                                 )}
                                                 {canManageInDept && (
@@ -480,7 +495,9 @@ export default function StructureManager() {
                                                           stage: stg,
                                                           editId: sub.id,
                                                           name: sub.name,
-                                                          doctorId: sub.doctorId || '',
+                                                          subjectType: sub.subjectType || 'both',
+                                                          theoryDoctorId: sub.theoryDoctorId || sub.doctorId || '',
+                                                          practicalDoctorId: sub.practicalDoctorId || '',
                                                         })
                                                       }
                                                       className="text-emerald-700 hover:text-emerald-950 cursor-pointer"
@@ -709,19 +726,77 @@ export default function StructureManager() {
               />
             </div>
             <div>
-              <Select
-                label="التدريسي المسؤول"
-                value={subjectModal.doctorId || ''}
-                onChange={(val) => setSubjectModal({ ...subjectModal, doctorId: val })}
-                placeholder="-- بدون تدريسي --"
-                options={[
-                  { value: '', label: '-- بدون تدريسي --' },
-                  ...users
-                    .filter((u) => u.role === 'doctor' && u.departmentId === subjectModal.departmentId)
-                    .map((doc) => ({ value: doc.id, label: doc.name })),
-                ]}
-              />
+              <label className="block text-[12px] font-bold text-slate-700 mb-1.5 text-right">طبيعة المادة</label>
+              <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => setSubjectModal({ ...subjectModal, subjectType: 'both' })}
+                  className={`py-1.5 rounded-lg transition-all ${
+                    subjectModal.subjectType === 'both' ? 'bg-[#041633] text-white shadow-xs' : 'text-slate-600 hover:bg-white'
+                  }`}
+                >
+                  نظري وعملي
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSubjectModal({ ...subjectModal, subjectType: 'theory' })}
+                  className={`py-1.5 rounded-lg transition-all ${
+                    subjectModal.subjectType === 'theory' ? 'bg-[#041633] text-white shadow-xs' : 'text-slate-600 hover:bg-white'
+                  }`}
+                >
+                  نظري فقط
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSubjectModal({ ...subjectModal, subjectType: 'practical' })}
+                  className={`py-1.5 rounded-lg transition-all ${
+                    subjectModal.subjectType === 'practical' ? 'bg-[#041633] text-white shadow-xs' : 'text-slate-600 hover:bg-white'
+                  }`}
+                >
+                  عملي فقط
+                </button>
+              </div>
             </div>
+
+            {(subjectModal.subjectType === 'theory' || subjectModal.subjectType === 'both') && (
+              <div>
+                <Select
+                  label="أستاذ المحاضرات النظرية"
+                  value={subjectModal.theoryDoctorId || ''}
+                  onChange={(val) => setSubjectModal({ ...subjectModal, theoryDoctorId: val })}
+                  placeholder="-- بدون تدريسي --"
+                  options={[
+                    { value: '', label: '-- بدون تدريسي --' },
+                    ...users
+                      .filter((u) => u.role === 'doctor' && u.departmentId === subjectModal.departmentId)
+                      .map((doc) => ({ value: doc.id, label: doc.name })),
+                  ]}
+                />
+              </div>
+            )}
+
+            {(subjectModal.subjectType === 'practical' || subjectModal.subjectType === 'both') && (
+              <div>
+                <Select
+                  label="أستاذ المختبر / الدروس العملية"
+                  value={subjectModal.practicalDoctorId || ''}
+                  onChange={(val) => setSubjectModal({ ...subjectModal, practicalDoctorId: val })}
+                  placeholder="-- بدون تدريسي --"
+                  options={[
+                    { value: '', label: '-- بدون تدريسي --' },
+                    ...users
+                      .filter((u) => u.role === 'doctor' && u.departmentId === subjectModal.departmentId)
+                      .map((doc) => ({ value: doc.id, label: doc.name })),
+                  ]}
+                />
+              </div>
+            )}
+
+            {subjectModal.subjectType === 'both' && (
+              <p className="text-[11px] text-sky-800 bg-sky-50 border border-sky-200 p-2 rounded-xl font-medium">
+                💡 يمكنك اختيار نفس التدريسي للاثنين معاً، أو اختيار أستاذين مختلفين للنظري والعملي.
+              </p>
+            )}
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
                 onClick={() => setSubjectModal({ ...subjectModal, open: false })}
@@ -732,24 +807,30 @@ export default function StructureManager() {
               <button
                 onClick={() => {
                   if (!subjectModal.name.trim()) return;
-                  const selectedDoc = users.find((u) => u.id === subjectModal.doctorId);
-                  const docName = selectedDoc ? selectedDoc.name : undefined;
+                  const theoryDoc = users.find((u) => u.id === subjectModal.theoryDoctorId);
+                  const practicalDoc = users.find((u) => u.id === subjectModal.practicalDoctorId);
+                  const primaryDoc = theoryDoc || practicalDoc;
+
+                  const payload = {
+                    name: subjectModal.name.trim(),
+                    subjectType: subjectModal.subjectType,
+                    doctorId: primaryDoc?.id || undefined,
+                    doctorName: primaryDoc?.name,
+                    theoryDoctorId: (subjectModal.subjectType === 'theory' || subjectModal.subjectType === 'both') ? (subjectModal.theoryDoctorId || undefined) : undefined,
+                    theoryDoctorName: (subjectModal.subjectType === 'theory' || subjectModal.subjectType === 'both') ? theoryDoc?.name : undefined,
+                    practicalDoctorId: (subjectModal.subjectType === 'practical' || subjectModal.subjectType === 'both') ? (subjectModal.practicalDoctorId || undefined) : undefined,
+                    practicalDoctorName: (subjectModal.subjectType === 'practical' || subjectModal.subjectType === 'both') ? practicalDoc?.name : undefined,
+                  };
 
                   if (subjectModal.editId) {
-                    updateSubject(subjectModal.editId, {
-                      name: subjectModal.name.trim(),
-                      doctorId: subjectModal.doctorId || undefined,
-                      doctorName: docName,
-                    });
+                    updateSubject(subjectModal.editId, payload);
                   } else {
                     addSubject({
-                      name: subjectModal.name.trim(),
+                      ...payload,
                       collegeId: subjectModal.collegeId,
                       departmentId: subjectModal.departmentId,
                       stage: subjectModal.stage,
                       semester: 1,
-                      doctorId: subjectModal.doctorId || undefined,
-                      doctorName: docName,
                     });
                   }
                   setSubjectModal({ ...subjectModal, open: false });
