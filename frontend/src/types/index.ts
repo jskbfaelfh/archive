@@ -97,21 +97,25 @@ export const WEEK_DAYS: { key: DayKey; label: string }[] = [
   { key: 'wednesday', label: 'الأربعاء' },
 ];
 
+export type ScheduleTargetType = 'stage' | 'doctor';
+
 export interface Schedule {
   id: string;
   title: string;
+  targetType: ScheduleTargetType;
   collegeId: string;
   departmentId: string;
-  stage: number;
-  sectionTarget: 'all' | string;
+  stage?: number;
+  sectionTarget?: 'all' | string;
   sectionName?: string;
+  doctorId?: string;
+  doctorName?: string;
   semester: 1 | 2;
   academicYear: string;
   type: 'image' | 'api';
-  imageUrl?: string;
-  dailyImages?: Partial<Record<DayKey, string>>;
+  imageUrl: string;
   notes?: string;
-  daysRange: string;
+  daysRange?: string;
   createdById: string;
   createdByName: string;
   createdAt: string;

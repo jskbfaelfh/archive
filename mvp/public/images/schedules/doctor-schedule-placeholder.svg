@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" width="900" height="600" direction="rtl">
+  <defs>
+    <linearGradient id="docHeaderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#041633"/>
+      <stop offset="50%" stop-color="#0c2b64"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="900" height="600" fill="#f8fafc" rx="16"/>
+  <rect width="900" height="600" fill="none" stroke="#cbd5e1" stroke-width="2" rx="16"/>
+
+  <!-- University Header Ribbon -->
+  <rect width="900" height="85" fill="url(#docHeaderGrad)" rx="16"/>
+  <rect y="70" width="900" height="15" fill="#041633"/>
+  <text x="450" y="38" fill="#ffffff" font-family="'Cairo', system-ui, sans-serif" font-size="20" font-weight="900" text-anchor="middle">جامعة الزهراوي — كلية الطب البشري</text>
+  <text x="450" y="65" fill="#38bdf8" font-family="'Cairo', system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">الجدول الأسبوعي المعتمد للأستاذ التدريسي: أ.د. حيدر كاظم (قسم الجراحة العامة)</text>
+
+  <!-- Table Header -->
+  <g transform="translate(30, 105)">
+    <rect width="840" height="42" fill="#0c2b64" rx="8"/>
+    <text x="760" y="27" fill="#ffffff" font-family="'Cairo', sans-serif" font-size="13" font-weight="800" text-anchor="middle">اليوم</text>
+    <text x="610" y="27" fill="#ffffff" font-family="'Cairo', sans-serif" font-size="13" font-weight="800" text-anchor="middle">08:30 - 10:00</text>
+    <text x="450" y="27" fill="#ffffff" font-family="'Cairo', sans-serif" font-size="13" font-weight="800" text-anchor="middle">10:15 - 11:45</text>
+    <text x="290" y="27" fill="#ffffff" font-family="'Cairo', sans-serif" font-size="13" font-weight="800" text-anchor="middle">12:00 - 01:30</text>
+    <text x="130" y="27" fill="#ffffff" font-family="'Cairo', sans-serif" font-size="13" font-weight="800" text-anchor="middle">01:45 - 03:00</text>
+  </g>
+
+  <!-- Row 1: السبت -->
+  <g transform="translate(30, 155)">
+    <rect width="840" height="65" fill="#ffffff" stroke="#e2e8f0" rx="8"/>
+    <rect x="700" width="140" height="65" fill="#f1f5f9" rx="8"/>
+    <text x="770" y="38" fill="#041633" font-family="'Cairo', sans-serif" font-size="15" font-weight="900" text-anchor="middle">السبت</text>
+    <text x="610" y="30" fill="#0369a1" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">تشريح سريري (نظري)</text>
+    <text x="610" y="48" fill="#64748b" font-family="'Cairo', sans-serif" font-size="10" text-anchor="middle">المرحلة 1 • المدرج الكبير 1</text>
+    <text x="450" y="38" fill="#94a3b8" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">—</text>
+    <text x="290" y="38" fill="#0284c7" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">ساعات مكتبية وإرشاد</text>
+    <text x="130" y="30" fill="#0f172a" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">مجلس القسم السريري</text>
+    <text x="130" y="48" fill="#64748b" font-family="'Cairo', sans-serif" font-size="10" text-anchor="middle">قاعة الاجتماعات</text>
+  </g>
+
+  <!-- Row 2: الأحد -->
+  <g transform="translate(30, 227)">
+    <rect width="840" height="65" fill="#ffffff" stroke="#e2e8f0" rx="8"/>
+    <rect x="700" width="140" height="65" fill="#f1f5f9" rx="8"/>
+    <text x="770" y="38" fill="#041633" font-family="'Cairo', sans-serif" font-size="15" font-weight="900" text-anchor="middle">الأحد</text>
+    <text x="610" y="38" fill="#94a3b8" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">—</text>
+    <text x="450" y="30" fill="#0369a1" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">تشريح سريري (نظري)</text>
+    <text x="450" y="48" fill="#64748b" font-family="'Cairo', sans-serif" font-size="10" text-anchor="middle">المرحلة 1 • المدرج الكبير 1</text>
+    <text x="290" y="30" fill="#0f172a" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">فسيولوجيا الجراحة</text>
+    <text x="290" y="48" fill="#64748b" font-family="'Cairo', sans-serif" font-size="10" text-anchor="middle">المرحلة 1 • القاعة 2</text>
+    <text x="130" y="38" fill="#94a3b8" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">—</text>
+  </g>
+
+  <!-- Row 3: الاثنين -->
+  <g transform="translate(30, 299)">
+    <rect width="840" height="65" fill="#ffffff" stroke="#e2e8f0" rx="8"/>
+    <rect x="700" width="140" height="65" fill="#f1f5f9" rx="8"/>
+    <text x="770" y="38" fill="#041633" font-family="'Cairo', sans-serif" font-size="15" font-weight="900" text-anchor="middle">الاثنين</text>
+    <text x="610" y="30" fill="#0369a1" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">مختبر تشريح متقدم</text>
+    <text x="610" y="48" fill="#64748b" font-family="'Cairo', sans-serif" font-size="10" text-anchor="middle">المرحلة 1 • مختبر 1</text>
+    <text x="450" y="38" fill="#94a3b8" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">—</text>
+    <text x="290" y="38" fill="#0284c7" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">مراجعة بحوث الطلبة</text>
+    <text x="130" y="38" fill="#94a3b8" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">—</text>
+  </g>
+
+  <!-- Row 4: الثلاثاء -->
+  <g transform="translate(30, 371)">
+    <rect width="840" height="65" fill="#ffffff" stroke="#e2e8f0" rx="8"/>
+    <rect x="700" width="140" height="65" fill="#f1f5f9" rx="8"/>
+    <text x="770" y="38" fill="#041633" font-family="'Cairo', sans-serif" font-size="15" font-weight="900" text-anchor="middle">الثلاثاء</text>
+    <text x="610" y="30" fill="#0369a1" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">أدوية وعقاقير جراحية</text>
+    <text x="610" y="48" fill="#64748b" font-family="'Cairo', sans-serif" font-size="10" text-anchor="middle">المرحلة 1 • المدرج 1</text>
+    <text x="450" y="38" fill="#94a3b8" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">—</text>
+    <text x="290" y="38" fill="#0284c7" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">ساعات مكتبية</text>
+    <text x="130" y="38" fill="#94a3b8" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">—</text>
+  </g>
+
+  <!-- Row 5: الأربعاء -->
+  <g transform="translate(30, 443)">
+    <rect width="840" height="65" fill="#ffffff" stroke="#e2e8f0" rx="8"/>
+    <rect x="700" width="140" height="65" fill="#f1f5f9" rx="8"/>
+    <text x="770" y="38" fill="#041633" font-family="'Cairo', sans-serif" font-size="15" font-weight="900" text-anchor="middle">الأربعاء</text>
+    <text x="610" y="30" fill="#0f172a" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">الندوة العلمية السريرية</text>
+    <text x="610" y="48" fill="#64748b" font-family="'Cairo', sans-serif" font-size="10" text-anchor="middle">مدرج المؤتمرات</text>
+    <text x="450" y="38" fill="#94a3b8" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">—</text>
+    <text x="290" y="38" fill="#0284c7" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">سمنار القسم</text>
+    <text x="130" y="38" fill="#94a3b8" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">—</text>
+  </g>
+
+  <!-- Footer Seal -->
+  <g transform="translate(30, 525)">
+    <rect width="840" height="45" fill="#f1f5f9" rx="8"/>
+    <text x="810" y="28" fill="#041633" font-family="'Cairo', sans-serif" font-size="12" font-weight="bold" text-anchor="start">معتمد وموثق رسمياً من رئاسة قسم الجراحة العامة وعمادة كلية الطب البشري للعام الدراسي 2026-2027</text>
+  </g>
+</svg>
