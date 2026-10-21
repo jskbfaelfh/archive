@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "npm --prefix frontend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:mvp": "npm --prefix mvp run dev",
     "build": "npm --prefix frontend run build",
-    "preview": "npm --prefix frontend run preview",
-    "test:e2e": "npm --prefix frontend run test:e2e",
+    "build:mvp": "npm --prefix mvp run build",
     "map:update": "node scripts/update-project-map.mjs",
     "check:lines": "node scripts/check-line-limits.mjs"
   }

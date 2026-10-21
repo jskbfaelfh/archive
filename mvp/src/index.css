@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f7fb;
+  --foreground: #041633;
+  --alzahrawi-navy-dark: #041633;
+  --alzahrawi-navy: #0a1e3b;
+  --alzahrawi-blue: #0c2b64;
+  --alzahrawi-royal: #13408a;
+  --alzahrawi-cyan: #00f0ff;
+  --alzahrawi-sky: #38bdf8;
+  --alzahrawi-accent: #22d3ee;
+  --alzahrawi-bg: #f4f7fb;
+}
+
+html {
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
+body {
+  background-color: #f4f7fb;
+  color: #041633;
+  font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Force crystal-clear high contrast for all form elements & dropdowns */
+input, select, textarea {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
+select option {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+}
+
+/* Clear focus states with Alzahrawi Cyan */
+input:focus, select:focus, textarea:focus {
+  border-color: #0284c7 !important;
+  outline: 2px solid rgba(2, 132, 199, 0.3) !important;
+  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.15) !important;
+}
+
+/* Custom Scrollbar styled for Alzahrawi Portal */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0284c7;
+}
