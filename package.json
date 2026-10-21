@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "prisma db push && next start",
+    "dev": "node scripts/prepare-db.js && prisma generate && next dev",
+    "build": "node scripts/prepare-db.js && prisma generate && next build",
+    "start": "node scripts/prepare-db.js && prisma db push && next start",
     "lint": "eslint",
     "test:rbac": "tsx scripts/test-rbac.ts"
   },
