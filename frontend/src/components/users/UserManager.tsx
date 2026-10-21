@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { User, UserRole } from '@/types';
+import { User, UserRole, Subject } from '@/types';
 import {
   UserPlus,
   Edit2,
@@ -17,7 +17,7 @@ import {
 import Select from '@/components/common/Select';
 
 export default function UserManager() {
-  const { users, colleges, sections, subjects, addUser, updateUser, deleteUser, currentUser, refreshData } = useApp();
+  const { users, colleges, sections, subjects, addUser, updateUser, deleteUser, updateSubject, currentUser, refreshData } = useApp();
 
   const isSuper = currentUser.role === 'super_admin';
   const isCollegeAdmin = currentUser.role === 'college_admin';
@@ -35,6 +35,11 @@ export default function UserManager() {
   const [departmentId, setDepartmentId] = useState('');
   const [stage, setStage] = useState<number>(1);
   const [sectionId, setSectionId] = useState('');
+
+  // Doctor Subject Assignments
+  const [doctorSubjectAssignments, setDoctorSubjectAssignments] = useState<
+    Record<string, { selected: boolean; role: 'both' | 'theory' | 'practical' }>
+  >({});
 
   // Excel Bulk Import States
   const [importModalOpen, setImportModalOpen] = useState(false);
@@ -102,6 +107,9 @@ export default function UserManager() {
   const availableSections = sections.filter(
     (s) => s.collegeId === effectiveCollegeId && s.departmentId === effectiveDeptId && s.stage === stage
   );
+  const availableDeptSubjects = subjects.filter(
+    (s) => !effectiveDeptId || s.departmentId === effectiveDeptId
+  );
 
   const getAllowedRoles = (): { role: UserRole; label: string }[] => {
     if (isSuper) {
@@ -155,6 +163,7 @@ export default function UserManager() {
 
     setStage(1);
     setSectionId('');
+    setDoctorSubjectAssignments({});
     setModalOpen(true);
   };
 
@@ -168,6 +177,27 @@ export default function UserManager() {
     setDepartmentId(u.departmentId || currentUser.departmentId || '');
     setStage(u.stage || 1);
     setSectionId(u.sectionId || '');
+
+    if (u.role === 'doctor') {
+      const existing: Record<string, { selected: boolean; role: 'both' | 'theory' | 'practical' }> = {};
+      subjects.forEach((sub) => {
+        const isTheory = sub.theoryDoctorId === u.id;
+        const isPractical = sub.practicalDoctorId === u.id;
+        const isPrimary = sub.doctorId === u.id;
+        if (isTheory || isPractical || isPrimary) {
+          let r: 'both' | 'theory' | 'practical' = 'both';
+          if (isTheory && isPractical) r = 'both';
+          else if (isTheory) r = 'theory';
+          else if (isPractical) r = 'practical';
+          else r = sub.subjectType === 'practical' ? 'practical' : 'theory';
+          existing[sub.id] = { selected: true, role: r };
+        }
+      });
+      setDoctorSubjectAssignments(existing);
+    } else {
+      setDoctorSubjectAssignments({});
+    }
+
     setModalOpen(true);
   };
 
@@ -187,6 +217,7 @@ export default function UserManager() {
     }
 
     const sec = sections.find((s) => s.id === sectionId);
+    let savedDoctorId: string | undefined = editId || undefined;
 
     if (editId) {
       await updateUser(editId, {
@@ -211,7 +242,9 @@ export default function UserManager() {
         stage: role === 'student' ? stage : undefined,
         sectionId: role === 'student' ? sectionId : undefined,
         sectionName: role === 'student' ? sec?.name : undefined,
-      })) as { tempPassword?: string } | undefined;
+      })) as { tempPassword?: string; user?: User } | undefined;
+
+      savedDoctorId = result?.user?.id;
 
       if (result?.tempPassword) {
         setCreatedUserNotice({
@@ -219,6 +252,66 @@ export default function UserManager() {
           email,
           tempPassword: result.tempPassword,
         });
+      }
+    }
+
+    // Sync doctor subjects if role === 'doctor'
+    if (role === 'doctor' && savedDoctorId) {
+      const relevantSubjects = subjects.filter(
+        (s) => !targetDeptId || s.departmentId === targetDeptId
+      );
+      for (const sub of relevantSubjects) {
+        const assignment = doctorSubjectAssignments[sub.id];
+        if (assignment?.selected) {
+          const r = assignment.role;
+          const updates: Partial<Subject> = {};
+          if (r === 'theory') {
+            updates.theoryDoctorId = savedDoctorId;
+            updates.theoryDoctorName = name;
+            updates.doctorId = savedDoctorId;
+            updates.doctorName = name;
+            if (sub.practicalDoctorId === savedDoctorId) {
+              updates.practicalDoctorId = undefined;
+              updates.practicalDoctorName = undefined;
+            }
+          } else if (r === 'practical') {
+            updates.practicalDoctorId = savedDoctorId;
+            updates.practicalDoctorName = name;
+            if (sub.theoryDoctorId === savedDoctorId) {
+              updates.theoryDoctorId = undefined;
+              updates.theoryDoctorName = undefined;
+            }
+          } else {
+            updates.theoryDoctorId = savedDoctorId;
+            updates.theoryDoctorName = name;
+            updates.practicalDoctorId = savedDoctorId;
+            updates.practicalDoctorName = name;
+            updates.doctorId = savedDoctorId;
+            updates.doctorName = name;
+          }
+          await updateSubject(sub.id, updates);
+        } else {
+          const wasAssigned =
+            sub.theoryDoctorId === savedDoctorId ||
+            sub.practicalDoctorId === savedDoctorId ||
+            sub.doctorId === savedDoctorId;
+          if (wasAssigned) {
+            const updates: Partial<Subject> = {};
+            if (sub.theoryDoctorId === savedDoctorId) {
+              updates.theoryDoctorId = undefined;
+              updates.theoryDoctorName = undefined;
+            }
+            if (sub.practicalDoctorId === savedDoctorId) {
+              updates.practicalDoctorId = undefined;
+              updates.practicalDoctorName = undefined;
+            }
+            if (sub.doctorId === savedDoctorId) {
+              updates.doctorId = undefined;
+              updates.doctorName = undefined;
+            }
+            await updateSubject(sub.id, updates);
+          }
+        }
       }
     }
 
@@ -409,19 +502,30 @@ export default function UserManager() {
                           )}
                           {u.role === 'doctor' && (
                             <div className="pt-1 flex flex-wrap gap-1">
-                              {subjects.filter((s) => s.doctorId === u.id).length > 0 ? (
+                              {subjects.filter((s) => s.theoryDoctorId === u.id || s.practicalDoctorId === u.id || s.doctorId === u.id).length > 0 ? (
                                 subjects
-                                  .filter((s) => s.doctorId === u.id)
-                                  .map((s) => (
-                                    <span
-                                      key={s.id}
-                                      className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-1.5 py-0.2 rounded font-bold"
-                                    >
-                                      {s.name} (م{s.stage})
-                                    </span>
-                                  ))
+                                  .filter((s) => s.theoryDoctorId === u.id || s.practicalDoctorId === u.id || s.doctorId === u.id)
+                                  .map((s) => {
+                                    const isTheory = s.theoryDoctorId === u.id;
+                                    const isPractical = s.practicalDoctorId === u.id;
+                                    let tag = 'نظري وعملي';
+                                    if (isTheory && isPractical) tag = 'نظري وعملي';
+                                    else if (isTheory) tag = 'نظري';
+                                    else if (isPractical) tag = 'عملي';
+                                    return (
+                                      <span
+                                        key={s.id}
+                                        className="text-[10px] bg-emerald-50 text-emerald-900 border border-emerald-300 px-1.5 py-0.5 rounded font-black flex items-center gap-1"
+                                      >
+                                        <span>{s.name}</span>
+                                        <span className="text-[9px] text-emerald-700 bg-white px-1 rounded border border-emerald-200">
+                                          م{s.stage} • {tag}
+                                        </span>
+                                      </span>
+                                    );
+                                  })
                               ) : (
-                                <span className="text-[10px] text-amber-700 font-medium">بدون مواد</span>
+                                <span className="text-[10px] text-amber-700 font-medium">بدون مواد مسندة</span>
                               )}
                             </div>
                           )}
@@ -605,6 +709,115 @@ export default function UserManager() {
                           }))}
                         />
                       </div>
+                    </div>
+                  )}
+
+                  {/* 4. Subject Assignments for Doctor */}
+                  {role === 'doctor' && (
+                    <div className="space-y-2 border-t border-slate-100 pt-2.5">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-[13px] font-bold text-slate-800">
+                          المواد والمقررات المكلّف بها الأستاذ
+                        </label>
+                        <span className="text-[11px] font-semibold text-slate-400">
+                          (حدد المقررات التي سيدرّسها التدريسي)
+                        </span>
+                      </div>
+
+                      {availableDeptSubjects.length === 0 ? (
+                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center text-xs text-slate-500 font-medium">
+                          لا توجد مواد مسجلة في هذا القسم بعد. يمكنك إضافة المواد من تبويب الهيكلية.
+                        </div>
+                      ) : (
+                        <div className="max-h-56 overflow-y-auto space-y-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
+                          {availableDeptSubjects.map((sub) => {
+                            const isAssigned = doctorSubjectAssignments[sub.id]?.selected;
+                            const currentRole = doctorSubjectAssignments[sub.id]?.role || (sub.subjectType === 'practical' ? 'practical' : sub.subjectType === 'theory' ? 'theory' : 'both');
+
+                            return (
+                              <div
+                                key={sub.id}
+                                className={`p-2.5 rounded-xl border transition-all ${
+                                  isAssigned
+                                    ? 'bg-white border-cyan-400 shadow-xs'
+                                    : 'bg-white/60 border-slate-200 hover:border-slate-300'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <label className="flex items-center gap-2 cursor-pointer flex-1">
+                                    <input
+                                      type="checkbox"
+                                      checked={isAssigned || false}
+                                      onChange={(e) => {
+                                        const checked = e.target.checked;
+                                        setDoctorSubjectAssignments((prev) => ({
+                                          ...prev,
+                                          [sub.id]: {
+                                            selected: checked,
+                                            role: prev[sub.id]?.role || (sub.subjectType === 'practical' ? 'practical' : sub.subjectType === 'theory' ? 'theory' : 'both'),
+                                          },
+                                        }));
+                                      }}
+                                      className="w-4 h-4 rounded text-cyan-600 focus:ring-cyan-500 cursor-pointer"
+                                    />
+                                    <span className="text-xs font-black text-slate-900">{sub.name}</span>
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                                      المرحلة {sub.stage}
+                                    </span>
+                                  </label>
+
+                                  {isAssigned && sub.subjectType === 'both' && (
+                                    <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg text-[10px] font-bold">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setDoctorSubjectAssignments((prev) => ({
+                                            ...prev,
+                                            [sub.id]: { ...prev[sub.id], role: 'both' },
+                                          }))
+                                        }
+                                        className={`px-2 py-0.5 rounded cursor-pointer ${
+                                          currentRole === 'both' ? 'bg-[#041633] text-white shadow-xs' : 'text-slate-600 hover:bg-white'
+                                        }`}
+                                      >
+                                        نظري وعملي
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setDoctorSubjectAssignments((prev) => ({
+                                            ...prev,
+                                            [sub.id]: { ...prev[sub.id], role: 'theory' },
+                                          }))
+                                        }
+                                        className={`px-2 py-0.5 rounded cursor-pointer ${
+                                          currentRole === 'theory' ? 'bg-[#041633] text-white shadow-xs' : 'text-slate-600 hover:bg-white'
+                                        }`}
+                                      >
+                                        نظري فقط
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setDoctorSubjectAssignments((prev) => ({
+                                            ...prev,
+                                            [sub.id]: { ...prev[sub.id], role: 'practical' },
+                                          }))
+                                        }
+                                        className={`px-2 py-0.5 rounded cursor-pointer ${
+                                          currentRole === 'practical' ? 'bg-[#041633] text-white shadow-xs' : 'text-slate-600 hover:bg-white'
+                                        }`}
+                                      >
+                                        عملي فقط
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
