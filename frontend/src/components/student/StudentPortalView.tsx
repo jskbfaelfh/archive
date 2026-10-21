@@ -22,9 +22,9 @@ import {
 } from 'lucide-react';
 
 export default function StudentPortalView() {
-  const { currentUser, colleges, subjects, lectures, updateLecture } = useApp();
+  const { currentUser, colleges, subjects, lectures, updateLecture, activeTab } = useApp();
 
-  const [activePortalTab, setActivePortalTab] = useState<'lectures' | 'schedule'>('lectures');
+  const isScheduleTab = activeTab === 'schedules';
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('all');
   const [semesterFilter, setSemesterFilter] = useState<'all' | 1 | 2>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -109,33 +109,7 @@ export default function StudentPortalView() {
         </div>
       </div>
 
-      {/* 2. Switcher: Lectures vs Schedules */}
-      <div className="flex items-center gap-2 bg-slate-200/80 p-1.5 rounded-2xl w-fit">
-        <button
-          onClick={() => setActivePortalTab('lectures')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all ${
-            activePortalTab === 'lectures'
-              ? 'bg-[#041633] text-white shadow-md'
-              : 'text-slate-700 hover:text-slate-900'
-          }`}
-        >
-          <BookOpen className="w-4 h-4 text-cyan-400" />
-          <span>المحاضرات والمقررات الدراسية</span>
-        </button>
-        <button
-          onClick={() => setActivePortalTab('schedule')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all ${
-            activePortalTab === 'schedule'
-              ? 'bg-[#041633] text-white shadow-md'
-              : 'text-slate-700 hover:text-slate-900'
-          }`}
-        >
-          <Calendar className="w-4 h-4 text-cyan-400" />
-          <span>جدول الدوام الأسبوعي (السبت - الأربعاء)</span>
-        </button>
-      </div>
-
-      {activePortalTab === 'schedule' ? (
+      {isScheduleTab ? (
         <ScheduleManager />
       ) : (
         <>

@@ -98,35 +98,7 @@ export default function DoctorPortalView() {
         </div>
       </div>
 
-      {/* 2. Switcher: Lectures vs Schedules */}
-      <div className="flex items-center gap-2 bg-slate-200/80 p-1.5 rounded-2xl w-fit">
-        <button
-          type="button"
-          onClick={() => setActiveTab('lectures')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all ${
-            currentTab === 'lectures'
-              ? 'bg-[#041633] text-white shadow-md'
-              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-300/50'
-          }`}
-        >
-          <FileText className="w-4 h-4 text-cyan-400" />
-          <span>المحاضرات والمقررات الدراسية</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('schedules')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all ${
-            currentTab === 'schedules'
-              ? 'bg-[#041633] text-white shadow-md'
-              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-300/50'
-          }`}
-        >
-          <Calendar className="w-4 h-4 text-cyan-400" />
-          <span>جدول المحاضرات اليومي</span>
-        </button>
-      </div>
-
-      {/* 3. Tab Content */}
+      {/* Dynamic View: Lectures or Schedules (Controlled by Top Navbar) */}
       <div>
         {currentTab === 'schedules' ? (
           <ScheduleManager />
