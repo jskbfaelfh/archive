@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Lecture, FileType } from '@/types';
 import {
@@ -45,6 +45,7 @@ export default function LectureManager() {
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
   const [stageFilter, setStageFilter] = useState<number | 'all'>('all');
+  const [deptFilter, setDeptFilter] = useState<string>('all');
 
   // Preview modal state
   const [previewLecture, setPreviewLecture] = useState<Lecture | null>(null);
@@ -62,8 +63,36 @@ export default function LectureManager() {
   );
   const myDoctorSubjectIds = myDoctorSubjects.map((s) => s.id);
 
+  // Departments list for Dean & Super Admin
+  const deanDepartments = useMemo(() => {
+    if (currentUser.role === 'college_admin') {
+      return colleges.find((c) => c.id === currentUser.collegeId)?.departments || [];
+    }
+    if (currentUser.role === 'super_admin') {
+      return colleges.flatMap((c) => c.departments);
+    }
+    return [];
+  }, [currentUser, colleges]);
+
+  // Stages list based on selected department or college
+  const stagesList = useMemo(() => {
+    if (currentUser.role === 'college_admin') {
+      const col = colleges.find((c) => c.id === currentUser.collegeId);
+      if (deptFilter !== 'all') {
+        const d = col?.departments.find((dept) => dept.id === deptFilter);
+        return Array.from({ length: d?.stagesCount || 4 }, (_, i) => i + 1);
+      }
+      const maxCount = Math.max(...(col?.departments.map((d) => d.stagesCount) || [4]), 4);
+      return Array.from({ length: maxCount }, (_, i) => i + 1);
+    }
+    return [1, 2, 3, 4];
+  }, [currentUser, colleges, deptFilter]);
+
   // Filter accessible lectures based on user scope and search
   const filteredLectures = lectures.filter((lec) => {
+    // Department filter for Dean & Super Admin
+    if (deptFilter !== 'all' && lec.departmentId !== deptFilter) return false;
+
     // Stage filter
     if (stageFilter !== 'all' && lec.stage !== stageFilter) return false;
 
@@ -281,43 +310,67 @@ export default function LectureManager() {
       )}
 
       {/* Search and Filters Bar */}
-      <div className="bg-white p-3 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 absolute right-3 top-2.5 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="بحث..."
-            className="w-full text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal pr-9 pl-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-sky-600 focus:outline-none"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute left-2.5 top-2.5 text-slate-400 hover:text-slate-600"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
+      <div className="bg-white p-3 rounded-2xl border border-slate-200 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 shadow-2xs">
+        <div className="flex flex-col sm:flex-row items-center gap-2.5 flex-1">
+          <div className="relative w-full sm:w-80">
+            <Search className="w-4 h-4 absolute right-3 top-2.5 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="بحث في المحاضرات..."
+              className="w-full text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal pr-9 pl-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-sky-600 focus:outline-none"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute left-2.5 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Department Filter for Dean (and Super Admin) */}
+          {(currentUser.role === 'college_admin' || currentUser.role === 'super_admin') && deanDepartments.length > 0 && (
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <span className="text-xs font-bold text-slate-500 shrink-0">القسم:</span>
+              <select
+                value={deptFilter}
+                onChange={(e) => {
+                  setDeptFilter(e.target.value);
+                  setStageFilter('all');
+                }}
+                className="w-full sm:w-56 text-xs font-bold text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:border-sky-600 focus:outline-none cursor-pointer transition-all"
+              >
+                <option value="all">كافة الأقسام ({deanDepartments.length})</option>
+                {deanDepartments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
         </div>
 
         {/* Stage Filter Buttons */}
         {currentUser.role !== 'student' && (
-          <div className="flex items-center gap-1 self-start sm:self-auto text-xs font-bold bg-slate-100 p-1 rounded-xl">
-            <span className="text-[10px] text-slate-400 px-2 font-semibold">المرحلة:</span>
+          <div className="flex items-center gap-1 self-start lg:self-auto text-xs font-bold bg-slate-100 p-1 rounded-xl shrink-0 overflow-x-auto">
+            <span className="text-[10px] text-slate-400 px-2 font-semibold shrink-0">المرحلة:</span>
             <button
               onClick={() => setStageFilter('all')}
-              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer shrink-0 ${
                 stageFilter === 'all' ? 'bg-white text-slate-900 shadow-2xs font-black' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               الكل
             </button>
-            {[1, 2, 3, 4].map((s) => (
+            {stagesList.map((s) => (
               <button
                 key={s}
                 onClick={() => setStageFilter(s)}
-                className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer shrink-0 ${
                   stageFilter === s ? 'bg-white text-slate-900 shadow-2xs font-black' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
