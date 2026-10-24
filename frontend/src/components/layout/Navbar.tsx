@@ -307,27 +307,19 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* Quick Fill Pills for Demo */}
-              <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-[10px] text-slate-600 font-bold block mb-1.5">حسابات تجريبية سريعة:</span>
-                <div className="flex flex-wrap gap-1.5">
-                  {[
-                    { label: 'سوبر أدمن', email: 'admin@alzahrawi.edu.iq' },
-                    { label: 'عميد الطب', email: 'dean.med@alzahrawi.edu.iq' },
-                    { label: 'رئيس قسم الجراحة', email: 'head.surgery@alzahrawi.edu.iq' },
-                    { label: 'تدريسي (د. حيدر)', email: 'haider.k@alzahrawi.edu.iq' },
-                    { label: 'طالب (أحمد)', email: 'ahmed.badri@student.alzahrawi.edu.iq' },
-                  ].map((acc) => (
-                    <button
-                      key={acc.email}
-                      type="button"
-                      onClick={() => handleQuickFill(acc.email)}
-                      className="px-2.5 py-1 bg-white hover:bg-cyan-50 text-slate-800 hover:text-cyan-900 border border-slate-300 hover:border-cyan-400 rounded-lg text-[10px] font-bold cursor-pointer transition-all"
-                    >
-                      {acc.label}
-                    </button>
-                  ))}
+              {/* Quick Fill for Super Admin */}
+              <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                <div>
+                  <span className="text-[11px] text-slate-800 font-bold block">حساب المشرف العام الافتراضي:</span>
+                  <span className="text-[10px] text-slate-500 font-mono">admin@alzahrawi.edu.iq</span>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => handleQuickFill('admin@alzahrawi.edu.iq')}
+                  className="px-2.5 py-1 bg-white hover:bg-cyan-50 text-slate-800 hover:text-cyan-900 border border-slate-300 hover:border-cyan-400 rounded-lg text-[10px] font-bold cursor-pointer transition-all"
+                >
+                  تعبئة تلقائية
+                </button>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">

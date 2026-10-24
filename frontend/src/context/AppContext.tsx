@@ -65,7 +65,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 function loadStorage<T>(key: string, fallback: T): T {
   try {
-    const item = localStorage.getItem(`alzahrawi_${key}`);
+    const item = localStorage.getItem(`alzahrawi_prod_${key}`);
     return item ? JSON.parse(item) : fallback;
   } catch {
     return fallback;
@@ -74,7 +74,7 @@ function loadStorage<T>(key: string, fallback: T): T {
 
 function saveStorage<T>(key: string, data: T) {
   try {
-    localStorage.setItem(`alzahrawi_${key}`, JSON.stringify(data));
+    localStorage.setItem(`alzahrawi_prod_${key}`, JSON.stringify(data));
   } catch {}
 }
 

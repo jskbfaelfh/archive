@@ -48,12 +48,12 @@ export default function BackupRestoreCard() {
       const text = await file.text();
       const data = JSON.parse(text);
 
-      if (data.colleges) localStorage.setItem('alzahrawi_colleges', JSON.stringify(data.colleges));
-      if (data.sections) localStorage.setItem('alzahrawi_sections', JSON.stringify(data.sections));
-      if (data.subjects) localStorage.setItem('alzahrawi_subjects', JSON.stringify(data.subjects));
-      if (data.lectures) localStorage.setItem('alzahrawi_lectures', JSON.stringify(data.lectures));
-      if (data.schedules) localStorage.setItem('alzahrawi_schedules', JSON.stringify(data.schedules));
-      if (data.users) localStorage.setItem('alzahrawi_users', JSON.stringify(data.users));
+      if (data.colleges) localStorage.setItem('alzahrawi_prod_colleges', JSON.stringify(data.colleges));
+      if (data.sections) localStorage.setItem('alzahrawi_prod_sections', JSON.stringify(data.sections));
+      if (data.subjects) localStorage.setItem('alzahrawi_prod_subjects', JSON.stringify(data.subjects));
+      if (data.lectures) localStorage.setItem('alzahrawi_prod_lectures', JSON.stringify(data.lectures));
+      if (data.schedules) localStorage.setItem('alzahrawi_prod_schedules', JSON.stringify(data.schedules));
+      if (data.users) localStorage.setItem('alzahrawi_prod_users', JSON.stringify(data.users));
 
       setRestoreStatus('تمت استعادة البيانات بنجاح! جاري تطبيق التغييرات...');
       setTimeout(() => {
