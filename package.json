@@ -3,12 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "frontend",
+    "mvp"
+  ],
   "scripts": {
     "dev": "npm --prefix frontend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:mvp": "npm --prefix mvp run dev",
+    "postinstall": "npm --prefix frontend install --include=dev",
     "build": "npm --prefix frontend run build",
     "build:mvp": "npm --prefix mvp run build",
+    "start": "npm --prefix frontend run preview",
+    "preview": "npm --prefix frontend run preview",
     "map:update": "node scripts/update-project-map.mjs",
     "check:lines": "node scripts/check-line-limits.mjs"
   }
