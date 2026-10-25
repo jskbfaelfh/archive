@@ -32,7 +32,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-[#f4f7fb]">
       <Navbar />
 
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-5 sm:py-6 pb-24 lg:pb-6 space-y-6">
         {/* MVP Live Switcher Banner */}
         <div className="bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/15 border border-amber-500/30 rounded-2xl p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-amber-950 shadow-sm">
           <div className="flex items-center gap-2.5">
