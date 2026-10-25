@@ -29,6 +29,19 @@ export interface College {
   departments: Department[];
 }
 
+export type FacilityType = 'hall' | 'lab';
+
+export interface Facility {
+  id: string;
+  name: string;
+  code?: string;
+  type: FacilityType; // 'hall' (قاعة مدرجة/دراسية) أو 'lab' (مختبر علمي/سريري)
+  collegeId: string;
+  departmentId?: string;
+  building?: string;
+  capacity?: number;
+}
+
 export type SubjectType = 'both' | 'theory' | 'practical';
 
 export interface Subject {
@@ -70,7 +83,7 @@ export interface Lecture {
   collegeId: string;
   departmentId: string;
   stage: number;
-  sectionTarget: 'all' | string; // 'all' أو معرّف شعبة معينة
+  sectionTarget: 'all' | string;
   sectionName?: string;
   subjectId: string;
   subjectName?: string;
@@ -119,4 +132,49 @@ export interface Schedule {
   createdById: string;
   createdByName: string;
   createdAt: string;
+}
+
+export interface CentralField {
+  key: string;
+  label: string;
+  description?: string;
+  required?: boolean;
+}
+
+export type CentralTableKey = 'colleges' | 'departments' | 'faculty' | 'facilities';
+
+export interface TableSyncMapping {
+  tableKey: CentralTableKey;
+  tableName: string;
+  sourceTable: string;
+  selectedFields: string[];
+  lastSyncedAt?: string;
+  syncedCount?: number;
+}
+
+export interface IntegrationSettings {
+  isEnabled: boolean; // تفعيل تكامل نظام الجداول مع نظام الهيكلية المركزي
+  apiUrl: string; // حقل واجهة برمجة التطبيقات (API Endpoint URL)
+  apiKey: string; // مفتاح الوصول والتوثيق (API Key / Token)
+  webhookUrl?: string;
+  webhookSecret?: string;
+  syncIntervalMinutes?: number;
+  lastSyncTimestamp?: string;
+  lastSyncStatus?: 'idle' | 'success' | 'error' | 'syncing';
+  lastSyncMessage?: string;
+  mappings: Record<CentralTableKey, TableSyncMapping>;
+}
+
+export interface SyncHistoryItem {
+  id: string;
+  timestamp: string;
+  type: 'manual' | 'automatic' | 'webhook';
+  status: 'success' | 'failed';
+  details: string;
+  counts: {
+    colleges: number;
+    departments: number;
+    faculty: number;
+    facilities: number;
+  };
 }

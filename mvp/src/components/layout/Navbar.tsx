@@ -15,6 +15,7 @@ import {
   Lock,
   Mail,
   X,
+  Settings,
 } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 
@@ -185,6 +186,20 @@ export default function Navbar() {
               >
                 <TrendingUp className="w-4 h-4 text-cyan-300" />
                 <span>الإحصائيات</span>
+              </button>
+            )}
+
+            {isSuper && (
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'settings'
+                    ? 'bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 font-black border border-cyan-400/40'
+                    : 'text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <Settings className="w-4 h-4 text-cyan-300" />
+                <span>الإعدادات</span>
               </button>
             )}
           </nav>

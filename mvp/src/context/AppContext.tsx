@@ -1,65 +1,19 @@
 // يجب قراءة ملف قواعد كتابة الكود قبل كتابة أي سطر في الملف
 /**
  * @file AppContext.tsx
- * @description سياق التطبيق المركزي لمنظومة الأرشفة الأكاديمية (Vite + Supabase SPA)
+ * @description سياق التطبيق المركزي لمنظومة الأرشفة الأكاديمية (MVP)
  * @created 2026-10-21
+ * @updated 2026-10-25
  */
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, College, Department, Section, Subject, Lecture, Schedule } from '@/types';
+import { User, College, Department, Section, Subject, Lecture, Schedule, Facility, IntegrationSettings, SyncHistoryItem } from '@/types';
 import { initialColleges, initialSections, initialSubjects, initialUsers, initialLectures, initialSchedules } from '@/data/initialData';
+import { defaultIntegrationSettings } from '@/data/centralIntegrationData';
+import { executeCentralHierarchySync } from '@/services/centralSyncService';
+import { AppContextType, MainTab } from './appContextTypes';
 import { supabase } from '@/lib/supabase';
 
-export type MainTab = 'structure' | 'users' | 'lectures' | 'schedules' | 'analytics';
-
-interface AppContextType {
-  currentUser: User;
-  users: User[];
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  logout: () => Promise<void>;
-  changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
-  isLoginModalOpen: boolean;
-  setIsLoginModalOpen: (open: boolean) => void;
-
-  colleges: College[];
-  sections: Section[];
-  subjects: Subject[];
-  lectures: Lecture[];
-  schedules: Schedule[];
-
-  addCollege: (data: { name: string }) => Promise<void>;
-  updateCollege: (id: string, updates: Partial<College>) => Promise<void>;
-  deleteCollege: (id: string) => Promise<void>;
-
-  addDepartment: (collegeId: string, data: { name: string; stagesCount: number }) => Promise<void>;
-  updateDepartment: (collegeId: string, deptId: string, updates: Partial<Department>) => Promise<void>;
-  deleteDepartment: (collegeId: string, deptId: string) => Promise<void>;
-
-  addSection: (data: { name: string; collegeId: string; departmentId: string; stage: number }) => Promise<void>;
-  updateSection: (id: string, updates: Partial<Section>) => Promise<void>;
-  deleteSection: (id: string) => Promise<void>;
-
-  addSubject: (data: Omit<Subject, 'id'>) => Promise<void>;
-  updateSubject: (id: string, updates: Partial<Subject>) => Promise<void>;
-  deleteSubject: (id: string) => Promise<void>;
-
-  addUser: (data: Omit<User, 'id'> & { password?: string }) => Promise<{ tempPassword?: string; user?: User; [key: string]: any } | void>;
-  updateUser: (id: string, updates: Partial<User>) => Promise<void>;
-  deleteUser: (id: string) => Promise<void>;
-
-  addLecture: (data: Omit<Lecture, 'id' | 'uploadDate' | 'downloadsCount' | 'viewsCount'>) => Promise<void>;
-  updateLecture: (id: string, updates: Partial<Lecture>) => Promise<void>;
-  deleteLecture: (id: string) => Promise<void>;
-
-  addSchedule: (data: Omit<Schedule, 'id' | 'createdAt'>) => Promise<void>;
-  updateSchedule: (id: string, updates: Partial<Schedule>) => Promise<void>;
-  deleteSchedule: (id: string) => Promise<void>;
-
-  activeTab: MainTab;
-  setActiveTab: (tab: MainTab) => void;
-  isLoading: boolean;
-  refreshData: () => Promise<void>;
-  resetAll: () => Promise<void>;
-}
+export type { MainTab, AppContextType };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -86,6 +40,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [subjects, setSubjects] = useState<Subject[]>(() => loadStorage('subjects', initialSubjects));
   const [lectures, setLectures] = useState<Lecture[]>(() => loadStorage('lectures', initialLectures));
   const [schedules, setSchedules] = useState<Schedule[]>(() => loadStorage('schedules', initialSchedules));
+  const [facilities, setFacilities] = useState<Facility[]>(() => loadStorage('facilities', []));
+  const [integrationSettings, setIntegrationSettings] = useState<IntegrationSettings>(() => loadStorage('integration_settings', defaultIntegrationSettings));
+  const [syncHistory, setSyncHistory] = useState<SyncHistoryItem[]>(() => loadStorage('sync_history', []));
   const [activeTab, setActiveTab] = useState<MainTab>('structure');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -97,6 +54,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => { saveStorage('subjects', subjects); }, [subjects]);
   useEffect(() => { saveStorage('lectures', lectures); }, [lectures]);
   useEffect(() => { saveStorage('schedules', schedules); }, [schedules]);
+  useEffect(() => { saveStorage('facilities', facilities); }, [facilities]);
+  useEffect(() => { saveStorage('integration_settings', integrationSettings); }, [integrationSettings]);
+  useEffect(() => { saveStorage('sync_history', syncHistory); }, [syncHistory]);
 
   const refreshData = useCallback(async () => {
     setIsLoading(true);
@@ -121,7 +81,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => { setCurrentUser(users[0]); };
   const changePassword = async () => ({ success: true });
 
+  const checkIntegrationLock = () => {
+    if (integrationSettings.isEnabled) {
+      throw new Error('تم تعطيل الإضافة اليدوية: نظام التكامل مع الهيكلية المركزية مفعل.');
+    }
+  };
+
   const addCollege = async (data: { name: string }) => {
+    checkIntegrationLock();
     setColleges(prev => [...prev, { id: `col-${Date.now()}`, name: data.name, departments: [] }]);
   };
   const updateCollege = async (id: string, updates: Partial<College>) => {
@@ -132,6 +99,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addDepartment = async (collegeId: string, data: { name: string; stagesCount: number }) => {
+    checkIntegrationLock();
     setColleges(prev => prev.map(c => c.id === collegeId ? {
       ...c, departments: [...c.departments, { id: `dept-${Date.now()}`, collegeId, ...data }]
     } : c));
@@ -148,6 +116,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addSection = async (data: { name: string; collegeId: string; departmentId: string; stage: number }) => {
+    checkIntegrationLock();
     setSections(prev => [...prev, { id: `sec-${Date.now()}`, ...data }]);
   };
   const updateSection = async (id: string, updates: Partial<Section>) => {
@@ -168,6 +137,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addUser = async (data: Omit<User, 'id'> & { password?: string }) => {
+    checkIntegrationLock();
     const newUser: User = { id: `user-${Date.now()}`, ...data };
     setUsers(prev => [...prev, newUser]);
     return { user: newUser };
@@ -177,6 +147,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
   const deleteUser = async (id: string) => {
     setUsers(prev => prev.filter(u => u.id !== id));
+  };
+
+  const addFacility = async (data: Omit<Facility, 'id'>) => {
+    checkIntegrationLock();
+    const newFac: Facility = { id: `fac-${Date.now()}`, ...data };
+    setFacilities(prev => [...prev, newFac]);
+  };
+  const updateFacility = async (id: string, updates: Partial<Facility>) => {
+    setFacilities(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f));
+  };
+  const deleteFacility = async (id: string) => {
+    setFacilities(prev => prev.filter(f => f.id !== id));
   };
 
   const addLecture = async (data: Omit<Lecture, 'id' | 'uploadDate' | 'downloadsCount' | 'viewsCount'>) => {
@@ -208,6 +190,58 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSchedules(prev => prev.filter(s => s.id !== id));
   };
 
+  const updateIntegrationSettings = async (updates: Partial<IntegrationSettings>) => {
+    setIntegrationSettings(prev => ({ ...prev, ...updates }));
+  };
+
+  const triggerCentralSync = async () => {
+    setIsLoading(true);
+    try {
+      const result = await executeCentralHierarchySync(integrationSettings);
+      if (result.success && result.colleges) {
+        setColleges(result.colleges);
+        if (result.users) {
+          const superAdmin = users.find(u => u.role === 'super_admin') || initialUsers[0];
+          setUsers([superAdmin, ...result.users.filter(u => u.role !== 'super_admin')]);
+        }
+        if (result.facilities) setFacilities(result.facilities);
+
+        const now = new Date().toLocaleString('ar-IQ');
+        const updatedSettings: IntegrationSettings = {
+          ...integrationSettings,
+          lastSyncTimestamp: now,
+          lastSyncStatus: 'success',
+          lastSyncMessage: result.message,
+          mappings: {
+            ...integrationSettings.mappings,
+            colleges: { ...integrationSettings.mappings.colleges, syncedCount: result.counts.colleges, lastSyncedAt: now },
+            departments: { ...integrationSettings.mappings.departments, syncedCount: result.counts.departments, lastSyncedAt: now },
+            faculty: { ...integrationSettings.mappings.faculty, syncedCount: result.counts.faculty, lastSyncedAt: now },
+            facilities: { ...integrationSettings.mappings.facilities, syncedCount: result.counts.facilities, lastSyncedAt: now },
+          },
+        };
+        setIntegrationSettings(updatedSettings);
+
+        const newLog: SyncHistoryItem = {
+          id: `sync-${Date.now()}`,
+          timestamp: now,
+          type: 'manual',
+          status: 'success',
+          details: result.message || 'تمت المزامنة بنجاح',
+          counts: result.counts,
+        };
+        setSyncHistory(prev => [newLog, ...prev.slice(0, 19)]);
+        return { success: true, message: result.message || 'تمت المزامنة بنجاح', counts: result.counts };
+      }
+      throw new Error(result.error || 'فشلت المزامنة');
+    } catch (err: any) {
+      setIntegrationSettings(prev => ({ ...prev, lastSyncStatus: 'error', lastSyncMessage: err.message }));
+      return { success: false, message: err.message };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const resetAll = async () => {
     localStorage.clear();
     setColleges(initialColleges);
@@ -216,6 +250,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setUsers(initialUsers);
     setLectures(initialLectures);
     setSchedules(initialSchedules);
+    setFacilities([]);
+    setIntegrationSettings(defaultIntegrationSettings);
+    setSyncHistory([]);
     setCurrentUser(initialUsers[0]);
   };
 
@@ -223,14 +260,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     <AppContext.Provider
       value={{
         currentUser, users, login, logout, changePassword, isLoginModalOpen, setIsLoginModalOpen,
-        colleges, sections, subjects, lectures, schedules,
+        colleges, sections, subjects, lectures, schedules, facilities, integrationSettings, syncHistory,
         addCollege, updateCollege, deleteCollege,
         addDepartment, updateDepartment, deleteDepartment,
         addSection, updateSection, deleteSection,
         addSubject, updateSubject, deleteSubject,
         addUser, updateUser, deleteUser,
+        addFacility, updateFacility, deleteFacility,
         addLecture, updateLecture, deleteLecture,
         addSchedule, updateSchedule, deleteSchedule,
+        updateIntegrationSettings, triggerCentralSync,
         activeTab, setActiveTab, isLoading, refreshData, resetAll,
       }}
     >

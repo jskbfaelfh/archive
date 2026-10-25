@@ -17,7 +17,7 @@ import {
 import Select from '@/components/common/Select';
 
 export default function UserManager() {
-  const { users, colleges, sections, subjects, addUser, updateUser, deleteUser, updateSubject, currentUser, refreshData } = useApp();
+  const { users, colleges, sections, subjects, addUser, updateUser, deleteUser, updateSubject, currentUser, refreshData, integrationSettings } = useApp();
 
   const isSuper = currentUser.role === 'super_admin';
   const isCollegeAdmin = currentUser.role === 'college_admin';
@@ -138,6 +138,10 @@ export default function UserManager() {
   };
 
   const openAddModal = () => {
+    if (integrationSettings.isEnabled) {
+      alert('تم تعطيل الإضافة اليدوية: نظام التكامل مع الهيكلية المركزية مفعل.');
+      return;
+    }
     setEditId(null);
     setName('');
     setEmail('');
@@ -421,29 +425,40 @@ export default function UserManager() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              setImportModalOpen(true);
-              setImportResult(null);
-              setImportFile(null);
-            }}
-            disabled={colleges.length === 0}
-            className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
-          >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
-            <span>استيراد إكسل</span>
-          </button>
+          {!integrationSettings.isEnabled && (
+            <>
+              <button
+                onClick={() => {
+                  setImportModalOpen(true);
+                  setImportResult(null);
+                  setImportFile(null);
+                }}
+                disabled={colleges.length === 0}
+                className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
+              >
+                <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
+                <span>استيراد إكسل</span>
+              </button>
 
-          <button
-            onClick={openAddModal}
-            disabled={colleges.length === 0}
-            className="px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white text-xs font-black rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <UserPlus className="w-4 h-4" />
-            <span>إضافة مستخدم</span>
-          </button>
+              <button
+                onClick={openAddModal}
+                disabled={colleges.length === 0}
+                className="px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white text-xs font-black rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span>إضافة مستخدم</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
+
+      {integrationSettings.isEnabled && (
+        <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 font-bold flex items-center gap-2">
+          <span>🔒</span>
+          <span>تكامل الهيكلية المركزية مفعّل: تم إخفاء أزرار الإضافة وقفل إدخال الكادر والموظفين والمستخدمين لضمان المزامنة التلقائية.</span>
+        </div>
+      )}
 
       {colleges.length === 0 && (
         <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 font-bold">

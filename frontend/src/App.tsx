@@ -14,6 +14,7 @@ import AnalyticsView from '@/components/analytics/AnalyticsView';
 import ScheduleManager from '@/components/schedules/ScheduleManager';
 import StudentPortalView from '@/components/student/StudentPortalView';
 import DoctorPortalView from '@/components/doctor/DoctorPortalView';
+import { SettingsView } from '@/components/settings/SettingsView';
 import { useApp } from '@/context/AppContext';
 
 export default function App() {
@@ -37,6 +38,7 @@ export default function App() {
               {activeTab === 'lectures' && <LectureManager />}
               {activeTab === 'schedules' && <ScheduleManager />}
               {activeTab === 'analytics' && <AnalyticsView />}
+              {activeTab === 'settings' && <SettingsView />}
             </>
           )}
         </div>
