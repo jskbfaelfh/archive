@@ -18,23 +18,17 @@ import {
   LogIn,
   RotateCcw,
   X,
-  Monitor,
-  Smartphone,
   ChevronLeft
 } from 'lucide-react';
 
 interface MobileControlDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  isMobileMode: boolean;
-  onToggleViewMode: () => void;
 }
 
 export const MobileControlDrawer: React.FC<MobileControlDrawerProps> = ({
   isOpen,
   onClose,
-  isMobileMode,
-  onToggleViewMode,
 }) => {
   const {
     currentUser,
@@ -146,25 +140,8 @@ export const MobileControlDrawer: React.FC<MobileControlDrawerProps> = ({
           })}
         </div>
 
-        {/* إعدادات المود وأزرار التحكم */}
+        {/* أزرار التحكم بالحساب والنظام */}
         <div className="p-3 border-t border-cyan-500/20 bg-[#0a1e3b]/60 space-y-2">
-          {/* تبديل مود العرض (حاسبة / موبايل) */}
-          <button
-            onClick={() => {
-              onToggleViewMode();
-              onClose();
-            }}
-            className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-cyan-200 text-xs font-bold transition-all border border-cyan-500/20 cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              {isMobileMode ? <Monitor className="w-4 h-4 text-cyan-300" /> : <Smartphone className="w-4 h-4 text-cyan-300" />}
-              <span>{isMobileMode ? 'التحويل إلى مود الحاسبة' : 'التحويل إلى مود الموبايل'}</span>
-            </div>
-            <span className="text-[10px] px-2 py-0.5 rounded-md bg-cyan-900/60 text-cyan-300 font-normal">
-              {isMobileMode ? 'مود الحاسبة' : 'مود الموبايل'}
-            </span>
-          </button>
-
           <div className="flex items-center gap-2 pt-1">
             {currentUser.id ? (
               <button
