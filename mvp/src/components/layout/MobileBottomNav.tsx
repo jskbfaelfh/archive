@@ -11,7 +11,7 @@ import {
   Users,
   FileText,
   Calendar,
-  Menu,
+  SlidersHorizontal,
   Settings
 } from 'lucide-react';
 
@@ -63,15 +63,15 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onOpenDrawer }
         );
       })}
 
-      {/* زر القائمة ولوحة التحكم الشاملة */}
+      {/* زر لوحة التحكم الشاملة */}
       <button
         onClick={onOpenDrawer}
         className="flex flex-col items-center justify-center py-1.5 px-2 rounded-xl text-slate-400 hover:text-cyan-300 transition-all cursor-pointer min-w-[58px]"
       >
         <div className="p-1 rounded-xl bg-white/5">
-          <Menu className="w-5 h-5 text-cyan-300" />
+          <SlidersHorizontal className="w-5 h-5 text-cyan-300" />
         </div>
-        <span className="text-[10px] mt-0.5 leading-tight font-bold">المزيد</span>
+        <span className="text-[10px] mt-0.5 leading-tight font-bold">التحكم</span>
       </button>
     </nav>
   );

@@ -143,13 +143,23 @@ export default function Navbar() {
 
               {currentUser.id && <NotificationBell />}
 
-              <button
-                onClick={() => setDrawerOpen(true)}
-                className="p-1.5 rounded-xl bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white shadow-md shadow-sky-600/30 border border-cyan-400/30 cursor-pointer"
-                title="قائمة التحكم الكاملة"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
+              {currentUser.id ? (
+                <div
+                  onClick={() => setDrawerOpen(true)}
+                  className="flex items-center gap-1 px-2 py-1 bg-[#0a1e3b] border border-cyan-500/30 rounded-xl text-xs font-bold text-white shadow-xs cursor-pointer hover:border-cyan-400/50"
+                  title="عرض بيانات الحساب"
+                >
+                  <Shield className="w-3 h-3 text-cyan-400 shrink-0" />
+                  <span className="text-[11px] max-w-[75px] truncate">{currentUser.name}</span>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setIsLoginModalOpen(true)}
+                  className="px-2.5 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-[11px] font-bold cursor-pointer"
+                >
+                  دخول
+                </button>
+              )}
             </div>
           </div>
         ) : (
