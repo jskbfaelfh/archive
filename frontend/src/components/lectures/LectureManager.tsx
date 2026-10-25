@@ -395,8 +395,105 @@ export default function LectureManager() {
           <p className="text-sm font-bold text-slate-700">لا توجد محاضرات</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto shadow-2xs">
-          <table className="w-full text-right text-xs min-w-[580px]">
+        <>
+          {/* Mobile Lectures Cards (sm:hidden) */}
+          <div className="sm:hidden space-y-3">
+            {filteredLectures.map((lec) => {
+              const col = colleges.find((c) => c.id === lec.collegeId);
+              const dept = col?.departments.find((d) => d.id === lec.departmentId);
+              const sub = subjects.find((s) => s.id === lec.subjectId);
+
+              const canEdit =
+                currentUser.role === 'super_admin' ||
+                (currentUser.role === 'college_admin' && currentUser.collegeId === lec.collegeId) ||
+                (currentUser.role === 'department_admin' && currentUser.departmentId === lec.departmentId) ||
+                (currentUser.role === 'doctor' && (myDoctorSubjectIds.includes(lec.subjectId) || currentUser.id === lec.doctorId));
+
+              return (
+                <div
+                  key={lec.id}
+                  className="bg-white p-3.5 rounded-[10px] border border-slate-200 shadow-2xs space-y-2.5 text-right"
+                >
+                  {/* Header: Title & Subject */}
+                  <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2">
+                    <div className="min-w-0 flex-1">
+                      <span className="font-bold text-sm text-slate-900 block truncate">{lec.title}</span>
+                      <span className="text-[11px] text-slate-500 font-semibold block truncate">
+                        {sub?.name || 'مقرر'} • م{lec.stage}
+                      </span>
+                    </div>
+                    <span className="shrink-0 bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-bold">
+                      {lec.sectionName || 'عام'}
+                    </span>
+                  </div>
+
+                  {/* Info: Doctor, Dept & File */}
+                  <div className="space-y-1 text-xs">
+                    <div className="flex items-center justify-between text-[11px] text-slate-600">
+                      <span className="font-bold text-slate-800 truncate">{lec.doctorName}</span>
+                      <span className="text-[10px] text-slate-400 font-mono shrink-0">
+                        {lec.fileName} ({lec.fileSize})
+                      </span>
+                    </div>
+                    <div className="text-[10px] text-slate-500 truncate">
+                      {col?.name} • {dept?.name}
+                    </div>
+                  </div>
+
+                  {/* Actions Row */}
+                  <div className="flex items-center gap-1.5 pt-2 border-t border-slate-100">
+                    <button
+                      onClick={() => setPreviewLecture(lec)}
+                      className="flex-1 py-1.5 px-2 bg-sky-50 hover:bg-sky-100 text-sky-900 rounded-[7px] text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors border border-sky-200 shadow-2xs"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>معاينة</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleDownload(lec)}
+                      className="flex-1 py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-[7px] text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors border border-slate-200 shadow-2xs"
+                    >
+                      <Download className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>{lec.downloadsCount}</span>
+                    </button>
+
+                    {canEdit && (
+                      <>
+                        <button
+                          onClick={() => openEditModal(lec)}
+                          className="py-1.5 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-[7px] text-[11px] font-bold flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+                          title="تعديل"
+                        >
+                          <Edit2 className="w-3.5 h-3.5 text-sky-700" />
+                        </button>
+                        <button
+                          onClick={async () => {
+                            const ok = await dialog.confirm({
+                              title: 'تأكيد حذف المحاضرة الأكاديمية',
+                              message: `هل أنت متأكد من حذف محاضرة "${lec.title}" نهائياً من المنظومة؟`,
+                              isDanger: true,
+                              confirmText: 'حذف',
+                              cancelText: 'إلغاء',
+                            });
+                            if (ok) deleteLecture(lec.id);
+                          }}
+                          className="py-1.5 px-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-[7px] text-[11px] font-bold flex items-center justify-center cursor-pointer transition-colors shadow-2xs border border-rose-200"
+                          title="حذف"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Lectures Table (hidden sm:block) */}
+          <div className="hidden sm:block bg-white rounded-2xl border border-slate-200 overflow-x-auto shadow-2xs">
+            <table className="w-full text-right text-xs min-w-[580px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold">
                 <th className="py-3 px-4">المحاضرة</th>
@@ -495,6 +592,7 @@ export default function LectureManager() {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       {/* MODAL: In-App Document Preview */}

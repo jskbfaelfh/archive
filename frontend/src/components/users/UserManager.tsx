@@ -491,8 +491,117 @@ export default function UserManager() {
         </div>
       )}
 
-      {/* Users Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto shadow-2xs">
+      {/* Mobile Users Cards (sm:hidden) */}
+      <div className="sm:hidden space-y-3">
+        {visibleUsers.length === 0 ? (
+          <div className="bg-white p-6 rounded-[10px] border border-slate-200 text-center text-slate-400 font-bold text-xs">
+            لا يوجد مستخدمون
+          </div>
+        ) : (
+          visibleUsers.map((u) => {
+            const col = colleges.find((c) => c.id === u.collegeId);
+            const dept = col?.departments.find((d) => d.id === u.departmentId);
+            const showEdit = canEditUser(u);
+            const showDelete = canDeleteUser(u);
+
+            return (
+              <div
+                key={u.id}
+                className="bg-white p-3.5 rounded-[10px] border border-slate-200 shadow-2xs space-y-2.5 text-right"
+              >
+                {/* Header: Name, Title & Role Badge */}
+                <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2">
+                  <div className="min-w-0 flex-1">
+                    <span className="font-bold text-sm text-slate-900 block truncate">{u.name}</span>
+                    {u.title && <span className="text-[11px] text-slate-500 block truncate">{u.title}</span>}
+                  </div>
+                  <div className="shrink-0">{getRoleBadge(u.role)}</div>
+                </div>
+
+                {/* Info: Email & Affiliation */}
+                <div className="space-y-1 text-xs">
+                  <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-600 truncate">
+                    <span className="text-slate-400 font-sans text-[10px]">البريد:</span>
+                    <span className="truncate">{u.email}</span>
+                  </div>
+
+                  <div className="text-[11px] text-slate-700 pt-0.5">
+                    {u.role === 'super_admin' ? (
+                      <span className="text-slate-500 font-semibold">إدارة مركزية</span>
+                    ) : (
+                      <div className="space-y-0.5">
+                        <span className="font-semibold block text-slate-800">
+                          {col?.name || '-'} {dept ? `• ${dept.name}` : ''}
+                        </span>
+                        {u.stage && (
+                          <span className="text-[10px] text-teal-700 block">
+                            م{u.stage} {u.sectionName ? `• ${u.sectionName}` : ''}
+                          </span>
+                        )}
+                        {u.role === 'doctor' && (
+                          <div className="pt-1 flex flex-wrap gap-1">
+                            {subjects.filter((s) => s.theoryDoctorId === u.id || s.practicalDoctorId === u.id || s.doctorId === u.id).length > 0 ? (
+                              subjects
+                                .filter((s) => s.theoryDoctorId === u.id || s.practicalDoctorId === u.id || s.doctorId === u.id)
+                                .map((s) => (
+                                  <span
+                                    key={s.id}
+                                    className="text-[9px] bg-emerald-50 text-emerald-900 border border-emerald-300 px-1.5 py-0.5 rounded font-black"
+                                  >
+                                    {s.name} (م{s.stage})
+                                  </span>
+                                ))
+                            ) : (
+                              <span className="text-[10px] text-amber-700 font-medium">بدون مواد</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions Row */}
+                {(showEdit || showDelete) && (
+                  <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-slate-100">
+                    {showEdit && (
+                      <button
+                        onClick={() => openEditModal(u)}
+                        className="flex-1 py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-[7px] text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                      >
+                        <Edit2 className="w-3 h-3 text-sky-700" />
+                        <span>تعديل</span>
+                      </button>
+                    )}
+                    {showDelete && (
+                      <button
+                        onClick={async () => {
+                          const ok = await dialog.confirm({
+                            title: 'تأكيد حذف الحساب',
+                            message: `حذف حساب "${u.name}" نهائياً؟`,
+                            isDanger: true,
+                            confirmText: 'حذف',
+                            cancelText: 'إلغاء',
+                          });
+                          if (ok) deleteUser(u.id);
+                        }}
+                        className="py-1.5 px-3 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-[7px] text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors shadow-2xs border border-rose-200"
+                        title="حذف"
+                      >
+                        <Trash2 className="w-3 h-3 text-rose-600" />
+                        <span>حذف</span>
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Desktop Users Table (hidden sm:block) */}
+      <div className="hidden sm:block bg-white rounded-2xl border border-slate-200 overflow-x-auto shadow-2xs">
         <table className="w-full text-right text-xs min-w-[580px]">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold">
