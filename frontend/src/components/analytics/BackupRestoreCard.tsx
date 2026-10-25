@@ -83,32 +83,37 @@ export default function BackupRestoreCard() {
   };
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+    <div className="bg-white p-3.5 sm:p-5 rounded-[10px] sm:rounded-2xl border border-slate-200 shadow-2xs space-y-3 sm:space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 bg-slate-900 text-white rounded-xl">
+          <div className="p-2 bg-slate-900 text-white rounded-[7px] sm:rounded-xl shrink-0">
             <Database className="w-5 h-5 text-sky-400" />
           </div>
           <div>
-            <h3 className="font-bold text-sm text-slate-900">النسخ الاحتياطي والأرشفة الشاملة</h3>
-            <p className="text-[11px] text-slate-500">تصدير قاعدة البيانات بالكامل أو استرجاعها بملف JSON آمن</p>
+            <h3 className="font-bold text-xs sm:text-sm text-slate-900">
+              <span className="hidden sm:inline">النسخ الاحتياطي والأرشفة الشاملة</span>
+              <span className="sm:hidden">النسخ والاسترجاع</span>
+            </h3>
+            <p className="text-[11px] text-slate-500 hidden sm:block">تصدير قاعدة البيانات بالكامل أو استرجاعها بملف JSON آمن</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             onClick={handleDownloadBackup}
-            className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl text-xs font-black transition-all cursor-pointer shadow-md shadow-sky-600/30"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-[7px] sm:rounded-xl text-xs font-black transition-all cursor-pointer shadow-md shadow-sky-600/30"
           >
             <Download className="w-4 h-4 text-sky-200" />
-            <span>تصدير نسخة احتياطية</span>
+            <span className="hidden sm:inline">تصدير نسخة احتياطية</span>
+            <span className="sm:hidden">تصدير</span>
           </button>
 
-          <label className={`flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs ${
+          <label className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 rounded-[7px] sm:rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs ${
             restoring ? 'opacity-50 pointer-events-none' : ''
           }`}>
             <UploadCloud className="w-4 h-4 text-emerald-600" />
-            <span>{restoring ? 'جاري الاسترجاع...' : 'استرجاع نسخة'}</span>
+            <span className="hidden sm:inline">{restoring ? 'جاري الاسترجاع...' : 'استرجاع نسخة'}</span>
+            <span className="sm:hidden">{restoring ? 'جاري...' : 'استرجاع'}</span>
             <input
               type="file"
               accept=".json"
@@ -121,7 +126,7 @@ export default function BackupRestoreCard() {
       </div>
 
       {restoreStatus && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-xs font-bold text-emerald-800 animate-in fade-in">
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-[7px] sm:rounded-xl flex items-center gap-2 text-xs font-bold text-emerald-800 animate-in fade-in">
           <FileCheck className="w-4 h-4 shrink-0 text-emerald-600" />
           <span>{restoreStatus}</span>
         </div>

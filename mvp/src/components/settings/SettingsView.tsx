@@ -38,23 +38,27 @@ export const SettingsView: React.FC = () => {
   }
 
   return (
-    <div className="w-full space-y-6 pb-16">
+    <div className="w-full space-y-4 sm:space-y-6 pb-20 sm:pb-16">
       {/* رأس الصفحة */}
-      <div className="bg-white rounded-2xl p-6 sm:p-7 shadow-sm border border-slate-200">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
-              <Settings className="w-7 h-7" />
+      <div className="bg-white rounded-[10px] sm:rounded-2xl p-3.5 sm:p-7 shadow-sm border border-slate-200">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-[7px] sm:rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
+              <Settings className="w-5 h-5 sm:w-7 sm:h-7" />
             </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="text-xl sm:text-2xl font-black text-slate-800">إعدادات المنظومة والربط المركزي</h1>
-                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300 shadow-2xs">
-                  <Lock className="w-3.5 h-3.5 text-amber-600" />
-                  حساب السوبر أدمن حصراً
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-sm sm:text-2xl font-black text-slate-800 truncate">
+                  <span className="hidden sm:inline">إعدادات المنظومة والربط المركزي</span>
+                  <span className="sm:hidden">إعدادات الربط المركزي</span>
+                </h1>
+                <span className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300 shadow-2xs shrink-0">
+                  <Lock className="w-3 h-3 text-amber-600" />
+                  <span className="hidden sm:inline">حساب السوبر أدمن حصراً</span>
+                  <span className="sm:hidden">سوبر أدمن</span>
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-slate-500 mt-1 hidden sm:block">
                 إدارة التكامل مع نظام الهيكلية المركزي لجامعة الزهراوي وتعيين الحقول والمزامنة التلقائية
               </p>
             </div>

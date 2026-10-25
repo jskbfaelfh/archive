@@ -67,19 +67,22 @@ export const CentralTableMappingCard: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+    <div className="bg-white rounded-[10px] sm:rounded-2xl shadow-sm border border-slate-200 p-3.5 sm:p-6 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-5 border-b border-slate-100">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
-            <Database className="w-6 h-6" />
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[7px] sm:rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold shrink-0">
+            <Database className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <h3 className="text-lg font-bold text-slate-800">تعيين حقول الجداول المركزية والمزامنة</h3>
-            <p className="text-sm text-slate-500">اختر الحقول المستوردة من النظام المركزي لكل جدول واحفظها كافتراضي</p>
+          <div className="min-w-0">
+            <h3 className="text-sm sm:text-lg font-bold text-slate-800 truncate">
+              <span className="hidden sm:inline">تعيين حقول الجداول المركزية والمزامنة</span>
+              <span className="sm:hidden">تعيين الحقول</span>
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 hidden sm:block">اختر الحقول المستوردة من النظام المركزي لكل جدول واحفظها كافتراضي</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           {!integrationSettings.isEnabled && (
             <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-bold hidden sm:inline-block">
               تفعيل التكامل أعلاه مطلوب للمزامنة
@@ -89,16 +92,17 @@ export const CentralTableMappingCard: React.FC = () => {
             type="button"
             onClick={handleSyncNow}
             disabled={syncStatus.loading || !integrationSettings.isEnabled}
-            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="flex-1 sm:flex-initial justify-center px-4 sm:px-5 py-2 sm:py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-[7px] sm:rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
-            <RefreshCw className={`w-4 h-4 ${syncStatus.loading ? 'animate-spin' : ''}`} />
-            <span>{syncStatus.loading ? 'جارِ المزامنة...' : 'مزامنة فورية الآن'}</span>
+            <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${syncStatus.loading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">{syncStatus.loading ? 'جارِ المزامنة...' : 'مزامنة فورية الآن'}</span>
+            <span className="sm:hidden">{syncStatus.loading ? 'مزامنة...' : 'مزامنة'}</span>
           </button>
         </div>
       </div>
 
       {syncStatus.message && (
-        <div className={`p-3.5 rounded-xl text-xs font-semibold flex items-center gap-2 ${
+        <div className={`p-3 sm:p-3.5 rounded-[7px] sm:rounded-xl text-xs font-semibold flex items-center gap-2 ${
           syncStatus.isError ? 'bg-rose-50 text-rose-800 border border-rose-200' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
         }`}>
           {syncStatus.isError ? '⚠️' : '✓'} {syncStatus.message}
@@ -106,7 +110,7 @@ export const CentralTableMappingCard: React.FC = () => {
       )}
 
       {/* تبويبات الجداول الأربعة */}
-      <div className="flex flex-wrap gap-2 border-b border-slate-100 pb-3">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 border-b border-slate-100 pb-3">
         {(Object.keys(tableConfig) as CentralTableKey[]).map(key => {
           const cfg = tableConfig[key];
           const TabIcon = cfg.icon;
@@ -116,13 +120,13 @@ export const CentralTableMappingCard: React.FC = () => {
             <button
               key={key}
               onClick={() => setActiveTab(key)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-[7px] sm:rounded-xl text-xs font-bold flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
                 isActive
                   ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
               }`}
             >
-              <TabIcon className="w-4 h-4" />
+              <TabIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>{cfg.title}</span>
               <span className={`px-1.5 py-0.5 rounded-md text-[10px] ${isActive ? 'bg-blue-700 text-white' : 'bg-slate-200 text-slate-700'}`}>
                 {count}/{cfg.fields.length}
@@ -133,33 +137,34 @@ export const CentralTableMappingCard: React.FC = () => {
       </div>
 
       {/* تفاصيل الجدول وحقوله */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Icon className="w-5 h-5 text-blue-600" />
-            <h4 className="text-sm font-bold text-slate-800">
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 shrink-0" />
+            <h4 className="text-xs sm:text-sm font-bold text-slate-800 truncate">
               حقول جدول: {title} <span className="text-xs font-normal text-slate-400">({currentMapping.sourceTable})</span>
             </h4>
           </div>
           <button
             type="button"
             onClick={handleSaveDefault}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg flex items-center gap-1.5 transition-colors self-start"
+            className="px-2.5 sm:px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-[7px] sm:rounded-lg flex items-center gap-1.5 transition-colors self-start cursor-pointer border border-slate-200"
           >
             {savedDefaultNotice ? <BookmarkCheck className="w-3.5 h-3.5 text-emerald-600" /> : <Check className="w-3.5 h-3.5" />}
-            <span>{savedDefaultNotice ? 'تم حفظ التعيين الافتراضي!' : 'حفظ كتعيين افتراضي'}</span>
+            <span className="hidden sm:inline">{savedDefaultNotice ? 'تم حفظ التعيين الافتراضي!' : 'حفظ كتعيين افتراضي'}</span>
+            <span className="sm:hidden">{savedDefaultNotice ? 'تم الحفظ' : 'حفظ الافتراضي'}</span>
           </button>
         </div>
 
         {/* شبكة الحقول القابلة للاختيار */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
           {fields.map(f => {
             const isSelected = currentMapping.selectedFields.includes(f.key);
             return (
               <label
                 key={f.key}
                 onClick={() => handleToggleField(f.key, f.required)}
-                className={`p-3 rounded-xl border flex items-start gap-3 cursor-pointer select-none transition-all ${
+                className={`p-2.5 sm:p-3 rounded-[7px] sm:rounded-xl border flex items-start gap-2.5 sm:gap-3 cursor-pointer select-none transition-all ${
                   isSelected
                     ? 'border-blue-300 bg-blue-50/50 shadow-xs'
                     : 'border-slate-200 bg-white hover:border-slate-300'
@@ -174,12 +179,12 @@ export const CentralTableMappingCard: React.FC = () => {
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-bold text-slate-800">{f.label}</span>
+                    <span className="text-xs font-bold text-slate-800 truncate">{f.label}</span>
                     {f.required && (
-                      <span className="text-[10px] text-amber-600 bg-amber-50 px-1 rounded font-semibold">إلزامي</span>
+                      <span className="text-[10px] text-amber-600 bg-amber-50 px-1 rounded font-semibold shrink-0">إلزامي</span>
                     )}
                   </div>
-                  <span className="text-[11px] text-slate-400 font-mono block mt-0.5">{f.key}</span>
+                  <span className="text-[10px] font-mono text-slate-400 block truncate">{f.key}</span>
                 </div>
               </label>
             );
@@ -189,10 +194,10 @@ export const CentralTableMappingCard: React.FC = () => {
         {/* عينة المعاينة الحية للبيانات المركزية */}
         <div className="mt-4 pt-4 border-t border-slate-100">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-700">معاينة البيانات الواردة وفق الحقول المحددة:</span>
-            <span className="text-[11px] text-slate-400 font-mono">آخر مزامنة: {currentMapping.lastSyncedAt || 'لم تتم بعد'}</span>
+            <span className="text-xs font-bold text-slate-700">معاينة البيانات الواردة:</span>
+            <span className="text-[10px] sm:text-[11px] text-slate-400 font-mono">آخر مزامنة: {currentMapping.lastSyncedAt || 'لم تتم بعد'}</span>
           </div>
-          <div className="overflow-x-auto border border-slate-200 rounded-xl max-h-48">
+          <div className="overflow-x-auto border border-slate-200 rounded-[7px] sm:rounded-xl max-h-48">
             <table className="w-full text-right text-xs">
               <thead className="bg-slate-50 text-slate-600 sticky top-0 border-b border-slate-200">
                 <tr>

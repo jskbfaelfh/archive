@@ -166,32 +166,32 @@ export default function AnalyticsView() {
   const isFilteredDept = isDeptAdmin || (isCollegeAdmin && selectedDeptId !== 'all');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header Scope Banner */}
-      <div className="bg-gradient-to-r from-sky-900 via-blue-900 to-slate-900 text-white p-5 rounded-2xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3.5">
-          <div className="p-3 bg-white/10 rounded-xl backdrop-blur-xs text-cyan-300">
-            <TrendingUp className="w-6 h-6" />
+      <div className="bg-gradient-to-r from-sky-900 via-blue-900 to-slate-900 text-white p-3.5 sm:p-5 rounded-[10px] sm:rounded-2xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 sm:p-3 bg-white/10 rounded-[7px] sm:rounded-xl backdrop-blur-xs text-cyan-300 shrink-0">
+            <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-black text-white">{stats.scopeTitle}</h2>
-              <span className="text-[11px] font-bold bg-cyan-400/20 text-cyan-200 border border-cyan-400/40 px-2.5 py-0.5 rounded-full">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-sm sm:text-lg font-black text-white truncate">{stats.scopeTitle}</h2>
+              <span className="text-[10px] sm:text-[11px] font-bold bg-cyan-400/20 text-cyan-200 border border-cyan-400/40 px-2 py-0.5 rounded-full shrink-0">
                 {stats.scopeBadge}
               </span>
             </div>
-            <p className="text-xs text-sky-200/80 mt-0.5">{stats.scopeSubtitle}</p>
+            <p className="text-[11px] sm:text-xs text-sky-200/80 mt-0.5 truncate">{stats.scopeSubtitle}</p>
           </div>
         </div>
 
         {/* Dean Department Selector */}
         {isCollegeAdmin && collegeDepts.length > 0 && (
-          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xs px-3 py-1.5 rounded-xl border border-white/20">
-            <span className="text-xs text-cyan-200 font-bold shrink-0">تصفية حسب القسم:</span>
+          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xs px-2.5 sm:px-3 py-1.5 rounded-[7px] sm:rounded-xl border border-white/20 w-full sm:w-auto justify-between sm:justify-start">
+            <span className="text-[11px] sm:text-xs text-cyan-200 font-bold shrink-0">القسم:</span>
             <select
               value={selectedDeptId}
               onChange={(e) => setSelectedDeptId(e.target.value)}
-              className="text-xs font-bold bg-slate-900/90 text-white border border-cyan-400/30 rounded-lg px-2.5 py-1 focus:outline-none cursor-pointer"
+              className="text-xs font-bold bg-slate-900/90 text-white border border-cyan-400/30 rounded-[7px] px-2.5 py-1 focus:outline-none cursor-pointer flex-1 sm:flex-initial"
             >
               <option value="all">كافة أقسام الكلية ({collegeDepts.length})</option>
               {collegeDepts.map((d) => (
@@ -205,48 +205,54 @@ export default function AnalyticsView() {
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-1">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="bg-white p-3 sm:p-4 rounded-[10px] sm:rounded-2xl border border-slate-200 shadow-2xs space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-bold text-slate-600">
-              {isFilteredDept ? 'محاضرات القسم' : isCollegeAdmin ? 'محاضرات الكلية' : 'إجمالي المحاضرات'}
+            <span className="text-[11px] sm:text-xs font-bold text-slate-600 truncate">
+              <span className="hidden sm:inline">{isFilteredDept ? 'محاضرات القسم' : isCollegeAdmin ? 'محاضرات الكلية' : 'إجمالي المحاضرات'}</span>
+              <span className="sm:hidden">المحاضرات</span>
             </span>
-            <FileText className="w-4 h-4 text-sky-600" />
+            <FileText className="w-4 h-4 text-sky-600 shrink-0" />
           </div>
-          <div className="text-2xl font-black text-slate-900">{stats.lecturesCount}</div>
+          <div className="text-xl sm:text-2xl font-black text-slate-900">{stats.lecturesCount}</div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-1">
+        <div className="bg-white p-3 sm:p-4 rounded-[10px] sm:rounded-2xl border border-slate-200 shadow-2xs space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-bold text-slate-600">
-              {isFilteredDept ? 'تدريسو القسم' : isCollegeAdmin ? 'تدريسو الكلية' : 'الكادر التدريسي'}
+            <span className="text-[11px] sm:text-xs font-bold text-slate-600 truncate">
+              <span className="hidden sm:inline">{isFilteredDept ? 'تدريسو القسم' : isCollegeAdmin ? 'تدريسو الكلية' : 'الكادر التدريسي'}</span>
+              <span className="sm:hidden">التدريسيون</span>
             </span>
-            <Users className="w-4 h-4 text-teal-600" />
+            <Users className="w-4 h-4 text-teal-600 shrink-0" />
           </div>
-          <div className="text-2xl font-black text-slate-900">{stats.doctorsCount}</div>
+          <div className="text-xl sm:text-2xl font-black text-slate-900">{stats.doctorsCount}</div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-1">
+        <div className="bg-white p-3 sm:p-4 rounded-[10px] sm:rounded-2xl border border-slate-200 shadow-2xs space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-bold text-slate-600">
-              {isFilteredDept ? 'طلبة القسم' : isCollegeAdmin ? 'طلبة الكلية' : 'الطلاب المسجلون'}
+            <span className="text-[11px] sm:text-xs font-bold text-slate-600 truncate">
+              <span className="hidden sm:inline">{isFilteredDept ? 'طلبة القسم' : isCollegeAdmin ? 'طلبة الكلية' : 'الطلاب المسجلون'}</span>
+              <span className="sm:hidden">الطلبة</span>
             </span>
-            <GraduationCap className="w-4 h-4 text-emerald-600" />
+            <GraduationCap className="w-4 h-4 text-emerald-600 shrink-0" />
           </div>
-          <div className="text-2xl font-black text-slate-900">{stats.studentsCount}</div>
+          <div className="text-xl sm:text-2xl font-black text-slate-900">{stats.studentsCount}</div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-1">
+        <div className="bg-white p-3 sm:p-4 rounded-[10px] sm:rounded-2xl border border-slate-200 shadow-2xs space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-bold text-slate-600">{stats.metric4Label}</span>
-            {isFilteredDept ? <BookOpen className="w-4 h-4 text-indigo-600" /> : <Building2 className="w-4 h-4 text-indigo-600" />}
+            <span className="text-[11px] sm:text-xs font-bold text-slate-600 truncate">
+              <span className="hidden sm:inline">{stats.metric4Label}</span>
+              <span className="sm:hidden">{isFilteredDept ? 'المواد' : 'الهيكلية'}</span>
+            </span>
+            {isFilteredDept ? <BookOpen className="w-4 h-4 text-indigo-600 shrink-0" /> : <Building2 className="w-4 h-4 text-indigo-600 shrink-0" />}
           </div>
-          <div className="text-lg font-black text-slate-900">{stats.metric4Value}</div>
+          <div className="text-xs sm:text-lg font-black text-slate-900 truncate">{stats.metric4Value}</div>
         </div>
       </div>
 
       {/* 2-Columns: Top Downloads & Recent Activities */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <AnalyticsTopLectures lectures={stats.topLectures} />
         <AnalyticsActivityLog
           title={isFilteredDept ? 'سجل النشاط الأكاديمي للقسم' : isCollegeAdmin ? 'سجل النشاط الأكاديمي للكلية' : 'سجل النشاط الأكاديمي العام'}
