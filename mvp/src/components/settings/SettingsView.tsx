@@ -8,6 +8,7 @@ import { useApp } from '@/context/AppContext';
 import { IntegrationSettingsCard } from './IntegrationSettingsCard';
 import { CentralTableMappingCard } from './CentralTableMappingCard';
 import { SyncHistoryCard } from './SyncHistoryCard';
+import { FeedbackNotesCard } from './FeedbackNotesCard';
 import { Settings, ShieldAlert, Lock } from 'lucide-react';
 
 export const SettingsView: React.FC = () => {
@@ -67,6 +68,7 @@ export const SettingsView: React.FC = () => {
       </div>
 
       {/* مكونات الإعدادات */}
+      <FeedbackNotesCard />
       <IntegrationSettingsCard />
       <CentralTableMappingCard />
       <SyncHistoryCard />

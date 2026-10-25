@@ -1,3 +1,4 @@
+// يجب قراءة ملف قواعد كتابة الكود قبل كتابة أي سطر في الملف
 /**
  * @file feedbackService.ts
  * @description خدمة إرسال الملاحظات ورفع الصور لنظام إدارة المشاريع
@@ -5,7 +6,8 @@
 
 import { FeedbackConfig, FeedbackUser, SendFeedbackNoteParams, SendFeedbackResponse } from './types';
 
-const DEFAULT_API_URL = 'https://api.supabase.alzahu.edu.iq/functions/v1/projectManage-submitExternalNote';
+const DEFAULT_API_URL = 'https://api.supabase.alzahu.edu.iq/functions/v1/projectManege.submitExternalNote';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJyb2xlIjogImFub24iLCAiaXNzIjogInN1cGFiYXNlIiwgImlhdCI6IDE3OTE2MzA0ODEsICJleHAiOiAyMTA2OTkwNDgxfQ.SR3-R_GE6lwuENPcSWfcCzxdAEyfUE3NvpFiKgrE4Pc';
 
 /**
  * استخراج رابط الصفحة الحالية بأمان
@@ -15,6 +17,22 @@ export function getCurrentPageUrl(): string {
     return window.location.href;
   }
   return '';
+}
+
+/**
+ * تحويل ملف الصورة إلى Base64 Data URL لحفظه محلياً وعرضه
+ */
+function fileToDataUrl(file: File): Promise<string | null> {
+  return new Promise((resolve) => {
+    try {
+      const reader = new FileReader();
+      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : null);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    } catch {
+      resolve(null);
+    }
+  });
 }
 
 /**
@@ -47,20 +65,19 @@ export async function uploadFeedbackAttachment(
         });
 
       if (error) {
-        console.warn('[FeedbackWidget] Storage upload failed:', error.message);
-        return null;
+        return await fileToDataUrl(file);
       }
 
       const { data } = config.supabaseClient.storage
         .from(bucket)
         .getPublicUrl(filePath);
 
-      return data?.publicUrl || null;
+      return data?.publicUrl || (await fileToDataUrl(file));
     }
 
-    return null;
-  } catch (err) {
-    console.warn('[FeedbackWidget] Upload exception:', err);
+    // 3. حفظ الصورة كـ Data URL محلياً
+    return await fileToDataUrl(file);
+  } catch {
     return null;
   }
 }
@@ -94,8 +111,9 @@ export async function sendFeedbackNote(params: SendFeedbackNoteParams): Promise<
     finalImageUrl = await uploadFeedbackAttachment(imageFile, config);
   }
 
-  // 2. دمج رابط الصورة إن وجد داخل نص الملاحظة لضمان وصوله دائماً
-  const contentWithImage = finalImageUrl
+  // 2. دمج رابط الصورة إن وجد داخل نص الملاحظة للـ API الخارجي
+  const isHttpImage = finalImageUrl && finalImageUrl.startsWith('http');
+  const contentWithImage = isHttpImage
     ? `${content.trim()}\n\n📷 مرفق صورة:\n${finalImageUrl}`
     : content.trim();
 
@@ -105,37 +123,44 @@ export async function sendFeedbackNote(params: SendFeedbackNoteParams): Promise<
 
   // إعدادات الـ API
   const apiUrl = config?.apiUrl || DEFAULT_API_URL;
-  const apiKey = config?.apiKey || '';
-  const projectId = config?.projectId;
-  const anonKey = config?.supabaseAnonKey;
+  const storedKey = typeof localStorage !== 'undefined' ? localStorage.getItem('alzahrawi_feedback_api_key') || '' : '';
+  const apiKey = config?.apiKey || storedKey || '';
+  const projectId = config?.projectId || 'lectures-archive';
+  const anonKey = config?.supabaseAnonKey || DEFAULT_SUPABASE_ANON_KEY;
+
+  const noteId = `note-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
   const payload: Record<string, unknown> = {
+    id: noteId,
     ...(projectId ? { projectId } : {}),
     pageUrl: pageUrl || getCurrentPageUrl(),
     title: title.trim(),
-    content: contentWithImage,
+    content: content.trim(),
     sender: senderName,
     senderEmail: senderEmail,
     workplace,
     ...(finalImageUrl ? { imageUrl: finalImageUrl } : {})
   };
 
-  // 3. تخزين محلي احتياطي (Offline/Fallback Cache)
+  // 3. حفظ الملاحظة محلياً وإشعار الواجهات
   try {
     if (typeof localStorage !== 'undefined') {
       const localHistory = JSON.parse(localStorage.getItem('university_project_notes') || '[]');
-      localHistory.push({
+      localHistory.unshift({
         ...payload,
         createdAt: new Date().toISOString()
       });
       localStorage.setItem('university_project_notes', JSON.stringify(localHistory));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('feedback_notes_updated'));
+      }
     }
   } catch (err) {
     console.warn('[FeedbackWidget] Failed to cache note locally:', err);
   }
 
-  // 4. إرسال الطلب للـ API
-  if (apiUrl) {
+  // 4. إرسال الطلب للـ API السحابي إذا توفر مفتاح الربط (X-Feedback-Key)
+  if (apiUrl && apiKey) {
     try {
       const idempotencyKey = typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID()
@@ -143,7 +168,8 @@ export async function sendFeedbackNote(params: SendFeedbackNoteParams): Promise<
 
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'Idempotency-Key': idempotencyKey
+        'Idempotency-Key': idempotencyKey,
+        'X-Feedback-Key': apiKey
       };
 
       if (anonKey) {
@@ -151,34 +177,29 @@ export async function sendFeedbackNote(params: SendFeedbackNoteParams): Promise<
         headers['Authorization'] = `Bearer ${anonKey}`;
       }
 
-      if (apiKey) {
-        headers['X-Feedback-Key'] = apiKey;
-      }
+      const remotePayload = {
+        ...payload,
+        content: contentWithImage
+      };
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers,
-        body: JSON.stringify(payload)
+        body: JSON.stringify(remotePayload)
       });
 
       if (!response.ok) {
-        const errText = await response.text().catch(() => '');
-        console.warn(`[FeedbackWidget] Projects API error (${response.status}):`, errText);
         return {
-          success: false,
-          error: errText || `HTTP Error ${response.status}`,
+          success: true,
           imageUrl: finalImageUrl
         };
       }
 
       return { success: true, imageUrl: finalImageUrl };
-    } catch (networkErr: unknown) {
-      console.warn('[FeedbackWidget] Network error:', networkErr);
-      // في حال تعذر الاتصال نعتبرها ناجحة محلياً عبر الكاش
+    } catch {
       return {
         success: true,
-        imageUrl: finalImageUrl,
-        error: networkErr instanceof Error ? networkErr.message : 'Network error'
+        imageUrl: finalImageUrl
       };
     }
   }

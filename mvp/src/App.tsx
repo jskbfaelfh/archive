@@ -107,7 +107,7 @@ export default function App() {
         currentUser={feedbackUser}
         config={{
           projectId: 'lectures-archive',
-          apiUrl: 'https://api.supabase.alzahu.edu.iq/functions/v1/projectManage-submitExternalNote',
+          apiUrl: 'https://api.supabase.alzahu.edu.iq/functions/v1/projectManege.submitExternalNote',
         }}
         lang="ar"
       />

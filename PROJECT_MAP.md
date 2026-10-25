@@ -1,8 +1,8 @@
 # خريطة بنية المشروع (PROJECT_MAP.md)
 ## منظومة الهيكلية المركزية وإدارة البيانات المرجعية للجامعة
 
-**تاريخ التحديث الآلي:** 2026-10-25T10:39:12.095Z
-**إجمالي الملفات غير المولدة:** 240
+**تاريخ التحديث الآلي:** 2026-10-25T10:54:26.135Z
+**إجمالي الملفات غير المولدة:** 242
 **حدود الخريطة:** جرد ملفات؛ لا يمثل إثبات صحة الوظائف أو جاهزية الإنتاج. يستثني الأسرار والتبعيات وملفات العمل المولدة.
 
 ### المكدس التقني
@@ -20,8 +20,8 @@
 | `root` | 9 |
 | `backend` | 9 |
 | `docs` | 5 |
-| `frontend` | 73 |
-| `mvp` | 72 |
+| `frontend` | 74 |
+| `mvp` | 73 |
 | `packages` | 17 |
 | `prisma` | 3 |
 | `scripts` | 8 |
@@ -53,6 +53,7 @@
 - [`frontend/src/components/schedules/ScheduleManager.tsx`](frontend/src/components/schedules/ScheduleManager.tsx)
 - [`frontend/src/components/schedules/ScheduleZoomModal.tsx`](frontend/src/components/schedules/ScheduleZoomModal.tsx)
 - [`frontend/src/components/settings/CentralTableMappingCard.tsx`](frontend/src/components/settings/CentralTableMappingCard.tsx)
+- [`frontend/src/components/settings/FeedbackNotesCard.tsx`](frontend/src/components/settings/FeedbackNotesCard.tsx)
 - [`frontend/src/components/settings/IntegrationSettingsCard.tsx`](frontend/src/components/settings/IntegrationSettingsCard.tsx)
 - [`frontend/src/components/settings/SettingsView.tsx`](frontend/src/components/settings/SettingsView.tsx)
 - [`frontend/src/components/settings/SyncHistoryCard.tsx`](frontend/src/components/settings/SyncHistoryCard.tsx)
