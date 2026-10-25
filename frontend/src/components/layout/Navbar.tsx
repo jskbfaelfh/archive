@@ -115,35 +115,31 @@ export default function Navbar() {
         <div className="h-0.5 w-full bg-gradient-to-r from-sky-500 via-cyan-400 to-blue-600" />
 
         {/* 1. الشريط العلوي للموبايل (يظهر تلقائياً على الشاشات الصغيرة) */}
-        <div className="w-full px-2.5 sm:px-4 py-2 flex lg:hidden items-center justify-between gap-1.5">
-          <div className="flex items-center gap-2 min-w-0">
+        <div className="w-full px-3 py-2 flex lg:hidden items-center justify-between gap-2">
+          <div className="flex items-center shrink-0">
             <img
               src="/images/university-logo.png"
               alt="شعار جامعة الزهراوي"
-              className="h-8 w-8 object-contain drop-shadow shrink-0"
+              className="h-8.5 w-8.5 object-contain drop-shadow shrink-0"
             />
-            <div className="min-w-0">
-              <h1 className="text-xs sm:text-sm font-black text-white leading-tight truncate">المحاضرات</h1>
-              <p className="text-[10px] text-cyan-300/80 truncate">جامعة الزهراوي</p>
-            </div>
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             {currentUser.id && <NotificationBell />}
 
             {currentUser.id ? (
               <div
                 onClick={() => setDrawerOpen(true)}
-                className="flex items-center gap-1 px-2 py-1 bg-[#0a1e3b] border border-cyan-500/30 rounded-xl text-xs font-bold text-white shadow-xs cursor-pointer hover:border-cyan-400/50"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#0a1e3b] border border-cyan-500/30 rounded-[7px] text-xs font-bold text-white shadow-xs cursor-pointer hover:border-cyan-400/50 whitespace-nowrap"
                 title="عرض بيانات الحساب"
               >
                 <Shield className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                <span className="text-[11px] max-w-[70px] truncate">{currentUser.name}</span>
+                <span className="text-xs font-bold text-slate-100 whitespace-nowrap">{currentUser.name}</span>
               </div>
             ) : (
               <button
                 onClick={() => setIsLoginModalOpen(true)}
-                className="px-2.5 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold cursor-pointer"
+                className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-[7px] text-xs font-bold cursor-pointer whitespace-nowrap"
               >
                 دخول
               </button>
@@ -151,7 +147,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* 2. مود الحاسبة الأصلي (كما هو تماماً وبدون أي ذرة تغيير) */}
+        {/* 2. مود الحاسبة الأصلي */}
         <div className="hidden lg:flex w-full px-4 sm:px-6 lg:px-8 min-h-18 py-2.5 items-center justify-between gap-4">
           {/* Brand with Official University Logo */}
           <div className="flex items-center gap-3 shrink-0">
@@ -160,9 +156,6 @@ export default function Navbar() {
               alt="شعار جامعة الزهراوي"
               className="h-10 sm:h-11 w-auto object-contain drop-shadow"
             />
-            <h1 className="text-base sm:text-lg font-black text-white tracking-wide whitespace-nowrap">
-              المحاضرات
-            </h1>
           </div>
 
           {/* Main Tabs with University Theme */}
