@@ -24,7 +24,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-[#f4f7fb]">
       <Navbar />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-6 space-y-6">
+      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Dynamic Views */}
         <div>
           {currentUser.role === 'student' ? (
@@ -46,7 +46,7 @@ export default function App() {
 
       {/* Official Footer with Identity */}
       <footer className="mt-auto bg-[#041633] text-white border-t border-cyan-500/20 py-8">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <img
               src="/images/university-logo.png"

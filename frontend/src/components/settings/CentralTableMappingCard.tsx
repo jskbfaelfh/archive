@@ -79,15 +79,22 @@ export const CentralTableMappingCard: React.FC = () => {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleSyncNow}
-          disabled={syncStatus.loading || !integrationSettings.isEnabled}
-          className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <RefreshCw className={`w-4 h-4 ${syncStatus.loading ? 'animate-spin' : ''}`} />
-          <span>{syncStatus.loading ? 'جارِ المزامنة...' : 'مزامنة فورية الآن'}</span>
-        </button>
+        <div className="flex items-center gap-3">
+          {!integrationSettings.isEnabled && (
+            <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-bold hidden sm:inline-block">
+              تفعيل التكامل أعلاه مطلوب للمزامنة
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handleSyncNow}
+            disabled={syncStatus.loading || !integrationSettings.isEnabled}
+            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <RefreshCw className={`w-4 h-4 ${syncStatus.loading ? 'animate-spin' : ''}`} />
+            <span>{syncStatus.loading ? 'جارِ المزامنة...' : 'مزامنة فورية الآن'}</span>
+          </button>
+        </div>
       </div>
 
       {syncStatus.message && (

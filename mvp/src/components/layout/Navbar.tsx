@@ -108,21 +108,21 @@ export default function Navbar() {
         {/* Top subtle cyan brand glow strip */}
         <div className="h-0.5 w-full bg-gradient-to-r from-sky-500 via-cyan-400 to-blue-600" />
 
-        <div className="max-w-6xl mx-auto px-3 sm:px-4 min-h-18 py-2.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+        <div className="w-full px-4 sm:px-6 lg:px-8 min-h-18 py-2.5 flex items-center justify-between gap-4">
           {/* Brand with Official University Logo */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <img
               src="/images/university-logo.png"
               alt="شعار جامعة الزهراوي"
               className="h-10 sm:h-11 w-auto object-contain drop-shadow"
             />
-            <h1 className="text-base sm:text-lg font-black text-white tracking-wide">
+            <h1 className="text-base sm:text-lg font-black text-white tracking-wide whitespace-nowrap">
               المحاضرات
             </h1>
           </div>
 
-          {/* 4 Main Tabs with University Theme */}
-          <nav className="flex items-center gap-1 bg-[#0a1e3b]/90 p-1.5 rounded-2xl border border-cyan-500/20 text-xs font-bold overflow-x-auto max-w-full backdrop-blur-sm">
+          {/* Main Tabs with University Theme */}
+          <nav className="flex items-center gap-1 bg-[#0a1e3b]/90 p-1.5 rounded-2xl border border-cyan-500/20 text-xs font-bold backdrop-blur-sm shrink-0">
             {canSeeStructure && (
               <button
                 onClick={() => setActiveTab('structure')}
@@ -205,7 +205,7 @@ export default function Navbar() {
           </nav>
 
           {/* User Info & Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {currentUser.id && <NotificationBell />}
 
             {currentUser.id ? (

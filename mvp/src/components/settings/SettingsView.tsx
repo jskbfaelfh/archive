@@ -38,23 +38,23 @@ export const SettingsView: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-16">
+    <div className="w-full space-y-6 pb-16">
       {/* رأس الصفحة */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
+      <div className="bg-white rounded-2xl p-6 sm:p-7 shadow-sm border border-slate-200">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
               <Settings className="w-7 h-7" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-black text-slate-800">إعدادات المنظومة والربط المركزي</h1>
-                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                  <Lock className="w-3 h-3" />
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="text-xl sm:text-2xl font-black text-slate-800">إعدادات المنظومة والربط المركزي</h1>
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300 shadow-2xs">
+                  <Lock className="w-3.5 h-3.5 text-amber-600" />
                   حساب السوبر أدمن حصراً
                 </span>
               </div>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">
                 إدارة التكامل مع نظام الهيكلية المركزي لجامعة الزهراوي وتعيين الحقول والمزامنة التلقائية
               </p>
             </div>
