@@ -75,16 +75,16 @@ export default function ScheduleManager() {
   return (
     <div className="space-y-6">
       {/* Top Header Card */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#041633] text-white flex items-center justify-center">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 sm:p-5 rounded-[10px] border border-slate-200/80 shadow-2xs">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-[7px] bg-[#041633] text-white flex items-center justify-center shrink-0">
             <Calendar className="w-5 h-5 text-cyan-400" />
           </div>
-          <div>
-            <h3 className="text-base font-black text-slate-900">
-              الجداول الأسبوعية المعتمدة
+          <div className="min-w-0">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 truncate">
+              الجداول
             </h3>
-            <p className="text-xs text-slate-500 font-semibold">
+            <p className="text-xs text-slate-500 font-semibold hidden sm:block">
               {isDoctor
                 ? 'استعراض جدولك الأسبوعي الشخصي ومواعيد محاضرات المراحل الدراسية في القسم'
                 : 'جداول المحاضرات والمختبرات الأسبوعية للطلاب والتدريسيين'}
@@ -96,10 +96,11 @@ export default function ScheduleManager() {
         {canManage && (
           <button
             onClick={() => setModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-[#041633] to-[#0c2b64] hover:from-[#0c2b64] hover:to-[#13408a] text-white text-xs font-black shadow-md shadow-slate-900/10 transition-all self-start md:self-auto"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-[7px] bg-gradient-to-r from-[#041633] to-[#0c2b64] hover:from-[#0c2b64] hover:to-[#13408a] text-white text-xs font-black shadow-md shadow-slate-900/10 transition-all self-end sm:self-auto whitespace-nowrap"
           >
             <Plus className="w-4 h-4 text-cyan-300" />
-            <span>إضافة جدول أسبوعي</span>
+            <span className="hidden sm:inline">إضافة جدول</span>
+            <span className="sm:hidden">إضافة</span>
           </button>
         )}
       </div>

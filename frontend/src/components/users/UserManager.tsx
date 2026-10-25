@@ -441,12 +441,12 @@ export default function UserManager() {
       )}
 
       {/* Header */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 flex items-center justify-between">
+      <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-black text-slate-900">المستخدمون</h2>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap self-end sm:self-auto">
           {!integrationSettings.isEnabled && (
             <>
               <button
@@ -456,19 +456,21 @@ export default function UserManager() {
                   setImportFile(null);
                 }}
                 disabled={colleges.length === 0}
-                className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
+                className="px-3 py-1.5 sm:px-3.5 sm:py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all shadow-2xs whitespace-nowrap"
               >
                 <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
-                <span>استيراد إكسل</span>
+                <span className="hidden sm:inline">استيراد إكسل</span>
+                <span className="sm:hidden">إكسل</span>
               </button>
 
               <button
                 onClick={openAddModal}
                 disabled={colleges.length === 0}
-                className="px-4 py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white text-xs font-black rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white text-xs font-black rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-md shadow-sky-600/30 transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
               >
                 <UserPlus className="w-4 h-4" />
-                <span>إضافة مستخدم</span>
+                <span className="hidden sm:inline">إضافة مستخدم</span>
+                <span className="sm:hidden">إضافة</span>
               </button>
             </>
           )}
