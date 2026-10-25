@@ -107,47 +107,51 @@ export default function ScheduleManager() {
 
       {/* Filter Tabs for Admin & Doctor */}
       {!isStudent && (
-        <div className="flex flex-wrap items-center gap-2 bg-slate-200/80 p-1.5 rounded-2xl w-fit">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 bg-slate-200/80 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl w-full sm:w-fit overflow-x-auto">
           <button
             onClick={() => setViewFilter('all')}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black transition-all ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-[7px] sm:rounded-xl text-xs font-black transition-all cursor-pointer shrink-0 ${
               viewFilter === 'all' ? 'bg-[#041633] text-white shadow-xs' : 'text-slate-700 hover:text-slate-900'
             }`}
           >
-            <Layers className="w-3.5 h-3.5" />
-            <span>كافة الجداول</span>
+            <Layers className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden sm:inline">كافة الجداول</span>
+            <span className="sm:hidden">الكل</span>
           </button>
 
           {isDoctor ? (
             <button
               onClick={() => setViewFilter('doctor')}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black transition-all ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-[7px] sm:rounded-xl text-xs font-black transition-all cursor-pointer shrink-0 ${
                 viewFilter === 'doctor' ? 'bg-[#041633] text-white shadow-xs' : 'text-slate-700 hover:text-slate-900'
               }`}
             >
-              <UserCheck className="w-3.5 h-3.5" />
-              <span>جدولي الأسبوعي الشخصي</span>
+              <UserCheck className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">جدولي الأسبوعي الشخصي</span>
+              <span className="sm:hidden">جدولي</span>
             </button>
           ) : (
             <button
               onClick={() => setViewFilter('doctor')}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black transition-all ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-[7px] sm:rounded-xl text-xs font-black transition-all cursor-pointer shrink-0 ${
                 viewFilter === 'doctor' ? 'bg-[#041633] text-white shadow-xs' : 'text-slate-700 hover:text-slate-900'
               }`}
             >
-              <UserCheck className="w-3.5 h-3.5" />
-              <span>جداول التدريسيين</span>
+              <UserCheck className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">جداول التدريسيين</span>
+              <span className="sm:hidden">التدريسيين</span>
             </button>
           )}
 
           <button
             onClick={() => setViewFilter('stage')}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black transition-all ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-[7px] sm:rounded-xl text-xs font-black transition-all cursor-pointer shrink-0 ${
               viewFilter === 'stage' ? 'bg-[#041633] text-white shadow-xs' : 'text-slate-700 hover:text-slate-900'
             }`}
           >
-            <GraduationCap className="w-3.5 h-3.5" />
-            <span>جداول المراحل (للطلاب)</span>
+            <GraduationCap className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden sm:inline">جداول المراحل (للطلاب)</span>
+            <span className="sm:hidden">المراحل</span>
           </button>
         </div>
       )}

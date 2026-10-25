@@ -45,7 +45,7 @@ export default function App() {
       </main>
 
       {/* Official Footer with Identity */}
-      <footer className="mt-auto bg-[#041633] text-white border-t border-cyan-500/20 py-4 lg:py-8">
+      <footer className="mt-auto bg-[#041633] text-white border-t border-cyan-500/20 py-4 lg:py-8 mb-16 lg:mb-0">
         <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-3 lg:gap-6">
           <div className="flex items-center gap-3">
             <img

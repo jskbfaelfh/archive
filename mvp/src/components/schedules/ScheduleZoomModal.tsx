@@ -25,31 +25,34 @@ export default function ScheduleZoomModal({ schedule, onClose }: Props) {
             <div className="flex items-center gap-2">
               {isDoctorSchedule ? (
                 <span className="px-3 py-1 rounded-full text-[11px] font-black bg-indigo-100 text-indigo-900 flex items-center gap-1">
-                  <UserCheck className="w-3.5 h-3.5" />
-                  <span>جدول التدريسي: {schedule.doctorName}</span>
+                  <UserCheck className="w-3.5 h-3.5 shrink-0" />
+                  <span className="hidden sm:inline">جدول التدريسي: {schedule.doctorName}</span>
+                  <span className="sm:hidden">{schedule.doctorName}</span>
                 </span>
               ) : (
                 <span className="px-3 py-1 rounded-full text-[11px] font-black bg-cyan-100 text-cyan-900 flex items-center gap-1">
-                  <GraduationCap className="w-3.5 h-3.5" />
-                  <span>المرحلة {schedule.stage} • {schedule.sectionName}</span>
+                  <GraduationCap className="w-3.5 h-3.5 shrink-0" />
+                  <span className="hidden sm:inline">المرحلة {schedule.stage} • {schedule.sectionName}</span>
+                  <span className="sm:hidden">م{schedule.stage} {schedule.sectionName ? `• ${schedule.sectionName.length > 12 ? 'كافة الشعب' : schedule.sectionName}` : ''}</span>
                 </span>
               )}
             </div>
-            <h3 className="text-sm font-black text-slate-900 mt-1">{schedule.title}</h3>
+            <h3 className="text-xs sm:text-sm font-black text-slate-900 mt-1 line-clamp-2">{schedule.title}</h3>
           </div>
 
           <div className="flex items-center gap-2 self-end sm:self-auto">
             <a
               href={schedule.imageUrl}
               download={`${schedule.title}.svg`}
-              className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black flex items-center gap-1.5 transition-all"
+              className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-[7px] sm:rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer border border-slate-200 shadow-2xs"
             >
-              <Download className="w-3.5 h-3.5 text-cyan-600" />
-              <span>تحميل الجدول كصورة</span>
+              <Download className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
+              <span className="hidden sm:inline">تحميل الجدول كصورة</span>
+              <span className="sm:hidden">تحميل</span>
             </a>
             <button
               onClick={onClose}
-              className="p-2 rounded-xl hover:bg-slate-100 text-slate-500 transition-colors"
+              className="p-1.5 sm:p-2 rounded-[7px] sm:rounded-xl hover:bg-slate-100 text-slate-500 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
