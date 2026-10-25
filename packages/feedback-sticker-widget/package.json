@@ -1,0 +1,31 @@
+{
+  "name": "@alzahrawi/feedback-sticker-widget",
+  "version": "1.0.0",
+  "description": "حزمة ستيكر إرسال الملاحظات ولقطات الشاشة العائم لنظام إدارة المشاريع في جامعة الزهراوي",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "react",
+    "feedback",
+    "sticker",
+    "widget",
+    "notes",
+    "alzahrawi",
+    "project-management"
+  ],
+  "author": "Al-Zahrawi University",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=16.8.0 || ^18.0.0 || ^19.0.0",
+    "react-dom": ">=16.8.0 || ^18.0.0 || ^19.0.0"
+  }
+}

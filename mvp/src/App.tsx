@@ -15,10 +15,42 @@ import ScheduleManager from '@/components/schedules/ScheduleManager';
 import StudentPortalView from '@/components/student/StudentPortalView';
 import DoctorPortalView from '@/components/doctor/DoctorPortalView';
 import { SettingsView } from '@/components/settings/SettingsView';
+import { FeedbackSticker } from '@/components/feedback';
 import { useApp } from '@/context/AppContext';
 
 export default function App() {
-  const { activeTab, currentUser } = useApp();
+  const { activeTab, currentUser, colleges } = useApp();
+
+  const userCol = colleges.find((c) => c.id === currentUser.collegeId);
+  const userDept = userCol?.departments.find((d) => d.id === currentUser.departmentId);
+
+  const feedbackUser = currentUser.id
+    ? {
+        id: currentUser.id,
+        name: currentUser.name,
+        email: currentUser.email,
+        role: currentUser.role,
+        jobTitle:
+          currentUser.title ||
+          (currentUser.role === 'super_admin'
+            ? 'مسؤول النظام العام'
+            : currentUser.role === 'college_admin'
+            ? 'عميد الكلية'
+            : currentUser.role === 'department_admin'
+            ? 'رئيس القسم'
+            : currentUser.role === 'doctor'
+            ? 'تدريسي'
+            : 'طالب'),
+        collegeId: currentUser.collegeId,
+        collegeName: userCol?.name,
+        deptId: currentUser.departmentId,
+        deptName: userDept?.name,
+        workplace:
+          userCol && userDept
+            ? `${userCol.name} / ${userDept.name}`
+            : userCol?.name || 'جامعة الزهراوي - منظومة المحاضرات',
+      }
+    : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f4f7fb]">
@@ -69,6 +101,16 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* ستيكر إرسال الملاحظات ولقطات الشاشة لنظام إدارة المشاريع المركزي */}
+      <FeedbackSticker
+        currentUser={feedbackUser}
+        config={{
+          projectId: 'lectures-archive',
+          apiUrl: 'https://api.supabase.alzahu.edu.iq/functions/v1/projectManage-submitExternalNote',
+        }}
+        lang="ar"
+      />
     </div>
   );
 }

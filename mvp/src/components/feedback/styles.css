@@ -1,0 +1,37 @@
+/**
+ * @file feedback-styles.css
+ * @description الأنماط والتأثيرات الحركية لستيكر ونافذة الملاحظات في حال عدم استخدام Tailwind CSS
+ */
+
+.alzahrawi-feedback-sticker {
+  font-family: inherit, system-ui, -apple-system, sans-serif;
+  user-select: none;
+}
+
+@keyframes alzahrawi-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.alzahrawi-animate-spin {
+  animation: alzahrawi-spin 1s linear infinite;
+}
+
+@keyframes alzahrawi-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.alzahrawi-modal-anim {
+  animation: alzahrawi-fade-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

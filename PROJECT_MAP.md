@@ -1,8 +1,8 @@
 # خريطة بنية المشروع (PROJECT_MAP.md)
 ## منظومة الهيكلية المركزية وإدارة البيانات المرجعية للجامعة
 
-**تاريخ التحديث الآلي:** 2026-10-25T10:27:59.345Z
-**إجمالي الملفات غير المولدة:** 207
+**تاريخ التحديث الآلي:** 2026-10-25T10:39:12.095Z
+**إجمالي الملفات غير المولدة:** 240
 **حدود الخريطة:** جرد ملفات؛ لا يمثل إثبات صحة الوظائف أو جاهزية الإنتاج. يستثني الأسرار والتبعيات وملفات العمل المولدة.
 
 ### المكدس التقني
@@ -20,8 +20,9 @@
 | `root` | 9 |
 | `backend` | 9 |
 | `docs` | 5 |
-| `frontend` | 65 |
-| `mvp` | 64 |
+| `frontend` | 73 |
+| `mvp` | 72 |
+| `packages` | 17 |
 | `prisma` | 3 |
 | `scripts` | 8 |
 | `uploads` | 1 |
@@ -37,6 +38,9 @@
 - [`frontend/src/components/common/Select.tsx`](frontend/src/components/common/Select.tsx)
 - [`frontend/src/components/common/SelectMenuPortal.tsx`](frontend/src/components/common/SelectMenuPortal.tsx)
 - [`frontend/src/components/doctor/DoctorPortalView.tsx`](frontend/src/components/doctor/DoctorPortalView.tsx)
+- [`frontend/src/components/feedback/FeedbackModal.tsx`](frontend/src/components/feedback/FeedbackModal.tsx)
+- [`frontend/src/components/feedback/FeedbackSticker.tsx`](frontend/src/components/feedback/FeedbackSticker.tsx)
+- [`frontend/src/components/feedback/Icons.tsx`](frontend/src/components/feedback/Icons.tsx)
 - [`frontend/src/components/hierarchy/StructureManager.tsx`](frontend/src/components/hierarchy/StructureManager.tsx)
 - [`frontend/src/components/layout/MobileBottomNav.tsx`](frontend/src/components/layout/MobileBottomNav.tsx)
 - [`frontend/src/components/layout/MobileControlDrawer.tsx`](frontend/src/components/layout/MobileControlDrawer.tsx)
