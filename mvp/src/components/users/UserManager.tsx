@@ -478,7 +478,8 @@ export default function UserManager() {
       {integrationSettings.isEnabled && (
         <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 font-bold flex items-center gap-2">
           <span>🔒</span>
-          <span>تكامل الهيكلية المركزية مفعّل: تم إخفاء أزرار الإضافة وقفل إدخال الكادر والموظفين والمستخدمين لضمان المزامنة التلقائية.</span>
+          <span className="hidden sm:inline">تكامل الهيكلية المركزية مفعّل: تم إخفاء أزرار الإضافة وقفل إدخال الكادر والموظفين والمستخدمين لضمان المزامنة التلقائية.</span>
+          <span className="sm:hidden">مزامنة مركزية</span>
         </div>
       )}
 

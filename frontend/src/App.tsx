@@ -45,23 +45,25 @@ export default function App() {
       </main>
 
       {/* Official Footer with Identity */}
-      <footer className="mt-auto bg-[#041633] text-white border-t border-cyan-500/20 py-8">
-        <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <footer className="mt-auto bg-[#041633] text-white border-t border-cyan-500/20 py-4 lg:py-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-3 lg:gap-6">
           <div className="flex items-center gap-3">
             <img
               src="/images/university-logo.png"
               alt="شعار جامعة الزهراوي"
-              className="h-12 w-auto object-contain"
+              className="h-8 lg:h-12 w-auto object-contain"
             />
             <div>
               <div className="font-black text-sm text-white">جامعة الزهراوي</div>
-              <div className="text-xs text-slate-400">كربلاء المقدسة، طريق كربلاء - نجف، العراق</div>
+              <div className="text-xs text-slate-400 hidden lg:block">كربلاء المقدسة، طريق كربلاء - نجف، العراق</div>
+              <div className="text-[11px] text-slate-400 lg:hidden">أرشفة المحاضرات</div>
             </div>
           </div>
 
           <div className="text-center md:text-left text-xs text-slate-400 space-y-1">
-            <p>منظومة أرشفة المحاضرات والمناهج الأكاديمية الرقمية © 2026</p>
-            <p className="text-[11px] text-cyan-300/70">
+            <p className="hidden lg:block">منظومة أرشفة المحاضرات والمناهج الأكاديمية الرقمية © 2026</p>
+            <p className="lg:hidden text-[11px] font-mono">© 2026</p>
+            <p className="text-[11px] text-cyan-300/70 hidden lg:block">
               معتمدة من وزارة التعليم العالي والبحث العلمي
             </p>
           </div>

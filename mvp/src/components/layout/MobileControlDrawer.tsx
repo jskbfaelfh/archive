@@ -53,12 +53,12 @@ export const MobileControlDrawer: React.FC<MobileControlDrawerProps> = ({
   const userCol = colleges.find((c) => c.id === currentUser.collegeId);
 
   const navItems: { tab: MainTab; label: string; icon: any; visible: boolean }[] = [
-    { tab: 'structure', label: 'الهيكلية الأكاديمية', icon: Layers, visible: canSeeStructure },
-    { tab: 'users', label: 'المستخدمون والكوادر', icon: Users, visible: canSeeUsersTab },
-    { tab: 'lectures', label: 'المحاضرات والمناهج', icon: FileText, visible: true },
-    { tab: 'schedules', label: 'الجداول الدراسية والقاعات', icon: Calendar, visible: true },
-    { tab: 'analytics', label: 'الإحصائيات والتقارير', icon: TrendingUp, visible: canSeeUsersTab },
-    { tab: 'settings', label: 'إعدادات المنظومة والربط المركزي', icon: Settings, visible: isSuper },
+    { tab: 'structure', label: 'الهيكلية', icon: Layers, visible: canSeeStructure },
+    { tab: 'users', label: 'المستخدمون', icon: Users, visible: canSeeUsersTab },
+    { tab: 'lectures', label: 'المحاضرات', icon: FileText, visible: true },
+    { tab: 'schedules', label: 'الجداول', icon: Calendar, visible: true },
+    { tab: 'analytics', label: 'الإحصائيات', icon: TrendingUp, visible: canSeeUsersTab },
+    { tab: 'settings', label: 'الإعدادات', icon: Settings, visible: isSuper },
   ];
 
   const handleSelectTab = (tab: MainTab) => {
@@ -86,7 +86,7 @@ export const MobileControlDrawer: React.FC<MobileControlDrawerProps> = ({
             />
             <div>
               <h2 className="text-sm font-black text-white">جامعة الزهراوي</h2>
-              <p className="text-[10px] text-cyan-300">لوحة التحكم • مود الموبايل</p>
+              <p className="text-[10px] text-cyan-300">التحكم</p>
             </div>
           </div>
           <button
@@ -106,10 +106,10 @@ export const MobileControlDrawer: React.FC<MobileControlDrawerProps> = ({
             <div className="flex-1 min-w-0">
               <div className="text-sm font-bold text-white truncate">{currentUser.name}</div>
               <div className="text-[11px] text-cyan-300/80 truncate">
-                {isSuper && 'مسؤول النظام العام (سوبر أدمن)'}
-                {isCollegeAdmin && `عميد • ${userCol?.name || 'الكلية'}`}
+                {isSuper && 'سوبر أدمن'}
+                {isCollegeAdmin && 'عميد الكلية'}
                 {isDeptAdmin && 'رئيس قسم'}
-                {currentUser.role === 'doctor' && 'عضو هيئة تدريسية'}
+                {currentUser.role === 'doctor' && 'تدريسي'}
                 {currentUser.role === 'student' && `طالب • مرحلة ${currentUser.stage || 1}`}
               </div>
             </div>
@@ -118,7 +118,7 @@ export const MobileControlDrawer: React.FC<MobileControlDrawerProps> = ({
 
         {/* قائمة التبويبات والتنقل */}
         <div className="flex-1 overflow-y-auto p-3 space-y-1">
-          <div className="text-[10px] font-bold text-cyan-400/70 px-3 py-1">أقسام المنظومة</div>
+          <div className="text-[10px] font-bold text-cyan-400/70 px-3 py-1">الأقسام</div>
           {navItems.filter(i => i.visible).map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.tab;
@@ -154,7 +154,7 @@ export const MobileControlDrawer: React.FC<MobileControlDrawerProps> = ({
                 className="flex-1 py-2 px-3 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-rose-500/30 cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
-                <span>تسجيل الخروج</span>
+                <span>خروج</span>
               </button>
             ) : (
               <button
@@ -165,17 +165,17 @@ export const MobileControlDrawer: React.FC<MobileControlDrawerProps> = ({
                 className="flex-1 py-2 px-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
               >
                 <LogIn className="w-3.5 h-3.5" />
-                <span>تسجيل الدخول</span>
+                <span>دخول</span>
               </button>
             )}
 
             <button
               onClick={async () => {
                 const ok = await dialog.confirm({
-                  title: 'تأكيد تصفير البيانات الأكاديمية',
-                  message: 'هل أنت متأكد من تصفير البيانات والعودة للبيانات الأولية للمنظومة؟',
+                  title: 'تصفير البيانات',
+                  message: 'تصفير البيانات للوضع الأولي؟',
                   isDanger: true,
-                  confirmText: 'تصفير البيانات',
+                  confirmText: 'تصفير',
                   cancelText: 'إلغاء',
                 });
                 if (ok) {
@@ -183,7 +183,7 @@ export const MobileControlDrawer: React.FC<MobileControlDrawerProps> = ({
                   onClose();
                 }
               }}
-              title="تصفير البيانات"
+              title="تصفير"
               className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
