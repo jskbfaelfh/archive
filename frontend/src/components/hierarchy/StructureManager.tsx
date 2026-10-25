@@ -183,16 +183,16 @@ export default function StructureManager() {
             return (
               <div key={col.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
                 {/* College Header Row */}
-                <div className="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between gap-3">
+                <div className="p-3 sm:p-4 bg-slate-50/80 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div
                     onClick={() => toggleCollege(col.id)}
-                    className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
+                    className="flex items-start sm:items-center gap-3 cursor-pointer flex-1 min-w-0"
                   >
-                    <button className="text-slate-400 hover:text-slate-700">
+                    <button className="text-slate-400 hover:text-slate-700 mt-0.5 sm:mt-0">
                       {isColOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                     </button>
-                    <Building2 className="w-5 h-5 text-sky-700 shrink-0" />
-                    <div>
+                    <Building2 className="w-5 h-5 text-sky-700 shrink-0 mt-0.5 sm:mt-0" />
+                    <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-black text-sm text-slate-900">{col.name}</span>
                       </div>
@@ -208,7 +208,7 @@ export default function StructureManager() {
                   </div>
 
                   {/* Actions for College */}
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 self-end sm:self-auto flex-wrap">
                     {canManageCollege && !integrationSettings.isEnabled && (
                       <button
                         onClick={() =>
@@ -267,7 +267,7 @@ export default function StructureManager() {
 
                 {/* Departments Container */}
                 {isColOpen && (
-                  <div className="p-4 bg-white space-y-4">
+                  <div className="p-2.5 sm:p-4 bg-white space-y-3 sm:space-y-4">
                     {depts.length === 0 ? (
                       <p className="text-xs text-slate-400 text-center py-4">
                         لا توجد أقسام.
@@ -281,31 +281,31 @@ export default function StructureManager() {
                         return (
                           <div
                             key={dept.id}
-                            className="mr-3 border-r-2 border-teal-500 pr-4 rounded-xl bg-slate-50/50 p-4 border border-slate-200/80 space-y-3"
+                            className="mr-1 sm:mr-3 border-r-2 border-teal-500 pr-2 sm:pr-4 rounded-[10px] bg-slate-50/50 p-2.5 sm:p-4 border border-slate-200/80 space-y-3"
                           >
                             {/* Department Header Row */}
-                            <div className="flex items-center justify-between gap-3">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                               <div
                                 onClick={() => toggleDept(dept.id)}
-                                className="flex items-center gap-2 cursor-pointer flex-1 min-w-0"
+                                className="flex items-start sm:items-center gap-2 cursor-pointer flex-1 min-w-0"
                               >
-                                <button className="text-slate-400">
+                                <button className="text-slate-400 mt-0.5 sm:mt-0">
                                   {isDeptOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                                 </button>
-                                <FolderTree className="w-4 h-4 text-teal-700 shrink-0" />
-                                <div>
-                                  <div className="flex items-center gap-2">
+                                <FolderTree className="w-4 h-4 text-teal-700 shrink-0 mt-0.5 sm:mt-0" />
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2 flex-wrap">
                                     <span className="font-bold text-xs sm:text-sm text-slate-900">{dept.name}</span>
-                                    <span className="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded font-bold">
+                                    <span className="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-bold whitespace-nowrap">
                                       {dept.stagesCount} مراحل
                                     </span>
                                   </div>
-                                  <p className="text-[10px] text-slate-500 mt-0.5">
+                                  <p className="text-[11px] text-slate-500 mt-0.5">
                                     رئيس القسم:{' '}
                                     {deptAdmin ? (
                                       <span className="font-bold text-teal-800">{deptAdmin.name}</span>
                                     ) : (
-                                      <span className="text-amber-700 font-medium bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">غير معيّن</span>
+                                      <span className="text-amber-700 font-medium bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">غير معيّن</span>
                                     )}
                                   </p>
                                 </div>
@@ -313,7 +313,7 @@ export default function StructureManager() {
 
                               {/* Department Actions */}
                               {canManageCollege && (
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-1 self-end sm:self-auto shrink-0">
                                   <button
                                     onClick={() =>
                                       setDeptModal({
@@ -382,19 +382,19 @@ export default function StructureManager() {
                                     return (
                                       <div
                                         key={stg}
-                                        className="bg-white p-3 rounded-xl border border-slate-200 text-xs space-y-2"
+                                        className="bg-white p-2.5 sm:p-3.5 rounded-[10px] border border-slate-200 text-xs space-y-2.5"
                                       >
                                         {/* Stage Bar */}
-                                        <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
-                                          <div className="flex items-center gap-2">
-                                            <span className="font-extrabold text-slate-800">المرحلة {stg}</span>
-                                            <span className="text-[10px] text-slate-400">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                                          <div className="flex items-center gap-2 flex-wrap">
+                                            <span className="font-extrabold text-slate-800 text-[13px]">المرحلة {stg}</span>
+                                            <span className="text-[11px] text-slate-400 font-medium">
                                               ({stageSections.length} شُعب • {stageSubjects.length} مواد)
                                             </span>
                                           </div>
 
                                           {canManageInDept && (
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1.5 flex-wrap">
                                               {!integrationSettings.isEnabled && (
                                                 <button
                                                   onClick={() =>
@@ -406,7 +406,7 @@ export default function StructureManager() {
                                                       name: '',
                                                     })
                                                   }
-                                                  className="px-2 py-0.5 bg-sky-50 text-sky-800 hover:bg-sky-100 rounded text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                                                  className="px-2 py-1 bg-sky-50 text-sky-800 hover:bg-sky-100 rounded-[7px] text-[11px] font-bold flex items-center gap-1 cursor-pointer whitespace-nowrap shadow-2xs border border-sky-200/60"
                                                 >
                                                   <Plus className="w-3 h-3" />
                                                   <span>إضافة شعبة</span>
@@ -426,7 +426,7 @@ export default function StructureManager() {
                                                     practicalDoctorId: '',
                                                   })
                                                 }
-                                                className="px-2 py-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                                                className="px-2 py-1 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-[7px] text-[11px] font-bold flex items-center gap-1 cursor-pointer whitespace-nowrap shadow-2xs border border-emerald-200/60"
                                               >
                                                 <Plus className="w-3 h-3" />
                                                 <span>إضافة مادة</span>
@@ -436,17 +436,17 @@ export default function StructureManager() {
                                         </div>
 
                                         {/* Sections Pills */}
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                          <span className="text-slate-400 font-semibold text-[10px]">الشُعب:</span>
+                                        <div className="flex items-center gap-1.5 flex-wrap py-0.5">
+                                          <span className="text-slate-400 font-bold text-[11px] shrink-0">الشُعب:</span>
                                           {stageSections.length === 0 ? (
-                                            <span className="text-slate-400 text-[10px]">لا توجد شُعب</span>
+                                            <span className="text-slate-400 text-[11px]">لا توجد شُعب</span>
                                           ) : (
                                             stageSections.map((sec) => (
                                               <div
                                                 key={sec.id}
-                                                className="bg-slate-100 hover:bg-slate-200/80 text-slate-800 px-2 py-1 rounded-lg flex items-center gap-1.5"
+                                                className="bg-slate-100 hover:bg-slate-200/80 text-slate-800 px-2 py-1 rounded-[7px] flex items-center gap-1 text-[11px] font-bold border border-slate-200"
                                               >
-                                                <span className="font-bold text-[11px]">{sec.name}</span>
+                                                <span>{sec.name}</span>
                                                 {canManageInDept && (
                                                   <>
                                                     <button
@@ -489,75 +489,80 @@ export default function StructureManager() {
                                         </div>
 
                                         {/* Subjects Pills */}
-                                        <div className="flex items-center gap-2 flex-wrap pt-1">
-                                          <span className="text-slate-400 font-semibold text-[10px]">المواد:</span>
+                                        <div className="flex items-start gap-1.5 flex-wrap pt-1">
+                                          <span className="text-slate-400 font-bold text-[11px] mt-1 shrink-0">المواد:</span>
                                           {stageSubjects.length === 0 ? (
-                                            <span className="text-slate-400 text-[10px]">لا توجد مواد</span>
+                                            <span className="text-slate-400 text-[11px] mt-1">لا توجد مواد</span>
                                           ) : (
-                                            stageSubjects.map((sub) => (
-                                              <div
-                                                key={sub.id}
-                                                className="bg-emerald-50 text-emerald-950 border border-emerald-300 px-2.5 py-1 rounded-lg flex items-center gap-1.5 text-[11px]"
-                                              >
-                                                <span className="font-bold">{sub.name}</span>
-                                                <span className="text-[9px] px-1.5 py-0.5 rounded font-black bg-cyan-100 text-cyan-900 border border-cyan-300">
-                                                  {sub.subjectType === 'theory' ? 'نظري' : sub.subjectType === 'practical' ? 'عملي' : 'نظري + عملي'}
-                                                </span>
-                                                {sub.subjectType === 'theory' ? (
-                                                  <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-bold border border-emerald-300">
-                                                    {sub.theoryDoctorName || sub.doctorName || 'شاغر'}
-                                                  </span>
-                                                ) : sub.subjectType === 'practical' ? (
-                                                  <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-bold border border-emerald-300">
-                                                    {sub.practicalDoctorName || sub.doctorName || 'شاغر'}
-                                                  </span>
-                                                ) : (
-                                                  <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-bold border border-emerald-300">
-                                                    {sub.theoryDoctorId === sub.practicalDoctorId && sub.theoryDoctorName
-                                                      ? `${sub.theoryDoctorName}`
-                                                      : `ن: ${sub.theoryDoctorName || 'شاغر'} • ع: ${sub.practicalDoctorName || 'شاغر'}`}
-                                                  </span>
-                                                )}
-                                                {canManageInDept && (
-                                                  <>
-                                                    <button
-                                                      onClick={() =>
-                                                        setSubjectModal({
-                                                          open: true,
-                                                          collegeId: col.id,
-                                                          departmentId: dept.id,
-                                                          stage: stg,
-                                                          editId: sub.id,
-                                                          name: sub.name,
-                                                          subjectType: sub.subjectType || 'both',
-                                                          theoryDoctorId: sub.theoryDoctorId || sub.doctorId || '',
-                                                          practicalDoctorId: sub.practicalDoctorId || '',
-                                                        })
-                                                      }
-                                                      className="text-emerald-700 hover:text-emerald-950 cursor-pointer"
-                                                      title="تعديل المادة أو تغيير الأستاذ"
-                                                    >
-                                                      <Edit2 className="w-3 h-3" />
-                                                    </button>
-                                                    <button
-                                                      onClick={async () => {
-                                                        const ok = await dialog.confirm({
-                                                          title: 'تأكيد حذف المقرر الدراسي',
-                                                          message: `هل أنت متأكد من حذف مقرر "${sub.name}"؟`,
-                                                          isDanger: true,
-                                                          confirmText: 'حذف المقرر',
-                                                          cancelText: 'إلغاء',
-                                                        });
-                                                        if (ok) deleteSubject(sub.id);
-                                                      }}
-                                                      className="text-emerald-600 hover:text-rose-600 cursor-pointer"
-                                                    >
-                                                      <Trash2 className="w-3 h-3" />
-                                                    </button>
-                                                  </>
-                                                )}
-                                              </div>
-                                            ))
+                                            <div className="flex-1 flex items-center gap-1.5 flex-wrap min-w-0">
+                                              {stageSubjects.map((sub) => (
+                                                <div
+                                                  key={sub.id}
+                                                  className="bg-emerald-50/90 text-emerald-950 border border-emerald-300 p-1.5 sm:px-2.5 sm:py-1 rounded-[7px] flex flex-wrap sm:flex-nowrap items-center gap-1.5 text-[11px] max-w-full shadow-2xs"
+                                                >
+                                                  <span className="font-bold text-slate-900 leading-tight">{sub.name}</span>
+                                                  <div className="flex items-center gap-1 flex-wrap">
+                                                    <span className="text-[10px] px-1.5 py-0.5 rounded font-black bg-cyan-100 text-cyan-900 border border-cyan-300 shrink-0">
+                                                      {sub.subjectType === 'theory' ? 'نظري' : sub.subjectType === 'practical' ? 'عملي' : 'نظري + عملي'}
+                                                    </span>
+                                                    {sub.subjectType === 'theory' ? (
+                                                      <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-bold border border-emerald-300 shrink-0">
+                                                        {sub.theoryDoctorName || sub.doctorName || 'شاغر'}
+                                                      </span>
+                                                    ) : sub.subjectType === 'practical' ? (
+                                                      <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-bold border border-emerald-300 shrink-0">
+                                                        {sub.practicalDoctorName || sub.doctorName || 'شاغر'}
+                                                      </span>
+                                                    ) : (
+                                                      <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-bold border border-emerald-300 shrink-0">
+                                                        {sub.theoryDoctorId === sub.practicalDoctorId && sub.theoryDoctorName
+                                                          ? `${sub.theoryDoctorName}`
+                                                          : `ن: ${sub.theoryDoctorName || 'شاغر'} • ع: ${sub.practicalDoctorName || 'شاغر'}`}
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                  {canManageInDept && (
+                                                    <div className="flex items-center gap-1 ms-auto shrink-0">
+                                                      <button
+                                                        onClick={() =>
+                                                          setSubjectModal({
+                                                            open: true,
+                                                            collegeId: col.id,
+                                                            departmentId: dept.id,
+                                                            stage: stg,
+                                                            editId: sub.id,
+                                                            name: sub.name,
+                                                            subjectType: sub.subjectType || 'both',
+                                                            theoryDoctorId: sub.theoryDoctorId || sub.doctorId || '',
+                                                            practicalDoctorId: sub.practicalDoctorId || '',
+                                                          })
+                                                        }
+                                                        className="text-emerald-700 hover:text-emerald-950 p-0.5 cursor-pointer"
+                                                        title="تعديل المادة أو تغيير الأستاذ"
+                                                      >
+                                                        <Edit2 className="w-3.5 h-3.5" />
+                                                      </button>
+                                                      <button
+                                                        onClick={async () => {
+                                                          const ok = await dialog.confirm({
+                                                            title: 'تأكيد حذف المقرر الدراسي',
+                                                            message: `هل أنت متأكد من حذف مقرر "${sub.name}"؟`,
+                                                            isDanger: true,
+                                                            confirmText: 'حذف المقرر',
+                                                            cancelText: 'إلغاء',
+                                                          });
+                                                          if (ok) deleteSubject(sub.id);
+                                                        }}
+                                                        className="text-emerald-600 hover:text-rose-600 p-0.5 cursor-pointer"
+                                                        title="حذف"
+                                                      >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                      </button>
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              ))}
+                                            </div>
                                           )}
                                         </div>
                                       </div>

@@ -490,8 +490,8 @@ export default function UserManager() {
       )}
 
       {/* Users Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
-        <table className="w-full text-right text-xs">
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto shadow-2xs">
+        <table className="w-full text-right text-xs min-w-[580px]">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold">
               <th className="py-3 px-4">الاسم</th>
