@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useDialog } from '@/context/DialogContext';
 import {
   Layers,
   Users,
@@ -23,6 +24,7 @@ import { MobileControlDrawer } from './MobileControlDrawer';
 import { MobileBottomNav } from './MobileBottomNav';
 
 export default function Navbar() {
+  const dialog = useDialog();
   const {
     currentUser,
     colleges,
@@ -288,8 +290,15 @@ export default function Navbar() {
             )}
 
             <button
-              onClick={() => {
-                if (confirm('تصفير البيانات والعودة للبيانات الأولية؟')) {
+              onClick={async () => {
+                const ok = await dialog.confirm({
+                  title: 'تأكيد تصفير البيانات الأكاديمية',
+                  message: 'هل أنت متأكد من تصفير البيانات والعودة للبيانات الأولية للمنظومة؟',
+                  isDanger: true,
+                  confirmText: 'تصفير البيانات',
+                  cancelText: 'إلغاء',
+                });
+                if (ok) {
                   resetAll();
                 }
               }}
@@ -315,7 +324,7 @@ export default function Navbar() {
       {/* LOGIN MODAL */}
       {isLoginModalOpen && (
         <div className="fixed inset-0 z-50 bg-[#02091b]/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-4 border border-slate-200 text-slate-900 my-auto">
+          <div className="bg-white rounded-[10px] shadow-2xl w-full max-w-md p-6 space-y-4 border border-slate-200 text-slate-900 my-auto">
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-3">
@@ -338,14 +347,14 @@ export default function Navbar() {
             </div>
 
             {loginError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs font-bold">
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-[7px] text-rose-800 text-[13px] font-bold">
                 ⚠️ {loginError}
               </div>
             )}
 
-            <form onSubmit={handleLoginSubmit} className="space-y-3.5 text-xs">
+            <form onSubmit={handleLoginSubmit} className="space-y-3.5 text-[13px]">
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">البريد الإلكتروني الجامعي</label>
+                <label className="block text-[13px] font-bold text-slate-900 mb-1">البريد الإلكتروني الجامعي</label>
                 <div className="relative">
                   <Mail className="w-4 h-4 absolute right-3 top-3 text-slate-400" />
                   <input
@@ -354,13 +363,13 @@ export default function Navbar() {
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     placeholder="name@alzahrawi.edu.iq"
-                    className="w-full text-sm font-bold text-slate-900 pr-9 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                    className="w-full text-[13px] font-bold text-slate-900 pr-9 p-2.5 rounded-[7px] bg-white border border-slate-300 focus:border-sky-600 focus:outline-none shadow-2xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-900 mb-1">كلمة المرور</label>
+                <label className="block text-[13px] font-bold text-slate-900 mb-1">كلمة المرور</label>
                 <div className="relative">
                   <Lock className="w-4 h-4 absolute right-3 top-3 text-slate-400" />
                   <input
@@ -369,13 +378,13 @@ export default function Navbar() {
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full text-sm font-bold text-slate-900 pr-9 p-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-sky-600 focus:outline-none shadow-xs"
+                    className="w-full text-[13px] font-bold text-slate-900 pr-9 p-2.5 rounded-[7px] bg-white border border-slate-300 focus:border-sky-600 focus:outline-none shadow-2xs"
                   />
                 </div>
               </div>
 
               {/* Quick Fill for Super Admin */}
-              <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+              <div className="p-2.5 bg-slate-50 rounded-[7px] border border-slate-200 flex items-center justify-between">
                 <div>
                   <span className="text-[11px] text-slate-800 font-bold block">حساب المشرف العام الافتراضي:</span>
                   <span className="text-[10px] text-slate-500 font-mono">admin@alzahrawi.edu.iq</span>
@@ -383,7 +392,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => handleQuickFill('admin@alzahrawi.edu.iq')}
-                  className="px-2.5 py-1 bg-white hover:bg-cyan-50 text-slate-800 hover:text-cyan-900 border border-slate-300 hover:border-cyan-400 rounded-lg text-[10px] font-bold cursor-pointer transition-all"
+                  className="px-2.5 py-1 bg-white hover:bg-cyan-50 text-slate-800 hover:text-cyan-900 border border-slate-300 hover:border-cyan-400 rounded-[7px] text-[10px] font-bold cursor-pointer transition-all"
                 >
                   تعبئة تلقائية
                 </button>
@@ -393,14 +402,14 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setIsLoginModalOpen(false)}
-                  className="px-3.5 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+                  className="px-3.5 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-100 rounded-[7px] cursor-pointer"
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-xl text-xs font-black transition-all cursor-pointer shadow-md shadow-sky-600/30 disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white rounded-[7px] text-[13px] font-black transition-all cursor-pointer shadow-md shadow-sky-600/30 disabled:opacity-50"
                 >
                   <LogIn className="w-3.5 h-3.5 text-cyan-200" />
                   <span>{isSubmitting ? 'جاري التحقق...' : 'دخول المنظومة'}</span>
@@ -414,19 +423,19 @@ export default function Navbar() {
       {/* Mandatory Password Change Modal */}
       {currentUser.id && currentUser.mustChangePassword && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#02091b]/80 backdrop-blur-md">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl border-2 border-amber-500 space-y-4 text-slate-900">
+          <div className="bg-white rounded-[10px] w-full max-w-md p-6 shadow-2xl border-2 border-amber-500 space-y-4 text-slate-900">
             <div className="flex items-center gap-3 pb-3 border-b border-amber-100 text-amber-800">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-[7px] bg-amber-100 flex items-center justify-center shrink-0">
                 <Shield className="w-6 h-6 text-amber-600" />
               </div>
               <div>
                 <h3 className="text-base font-black text-slate-900">تغيير كلمة المرور</h3>
-                <p className="text-xs text-slate-500 font-medium">مطلوب تعيين كلمة مرور جديدة للمتابعة.</p>
+                <p className="text-[13px] text-slate-500 font-medium">مطلوب تعيين كلمة مرور جديدة للمتابعة.</p>
               </div>
             </div>
 
             {passChangeError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold rounded-xl">
+              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-[13px] font-bold rounded-[7px]">
                 {passChangeError}
               </div>
             )}

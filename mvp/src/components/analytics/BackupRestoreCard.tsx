@@ -7,9 +7,11 @@
 import React, { useState } from 'react';
 import { Database, Download, UploadCloud, FileCheck } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
+import { useDialog } from '@/context/DialogContext';
 
 export default function BackupRestoreCard() {
   const { colleges, sections, subjects, lectures, schedules, users } = useApp();
+  const dialog = useDialog();
   const [restoring, setRestoring] = useState(false);
   const [restoreStatus, setRestoreStatus] = useState<string | null>(null);
 
@@ -37,7 +39,15 @@ export default function BackupRestoreCard() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!confirm(`هل أنت متأكد من استرجاع البيانات من الملف "${file.name}"؟ سيتم استبدال بيانات المنظومة وتحديثها بالكامل.`)) {
+    const confirmed = await dialog.confirm({
+      title: 'تأكيد استرجاع البيانات الأكاديمية',
+      message: `هل أنت متأكد من استرجاع البيانات من الملف "${file.name}"؟ سيتم استبدال بيانات المنظومة وتحديثها بالكامل.`,
+      isDanger: true,
+      confirmText: 'استرجاع البيانات',
+      cancelText: 'إلغاء',
+    });
+
+    if (!confirmed) {
       e.target.value = '';
       return;
     }
@@ -48,19 +58,23 @@ export default function BackupRestoreCard() {
       const text = await file.text();
       const data = JSON.parse(text);
 
-      if (data.colleges) localStorage.setItem('alzahrawi_colleges', JSON.stringify(data.colleges));
-      if (data.sections) localStorage.setItem('alzahrawi_sections', JSON.stringify(data.sections));
-      if (data.subjects) localStorage.setItem('alzahrawi_subjects', JSON.stringify(data.subjects));
-      if (data.lectures) localStorage.setItem('alzahrawi_lectures', JSON.stringify(data.lectures));
-      if (data.schedules) localStorage.setItem('alzahrawi_schedules', JSON.stringify(data.schedules));
-      if (data.users) localStorage.setItem('alzahrawi_users', JSON.stringify(data.users));
+      if (data.colleges) localStorage.setItem('alzahrawi_prod_colleges', JSON.stringify(data.colleges));
+      if (data.sections) localStorage.setItem('alzahrawi_prod_sections', JSON.stringify(data.sections));
+      if (data.subjects) localStorage.setItem('alzahrawi_prod_subjects', JSON.stringify(data.subjects));
+      if (data.lectures) localStorage.setItem('alzahrawi_prod_lectures', JSON.stringify(data.lectures));
+      if (data.schedules) localStorage.setItem('alzahrawi_prod_schedules', JSON.stringify(data.schedules));
+      if (data.users) localStorage.setItem('alzahrawi_prod_users', JSON.stringify(data.users));
 
       setRestoreStatus('تمت استعادة البيانات بنجاح! جاري تطبيق التغييرات...');
       setTimeout(() => {
         window.location.reload();
       }, 1000);
     } catch (err: any) {
-      alert(err.message || 'خطأ أثناء استرجاع الملف، تأكد من صحة تنسيق JSON.');
+      await dialog.alert({
+        title: 'تعذر استرجاع الملف',
+        message: err.message || 'خطأ أثناء استرجاع الملف، تأكد من صحة تنسيق JSON.',
+        type: 'error',
+      });
       setRestoreStatus(null);
     } finally {
       setRestoring(false);

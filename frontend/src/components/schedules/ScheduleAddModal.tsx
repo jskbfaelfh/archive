@@ -82,7 +82,7 @@ export default function ScheduleAddModal({ onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-slate-200 max-h-[92vh] overflow-y-auto">
+      <div className="bg-white rounded-[10px] max-w-lg w-full p-6 space-y-4 shadow-2xl border border-slate-200 max-h-[92vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b pb-3 border-slate-100">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-cyan-600" />

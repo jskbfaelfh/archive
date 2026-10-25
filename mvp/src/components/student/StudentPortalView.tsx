@@ -207,7 +207,7 @@ export default function StudentPortalView() {
       {/* Preview Modal */}
       {previewLecture && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+          <div className="bg-white rounded-[10px] max-w-lg w-full p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b pb-3 border-slate-100">
               <span className="text-xs font-bold text-cyan-700">{previewLecture.subjectName}</span>
               <button onClick={() => setPreviewLecture(null)}><X className="w-5 h-5 text-slate-400" /></button>

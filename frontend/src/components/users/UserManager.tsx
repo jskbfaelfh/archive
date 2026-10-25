@@ -15,8 +15,10 @@ import {
   X,
 } from 'lucide-react';
 import Select from '@/components/common/Select';
+import { useDialog } from '@/context/DialogContext';
 
 export default function UserManager() {
+  const dialog = useDialog();
   const { users, colleges, sections, subjects, addUser, updateUser, deleteUser, updateSubject, currentUser, refreshData, integrationSettings } = useApp();
 
   const isSuper = currentUser.role === 'super_admin';
@@ -78,10 +80,18 @@ export default function UserManager() {
         });
         await refreshData();
       } else {
-        alert(data.error || 'فشل استيراد الملف');
+        await dialog.alert({
+          title: 'تعذر استيراد الملف',
+          message: data.error || 'فشل استيراد الملف، يرجى مراجعة محتويات ملف الإكسل.',
+          type: 'error',
+        });
       }
     } catch {
-      alert('حدث خطأ أثناء رفع ومعالجة ملف الإكسل');
+      await dialog.alert({
+        title: 'خطأ في معالجة الملف',
+        message: 'حدث خطأ أثناء رفع ومعالجة ملف الإكسل الأكاديمي.',
+        type: 'error',
+      });
     } finally {
       setIsImporting(false);
     }
@@ -137,9 +147,13 @@ export default function UserManager() {
     return [];
   };
 
-  const openAddModal = () => {
+  const openAddModal = async () => {
     if (integrationSettings.isEnabled) {
-      alert('تم تعطيل الإضافة اليدوية: نظام التكامل مع الهيكلية المركزية مفعل.');
+      await dialog.alert({
+        title: 'الإضافة اليدوية معلقة',
+        message: 'تم تعليق الإضافة اليدوية نظراً لتفعيل مزامنة الهيكلية المركزية المعتمدة.',
+        type: 'warning',
+      });
       return;
     }
     setEditId(null);
@@ -215,7 +229,11 @@ export default function UserManager() {
     // Strict validation for students
     if (role === 'student') {
       if (!targetCollegeId || !targetDeptId || !sectionId) {
-        alert('يرجى تحديد الكلية والقسم والمرحلة والشعبة!');
+        await dialog.alert({
+          title: 'بيانات الطالب غير مكتملة',
+          message: 'يرجى تحديد الكلية والقسم والمرحلة والشعبة الدراسية للطالب.',
+          type: 'warning',
+        });
         return;
       }
     }
@@ -398,9 +416,13 @@ export default function UserManager() {
               </span>
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
                   navigator.clipboard.writeText(`البريد: ${createdUserNotice.email}\nكلمة المرور: ${createdUserNotice.tempPassword}`);
-                  alert('تم نسخ بيانات الدخول إلى الحافظة');
+                  await dialog.alert({
+                    title: 'تم النسخ',
+                    message: 'تم نسخ بيانات الدخول الجامعية إلى الحافظة بنجاح.',
+                    type: 'success',
+                  });
                 }}
                 className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-xl font-bold font-sans cursor-pointer transition-colors"
               >
@@ -561,8 +583,15 @@ export default function UserManager() {
                         )}
                         {showDelete && (
                           <button
-                            onClick={() => {
-                              if (confirm(`حذف حساب "${u.name}" نهائياً؟`)) deleteUser(u.id);
+                            onClick={async () => {
+                              const ok = await dialog.confirm({
+                                title: 'تأكيد حذف الحساب الأكاديمي',
+                                message: `هل أنت متأكد من حذف حساب "${u.name}" نهائياً من المنظومة؟`,
+                                isDanger: true,
+                                confirmText: 'حذف الحساب',
+                                cancelText: 'إلغاء',
+                              });
+                              if (ok) deleteUser(u.id);
                             }}
                             className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg cursor-pointer"
                             title="حذف"
@@ -586,7 +615,7 @@ export default function UserManager() {
       {/* MODAL: Add / Edit User */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-5 space-y-3 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-[10px] shadow-xl w-full max-w-md p-5 space-y-3 max-h-[90vh] overflow-y-auto">
             <h3 className="font-bold text-sm text-slate-900">
               {editId ? 'تعديل مستخدم' : 'إضافة مستخدم'}
             </h3>
@@ -861,7 +890,7 @@ export default function UserManager() {
       {/* MODAL: Excel Bulk Import */}
       {importModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto border border-slate-200">
+          <div className="bg-white rounded-[10px] shadow-2xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto border border-slate-200">
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
                 <h3 className="font-black text-base text-slate-900">استيراد من إكسل</h3>
@@ -925,12 +954,16 @@ export default function UserManager() {
                       </span>
                       <button
                         type="button"
-                        onClick={() => {
+                        onClick={async () => {
                           const text = importResult.createdAccounts!
                             .map((a) => `${a.name}\t${a.email}\t${a.tempPassword}`)
                             .join('\n');
                           navigator.clipboard.writeText(text);
-                          alert('تم النسخ إلى الحافظة');
+                          await dialog.alert({
+                            title: 'تم النسخ',
+                            message: 'تم نسخ جميع بيانات الحسابات المُنشأة إلى الحافظة بنجاح.',
+                            type: 'success',
+                          });
                         }}
                         className="text-[10px] text-sky-700 hover:text-sky-900 font-bold underline cursor-pointer"
                       >

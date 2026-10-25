@@ -15,8 +15,10 @@ import {
   Loader2,
 } from 'lucide-react';
 import Select from '@/components/common/Select';
+import { useDialog } from '@/context/DialogContext';
 
 export default function LectureManager() {
+  const dialog = useDialog();
   const {
     currentUser,
     colleges,
@@ -193,7 +195,11 @@ export default function LectureManager() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !collegeId || !departmentId || !subjectId) {
-      alert('يرجى استكمال اختيار الكلية والقسم والمرحلة والمادة الدراسية!');
+      await dialog.alert({
+        title: 'استكمال البيانات الأكاديمية',
+        message: 'يرجى استكمال اختيار الكلية والقسم والمرحلة والمادة الدراسية للمتابعة.',
+        type: 'warning',
+      });
       return;
     }
 
@@ -463,8 +469,15 @@ export default function LectureManager() {
                               <Edit2 className="w-3.5 h-3.5" />
                             </button>
                             <button
-                              onClick={() => {
-                                if (confirm(`حذف محاضرة "${lec.title}"؟`)) deleteLecture(lec.id);
+                              onClick={async () => {
+                                const ok = await dialog.confirm({
+                                  title: 'تأكيد حذف المحاضرة الأكاديمية',
+                                  message: `هل أنت متأكد من حذف محاضرة "${lec.title}" نهائياً من المنظومة؟`,
+                                  isDanger: true,
+                                  confirmText: 'حذف نهائي',
+                                  cancelText: 'إلغاء',
+                                });
+                                if (ok) deleteLecture(lec.id);
                               }}
                               className="p-1.5 text-slate-400 hover:text-rose-600 cursor-pointer"
                               title="حذف"
@@ -486,7 +499,7 @@ export default function LectureManager() {
       {/* MODAL: In-App Document Preview */}
       {previewLecture && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto border border-slate-200">
+          <div className="bg-white rounded-[10px] shadow-2xl w-full max-w-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto border border-slate-200">
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
                 <span className="text-[10px] text-sky-800 font-bold bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200">
@@ -566,7 +579,7 @@ export default function LectureManager() {
       {/* MODAL: Upload / Edit Lecture */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-5 space-y-3 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-[10px] shadow-xl w-full max-w-md p-5 space-y-3 max-h-[90vh] overflow-y-auto">
             <h3 className="font-bold text-sm text-slate-900">
               {editId ? 'تعديل محاضرة' : 'إضافة محاضرة'}
             </h3>

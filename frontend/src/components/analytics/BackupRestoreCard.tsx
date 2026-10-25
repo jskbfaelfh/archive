@@ -7,9 +7,11 @@
 import React, { useState } from 'react';
 import { Database, Download, UploadCloud, FileCheck } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
+import { useDialog } from '@/context/DialogContext';
 
 export default function BackupRestoreCard() {
   const { colleges, sections, subjects, lectures, schedules, users } = useApp();
+  const dialog = useDialog();
   const [restoring, setRestoring] = useState(false);
   const [restoreStatus, setRestoreStatus] = useState<string | null>(null);
 
@@ -37,7 +39,15 @@ export default function BackupRestoreCard() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!confirm(`هل أنت متأكد من استرجاع البيانات من الملف "${file.name}"؟ سيتم استبدال بيانات المنظومة وتحديثها بالكامل.`)) {
+    const confirmed = await dialog.confirm({
+      title: 'تأكيد استرجاع البيانات الأكاديمية',
+      message: `هل أنت متأكد من استرجاع البيانات من الملف "${file.name}"؟ سيتم استبدال بيانات المنظومة وتحديثها بالكامل.`,
+      isDanger: true,
+      confirmText: 'استرجاع البيانات',
+      cancelText: 'إلغاء',
+    });
+
+    if (!confirmed) {
       e.target.value = '';
       return;
     }
@@ -60,7 +70,11 @@ export default function BackupRestoreCard() {
         window.location.reload();
       }, 1000);
     } catch (err: any) {
-      alert(err.message || 'خطأ أثناء استرجاع الملف، تأكد من صحة تنسيق JSON.');
+      await dialog.alert({
+        title: 'تعذر استرجاع الملف',
+        message: err.message || 'خطأ أثناء استرجاع الملف، تأكد من صحة تنسيق JSON.',
+        type: 'error',
+      });
       setRestoreStatus(null);
     } finally {
       setRestoring(false);

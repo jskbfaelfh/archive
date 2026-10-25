@@ -1,8 +1,8 @@
 # خريطة بنية المشروع (PROJECT_MAP.md)
 ## منظومة الهيكلية المركزية وإدارة البيانات المرجعية للجامعة
 
-**تاريخ التحديث الآلي:** 2026-10-21T10:09:01.917Z
-**إجمالي الملفات غير المولدة:** 114
+**تاريخ التحديث الآلي:** 2026-10-25T09:44:48.129Z
+**إجمالي الملفات غير المولدة:** 207
 **حدود الخريطة:** جرد ملفات؛ لا يمثل إثبات صحة الوظائف أو جاهزية الإنتاج. يستثني الأسرار والتبعيات وملفات العمل المولدة.
 
 ### المكدس التقني
@@ -17,31 +17,49 @@
 | المجلد | العدد |
 |---|---:|
 | `.agent-skills` | 9 |
-| `root` | 7 |
-| `backend` | 7 |
+| `root` | 9 |
+| `backend` | 9 |
 | `docs` | 5 |
-| `frontend` | 37 |
-| `mvp` | 37 |
+| `frontend` | 65 |
+| `mvp` | 64 |
 | `prisma` | 3 |
 | `scripts` | 8 |
 | `uploads` | 1 |
+| `القواعد` | 34 |
 
 ### واجهات التطبيق (Vite + React)
 - [`frontend/src/App.tsx`](frontend/src/App.tsx)
+- [`frontend/src/components/analytics/AnalyticsActivityLog.tsx`](frontend/src/components/analytics/AnalyticsActivityLog.tsx)
+- [`frontend/src/components/analytics/AnalyticsTopLectures.tsx`](frontend/src/components/analytics/AnalyticsTopLectures.tsx)
 - [`frontend/src/components/analytics/AnalyticsView.tsx`](frontend/src/components/analytics/AnalyticsView.tsx)
+- [`frontend/src/components/analytics/BackupRestoreCard.tsx`](frontend/src/components/analytics/BackupRestoreCard.tsx)
+- [`frontend/src/components/common/PhoneInput.tsx`](frontend/src/components/common/PhoneInput.tsx)
 - [`frontend/src/components/common/Select.tsx`](frontend/src/components/common/Select.tsx)
 - [`frontend/src/components/common/SelectMenuPortal.tsx`](frontend/src/components/common/SelectMenuPortal.tsx)
+- [`frontend/src/components/doctor/DoctorPortalView.tsx`](frontend/src/components/doctor/DoctorPortalView.tsx)
 - [`frontend/src/components/hierarchy/StructureManager.tsx`](frontend/src/components/hierarchy/StructureManager.tsx)
+- [`frontend/src/components/layout/MobileBottomNav.tsx`](frontend/src/components/layout/MobileBottomNav.tsx)
+- [`frontend/src/components/layout/MobileControlDrawer.tsx`](frontend/src/components/layout/MobileControlDrawer.tsx)
 - [`frontend/src/components/layout/Navbar.tsx`](frontend/src/components/layout/Navbar.tsx)
 - [`frontend/src/components/layout/NotificationBell.tsx`](frontend/src/components/layout/NotificationBell.tsx)
 - [`frontend/src/components/lectures/LectureManager.tsx`](frontend/src/components/lectures/LectureManager.tsx)
+- [`frontend/src/components/schedules/ScheduleAddModal.tsx`](frontend/src/components/schedules/ScheduleAddModal.tsx)
+- [`frontend/src/components/schedules/ScheduleCard.tsx`](frontend/src/components/schedules/ScheduleCard.tsx)
+- [`frontend/src/components/schedules/ScheduleDayFilter.tsx`](frontend/src/components/schedules/ScheduleDayFilter.tsx)
 - [`frontend/src/components/schedules/ScheduleManager.tsx`](frontend/src/components/schedules/ScheduleManager.tsx)
+- [`frontend/src/components/schedules/ScheduleZoomModal.tsx`](frontend/src/components/schedules/ScheduleZoomModal.tsx)
+- [`frontend/src/components/settings/CentralTableMappingCard.tsx`](frontend/src/components/settings/CentralTableMappingCard.tsx)
+- [`frontend/src/components/settings/IntegrationSettingsCard.tsx`](frontend/src/components/settings/IntegrationSettingsCard.tsx)
+- [`frontend/src/components/settings/SettingsView.tsx`](frontend/src/components/settings/SettingsView.tsx)
+- [`frontend/src/components/settings/SyncHistoryCard.tsx`](frontend/src/components/settings/SyncHistoryCard.tsx)
 - [`frontend/src/components/student/StudentPortalView.tsx`](frontend/src/components/student/StudentPortalView.tsx)
 - [`frontend/src/components/users/UserManager.tsx`](frontend/src/components/users/UserManager.tsx)
 - [`frontend/src/main.tsx`](frontend/src/main.tsx)
 
 ### خدمات البيانات والمصادقة
 - [`frontend/src/context/AppContext.tsx`](frontend/src/context/AppContext.tsx)
+- [`frontend/src/context/DialogContext.tsx`](frontend/src/context/DialogContext.tsx)
+- [`frontend/src/context/appContextTypes.ts`](frontend/src/context/appContextTypes.ts)
 - [`frontend/src/lib/audit.ts`](frontend/src/lib/audit.ts)
 - [`frontend/src/lib/auth.ts`](frontend/src/lib/auth.ts)
 - [`frontend/src/lib/init-db.ts`](frontend/src/lib/init-db.ts)
@@ -52,7 +70,9 @@
 ### قاعدة البيانات والدوال (Backend & Supabase)
 - [`backend/supabase/functions/core_university.superadmin/index.ts`](backend/supabase/functions/core_university.superadmin/index.ts)
 - [`backend/supabase/functions/core_university/project.json`](backend/supabase/functions/core_university/project.json)
+- [`backend/supabase/functions/sync_central_hierarchy/index.ts`](backend/supabase/functions/sync_central_hierarchy/index.ts)
 - [`backend/supabase/migrations/20261021_init_core_university.sql`](backend/supabase/migrations/20261021_init_core_university.sql)
+- [`backend/supabase/migrations/20261025_add_central_integration_and_facilities.sql`](backend/supabase/migrations/20261025_add_central_integration_and_facilities.sql)
 
 ### الاختبارات
 لا توجد ملفات في هذا النطاق.

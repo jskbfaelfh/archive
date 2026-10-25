@@ -1,0 +1,56 @@
+# Agent Skills & Engineering Standards Integration
+
+## 0. Zero-Touch Automatic Environment Setup
+Upon opening or initializing any workspace/project, the Agent can ensure the environment is configured by running:
+`node scripts/auto-setup-skills.mjs`
+This automatically detects the project type (Node, Flutter, Python, PHP) and configures package scripts & Git hooks without manual intervention.
+
+## 1. Code Architecture & Standards
+- Location: `.agent-skills/code-architecture-standards/SKILL.md`
+- Key mandates:
+  - Line 1 comment header in all code files (`// يجب قراءة ملف قواعد كتابة الكود...`).
+  - Hard ceiling of **300 lines per file** across all languages.
+  - **Type Safety & Runtime Validation:** External data (APIs, forms, storage) must be parsed via runtime validators (e.g., Zod `.safeParse()`).
+  - **Universal Fault Isolation:** Localized Error Boundaries / protective try-catch fallbacks to prevent whole-app white-screen crashes.
+  - **Atomic & Conventional Commits:** Git commits must follow `<type>(<scope>): <message>` (feat, fix, refactor, chore).
+  - Clean architectural layer separation and zero unauthorized deletions.
+- **Automated Line Guard (Hybrid):** Execute `npm run check:lines` (or `node scripts/check-line-limits.mjs`) after major modifications.
+
+## 2. UI/UX & Visual Design Standards
+- Location: `.agent-skills/ui-ux-design-standards/SKILL.md`
+- Key mandates: Minimum font size **13px (`text-[13px]`)**, **no asterisks (`*`)** for required fields (use dynamic start border `border-s-[3px]`), modals rounded to **10px**, inputs/selects rounded to **7px**, dropdown lists & tooltips rendered via **React Portal** (`z-index: 99999`), and no native browser dialogs.
+
+## 3. Domain, Localization & Data Standards
+- Location: `.agent-skills/domain-and-localization-standards/SKILL.md`
+- Key mandates: **Strict English Numerals (0-9) Western digits only** everywhere (even in Arabic UI), 100% translation coverage with zero raw keys leakage (`npm run check:i18n`), and zero technical jargon in user-facing texts/alerts.
+
+## 4. Playwright E2E & Autonomous Testing
+- Location: `.agent-skills/playwright-e2e-testing/SKILL.md`
+- Key mandates:
+  - **Auto-Installation:** Ensure `@playwright/test` and browser binaries are present before running tests (`npm run ensure:playwright`).
+  - **Target-Driven Testing:** Every feature/component must have a corresponding `.spec.ts` test in `e2e/` or `tests/`.
+  - **Autonomous Error Healing:** Execute `npx playwright test`. If an assertion fails, parse the raw terminal error log directly and apply surgical code repairs without re-reading entire screens.
+
+## 5. Autonomous Project Map Protocol & Start Trigger ("ابدأ")
+- Location: `.agent-skills/project-map-protocol/SKILL.md` & `.agents/skills/project-map-protocol/SKILL.md`
+- Key mandates:
+  - **Start Trigger (عند البداية أو عند قول "ابدأ"):** Mandatory read of `PROJECT_MAP.md` before taking any action. If `PROJECT_MAP.md` is missing, generate it deterministically via `node scripts/update-project-map.mjs` (or `npm run map:update`). Strictly prohibit guessing the codebase or scanning files randomly.
+  - **Development Loop (أثناء العمل):** Carry out surgical code modifications grounded directly in `PROJECT_MAP.md`.
+  - **Post-Task Hook (عند النهاية):** Automatically execute `node scripts/update-project-map.mjs` (or `npm run map:update`) to keep `PROJECT_MAP.md` 100% synchronized with all created/modified files before concluding any task.
+
+## 6. Smart Searchable Dropdown Standards
+- Location: `.agent-skills/smart-searchable-dropdown/SKILL.md` & `.agents/skills/smart-searchable-dropdown/SKILL.md`
+- Key mandates:
+  - **Dynamic Threshold Rule:** If options count > 10 (`options.length > 10`), the dropdown automatically activates an embedded search input at the top (`sticky top-0`) with autofocus and instant filtering. If <= 10 options, strictly render as standard dropdown with zero search input overhead.
+  - **Zero Visual Disruption:** Preserve exact visual styles (7px inputs, seamless radius fusion with trigger, white background, shadow-2xl, no border, React Portal at z-index 99999).
+  - **Centralized Architecture:** Centralized in `src/components/common/Select.tsx` and `SelectMenuPortal.tsx` to automatically cover all screens, modals, and filters system-wide.
+
+## 7. Phone Input Standards, Fixed Iraq Prefix (+964) & 11/10 Digits Monitoring
+- Location: `.agent-skills/ui-ux-design-standards/SKILL.md` & `.agent-skills/code-architecture-standards/SKILL.md`
+- Key mandates:
+  - **Digits Only:** Strictly reject any letter, special character, space, or symbol. Only digits `0-9` are accepted across keyboard events, inputs, and paste actions.
+  - **Leading Zero Monitoring (11 Digits with 0, 10 Digits without 0):** Monitor leading `0`: if the number starts with `0`, strictly allow 11 digits; if without `0`, strictly allow 10 digits. Extra digits are blocked on keypress and sanitized on input/paste.
+  - **Fixed Iraq Prefix (+964) on Far Left:** Pinned to the left side of the field with `+` at the far left edge (`+964`), remaining strictly fixed even when switching language (RTL/LTR).
+  - **Centralized Component & Validation:** Implemented system-wide via `src/components/common/PhoneInput.tsx` and `src/utils/phoneValidation.ts`.
+
+

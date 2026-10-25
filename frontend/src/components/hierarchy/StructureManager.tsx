@@ -12,8 +12,10 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import Select from '@/components/common/Select';
+import { useDialog } from '@/context/DialogContext';
 
 export default function StructureManager() {
+  const dialog = useDialog();
   const {
     currentUser,
     colleges,
@@ -241,8 +243,15 @@ export default function StructureManager() {
 
                     {isSuper && (
                       <button
-                        onClick={() => {
-                          if (confirm(`حذف "${col.name}" وجميع أقسامها وشعبها ومحاضراتها نهائياً؟`)) {
+                        onClick={async () => {
+                          const ok = await dialog.confirm({
+                            title: 'تأكيد حذف الكلية',
+                            message: `هل أنت متأكد من حذف "${col.name}" وجميع أقسامها وشعبها ومحاضراتها نهائياً؟`,
+                            isDanger: true,
+                            confirmText: 'حذف نهائي',
+                            cancelText: 'إلغاء',
+                          });
+                          if (ok) {
                             deleteCollege(col.id);
                           }
                         }}
@@ -321,8 +330,15 @@ export default function StructureManager() {
                                   </button>
 
                                   <button
-                                    onClick={() => {
-                                      if (confirm(`حذف قسم "${dept.name}" وشعبه ومواده؟`)) {
+                                    onClick={async () => {
+                                      const ok = await dialog.confirm({
+                                        title: 'تأكيد حذف القسم',
+                                        message: `هل أنت متأكد من حذف قسم "${dept.name}" وشعبه ومواده؟`,
+                                        isDanger: true,
+                                        confirmText: 'حذف القسم',
+                                        cancelText: 'إلغاء',
+                                      });
+                                      if (ok) {
                                         deleteDepartment(col.id, dept.id);
                                       }
                                     }}
@@ -449,8 +465,15 @@ export default function StructureManager() {
                                                       <Edit2 className="w-3 h-3" />
                                                     </button>
                                                     <button
-                                                      onClick={() => {
-                                                        if (confirm(`حذف ${sec.name}؟`)) deleteSection(sec.id);
+                                                      onClick={async () => {
+                                                        const ok = await dialog.confirm({
+                                                          title: 'تأكيد حذف الشعبة',
+                                                          message: `هل أنت متأكد من حذف ${sec.name}؟`,
+                                                          isDanger: true,
+                                                          confirmText: 'حذف الشعبة',
+                                                          cancelText: 'إلغاء',
+                                                        });
+                                                        if (ok) deleteSection(sec.id);
                                                       }}
                                                       className="text-slate-400 hover:text-rose-600 cursor-pointer"
                                                       title="حذف"
@@ -516,8 +539,15 @@ export default function StructureManager() {
                                                       <Edit2 className="w-3 h-3" />
                                                     </button>
                                                     <button
-                                                      onClick={() => {
-                                                        if (confirm(`حذف مقرر "${sub.name}"؟`)) deleteSubject(sub.id);
+                                                      onClick={async () => {
+                                                        const ok = await dialog.confirm({
+                                                          title: 'تأكيد حذف المقرر الدراسي',
+                                                          message: `هل أنت متأكد من حذف مقرر "${sub.name}"؟`,
+                                                          isDanger: true,
+                                                          confirmText: 'حذف المقرر',
+                                                          cancelText: 'إلغاء',
+                                                        });
+                                                        if (ok) deleteSubject(sub.id);
                                                       }}
                                                       className="text-emerald-600 hover:text-rose-600 cursor-pointer"
                                                     >

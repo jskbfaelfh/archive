@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import { useApp } from '@/context/AppContext';
+import { useDialog } from '@/context/DialogContext';
 import { MainTab } from '@/context/appContextTypes';
 import {
   Layers,
@@ -30,6 +31,7 @@ export const MobileControlDrawer: React.FC<MobileControlDrawerProps> = ({
   isOpen,
   onClose,
 }) => {
+  const dialog = useDialog();
   const {
     currentUser,
     colleges,
@@ -168,8 +170,15 @@ export const MobileControlDrawer: React.FC<MobileControlDrawerProps> = ({
             )}
 
             <button
-              onClick={() => {
-                if (confirm('تصفير البيانات والعودة للبيانات الأولية؟')) {
+              onClick={async () => {
+                const ok = await dialog.confirm({
+                  title: 'تأكيد تصفير البيانات الأكاديمية',
+                  message: 'هل أنت متأكد من تصفير البيانات والعودة للبيانات الأولية للمنظومة؟',
+                  isDanger: true,
+                  confirmText: 'تصفير البيانات',
+                  cancelText: 'إلغاء',
+                });
+                if (ok) {
                   resetAll();
                   onClose();
                 }

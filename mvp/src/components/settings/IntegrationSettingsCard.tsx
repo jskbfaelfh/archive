@@ -134,7 +134,7 @@ export const IntegrationSettingsCard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
           <label className="block text-xs font-bold text-slate-700 mb-1.5">
-            رابط واجهة برمجة التطبيقات (Central API Endpoint) *
+            رابط واجهة برمجة التطبيقات (Central API Endpoint)
           </label>
           <div className="relative">
             <Globe className="w-4 h-4 text-slate-400 absolute right-3 top-3.5" />
@@ -143,7 +143,9 @@ export const IntegrationSettingsCard: React.FC = () => {
               value={integrationSettings.apiUrl}
               onChange={(e) => updateIntegrationSettings({ apiUrl: e.target.value })}
               placeholder="https://central-hierarchy.alzahrawi.edu.iq/api/v1"
-              className="w-full pr-10 pl-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:border-emerald-500 focus:outline-none transition-colors text-slate-800 font-mono"
+              className={`w-full pr-10 pl-3 py-2.5 bg-slate-50 border border-slate-200 rounded-[7px] text-xs sm:text-sm focus:bg-white focus:border-emerald-500 focus:outline-none transition-colors text-slate-800 font-mono border-s-[3px] ${
+                integrationSettings.apiUrl ? 'border-s-emerald-500' : 'border-s-rose-500'
+              }`}
               dir="ltr"
             />
           </div>
@@ -151,7 +153,7 @@ export const IntegrationSettingsCard: React.FC = () => {
 
         <div>
           <label className="block text-xs font-bold text-slate-700 mb-1.5">
-            مفتاح المصادقة والوصول (API Key / Bearer Token) *
+            مفتاح المصادقة والوصول (API Key / Bearer Token)
           </label>
           <div className="relative">
             <Key className="w-4 h-4 text-slate-400 absolute right-3 top-3.5" />
@@ -160,7 +162,9 @@ export const IntegrationSettingsCard: React.FC = () => {
               value={integrationSettings.apiKey}
               onChange={(e) => updateIntegrationSettings({ apiKey: e.target.value })}
               placeholder="zh_live_sec_..."
-              className="w-full pr-10 pl-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:border-emerald-500 focus:outline-none transition-colors text-slate-800 font-mono"
+              className={`w-full pr-10 pl-10 py-2.5 bg-slate-50 border border-slate-200 rounded-[7px] text-xs sm:text-sm focus:bg-white focus:border-emerald-500 focus:outline-none transition-colors text-slate-800 font-mono border-s-[3px] ${
+                integrationSettings.apiKey ? 'border-s-emerald-500' : 'border-s-rose-500'
+              }`}
               dir="ltr"
             />
             <button

@@ -18,7 +18,7 @@ export default function ScheduleZoomModal({ schedule, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in">
-      <div className="bg-white rounded-3xl max-w-5xl w-full p-4 sm:p-6 space-y-4 shadow-2xl overflow-hidden max-h-[94vh] flex flex-col border border-slate-200">
+      <div className="bg-white rounded-[10px] max-w-5xl w-full p-4 sm:p-6 space-y-4 shadow-2xl overflow-hidden max-h-[94vh] flex flex-col border border-slate-200">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3.5 border-slate-100">
           <div>
